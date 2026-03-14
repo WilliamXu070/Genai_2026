@@ -1,0 +1,13 @@
+{
+  "requestId": "cli_loop_example_1",
+  "type": "jungle:start-run",
+  "payload": {
+    "objective": "Test generated app feature and return fix guidance",
+    "url": "http://127.0.0.1:8088",
+    "projectRoot": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+    "environmentContext": "CLI Codex loop",
+    "constraints": "Terminal-only execution",
+    "severityThreshold": 8,
+    "maxRetries": 2
+  }
+}

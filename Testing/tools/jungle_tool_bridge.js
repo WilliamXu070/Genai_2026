@@ -2,6 +2,11 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
 const { JungleManager } = require("../../src/runtime/manager");
+const {
+  normalizeBridgeRequest,
+  validateBridgeRequest,
+  validateOrchestratorResponse
+} = require("../cli_agentic_loop/tool_contract");
 
 function parseStepToken(token) {
   if (!token) {
@@ -182,22 +187,14 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function mapRequestToAgenticPayload(request, repoRoot) {
-  const payload = request?.payload || {};
-  return {
-    feature_goal: payload.objective || payload.task || payload.scenarioName || "Validate generated code behavior",
-    environment_context: payload.environmentContext || "CLI-driven Codex to orchestrator loop",
-    target_url: payload.url || request?.url || "",
-    constraints: payload.constraints || "No destructive actions",
-    severity_threshold: Number(payload.severityThreshold || 8.0),
-    max_retries: Number(payload.maxRetries || 2),
-    project_root: payload.projectRoot || repoRoot
-  };
-}
-
 function runLangflowAgentic(request, repoRoot, timeoutMs) {
   return new Promise((resolve, reject) => {
-    const payload = mapRequestToAgenticPayload(request, repoRoot);
+    const check = validateBridgeRequest(request);
+    if (!check.valid) {
+      reject(new Error(`Invalid tool request schema: ${check.errors.join("; ")}`));
+      return;
+    }
+    const payload = normalizeBridgeRequest(request, repoRoot);
     const tmpDir = path.join(repoRoot, "Testing", ".jungle_tool_io");
     fs.mkdirSync(tmpDir, { recursive: true });
     const payloadPath = path.join(tmpDir, `langflow_payload_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.json`);
@@ -266,7 +263,13 @@ function runLangflowAgentic(request, repoRoot, timeoutMs) {
         return;
       }
       try {
-        finish(null, JSON.parse(line));
+        const parsed = JSON.parse(line);
+        const responseCheck = validateOrchestratorResponse(parsed);
+        if (!responseCheck.valid) {
+          finish(new Error(`Invalid orchestrator response schema: ${responseCheck.errors.join("; ")}`));
+          return;
+        }
+        finish(null, parsed);
       } catch (error) {
         finish(new Error(`Failed to parse Langflow CLI output: ${error.message}`));
       }

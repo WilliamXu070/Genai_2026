@@ -1,0 +1,9 @@
+{
+  "feature_goal": "Validate newly implemented feature behavior end-to-end",
+  "target_url": "http://127.0.0.1:8088",
+  "environment_context": "Local development branch test run",
+  "constraints": "No destructive actions",
+  "severity_threshold": 8.0,
+  "max_retries": 2,
+  "project_root": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+}

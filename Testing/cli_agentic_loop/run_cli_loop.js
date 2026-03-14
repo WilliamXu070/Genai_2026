@@ -2,6 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
 const { toFixPacket } = require("./feedback");
+const { validateBridgeRequest } = require("./tool_contract");
 
 function parseArgs(argv) {
   const args = [...argv];
@@ -135,6 +136,10 @@ async function runLoop() {
         maxRetries: args.maxRetries
       }
     };
+    const requestCheck = validateBridgeRequest(requestPayload);
+    if (!requestCheck.valid) {
+      throw new Error(`Generated invalid bridge request: ${requestCheck.errors.join("; ")}`);
+    }
     const requestPath = path.join(iterationDir, "bridge_request.json");
     fs.writeFileSync(requestPath, JSON.stringify(requestPayload, null, 2), "utf8");
 

@@ -15,7 +15,9 @@
     "test": "node tests/run_all.js",
     "simulate:ops": "node src/runtime/operational_example.js",
     "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
-    "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js"
+    "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+    "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+    "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
   },
   "devDependencies": {
     "electron": "^35.0.0",
