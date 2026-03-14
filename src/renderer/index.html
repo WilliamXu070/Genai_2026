@@ -101,35 +101,39 @@
           </div>
         </div>
 
-        <div class="mvp-grid">
-          <article class="mvp-card">
-            <p class="eyebrow">Live status</p>
-            <div id="run-live-status">Idle</div>
-            <pre id="run-live-steps" class="mvp-log">No steps yet.</pre>
-          </article>
+<div class="mvp-grid">
+  <article class="mvp-card">
+    <p class="eyebrow">Live status</p>
+    <div id="run-live-status">Idle</div>
+    <pre id="run-live-steps" class="mvp-log">No steps yet.</pre>
+  </article>
 
-          <article class="mvp-card">
-            <p class="eyebrow">Run history</p>
-            <ul id="run-history" class="run-history"></ul>
-          </article>
+  <article class="mvp-card">
+    <p class="eyebrow">Run history</p>
+    <ul id="run-history" class="run-history"></ul>
+  </article>
 
-          <article class="mvp-card">
-            <p class="eyebrow">Blank boxes (for William)</p>
-            <ul id="todo-blueprint" class="todo-blueprint"></ul>
-          </article>
-        </div>
-      </section>
+  <article class="mvp-card">
+    <p class="eyebrow">Blank boxes (for William)</p>
+    <ul id="todo-blueprint" class="todo-blueprint"></ul>
+  </article>
 
-      <section class="jungle-mvp" aria-label="Agentic test loop">
-        <div class="mvp-header-row">
-          <h3>WELCOME TO THE JUNGLE — Agentic Loop</h3>
-          <div class="action-row">
-            <button class="primary-action" id="agentic-create-draft" type="button">Start testing flow</button>
-            <button class="secondary-action" id="agentic-confirm-run" type="button">Confirm + run Playwright</button>
-            <button class="secondary-action" id="agentic-redo" type="button">Redo previous test</button>
-            <button class="secondary-action" id="agentic-fork" type="button">Fork previous tree</button>
-          </div>
-        </div>
+<article class="mvp-card timeline-card">
+  <p class="eyebrow">Execution Timeline</p>
+
+  <div id="timeline" class="timeline">
+
+    <div class="timeline-trunk"></div>
+
+    <!-- events injected here -->
+    <div id="timeline-events"></div>
+
+  </div>
+</article>
+
+    </div>
+  </article>
+</div>
         <div class="mvp-grid">
           <article class="mvp-card">
             <p class="eyebrow">Procedure confirmation</p>
