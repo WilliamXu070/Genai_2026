@@ -1,7 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
-const { spawn } = require("node:child_process");
+const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+const pty = require("node-pty");
 const { JungleManager } = require("./runtime/manager");
 const { runOperationalExample } = require("./runtime/operational_example");
 const { AgenticLoopManager } = require("./runtime/agentic_loop");
@@ -11,41 +12,57 @@ let terminalSession;
 let jungleManager;
 let agenticLoopManager;
 
+function readJsonFile(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function writeJsonFile(filePath, value) {
+  fs.writeFileSync(filePath, JSON.stringify(value, null, 2), "utf8");
+}
+
 function getProjectRoot() {
   return app.getAppPath();
 }
 
 function disposeTerminalSession() {
-  if (terminalSession?.process && !terminalSession.process.killed) {
-    terminalSession.process.kill();
+  if (terminalSession?.process) {
+    try {
+      terminalSession.process.kill();
+    } catch (_) {
+      // ignore process disposal failures
+    }
   }
 
   terminalSession = null;
 }
 
-function createTerminalSession(webContents) {
-  if (terminalSession && !terminalSession.process.killed) {
-    return terminalSession;
+function createTerminalSession(webContents, options = {}) {
+  if (terminalSession?.process) {
+    disposeTerminalSession();
   }
 
-  const shellPath = process.env.SHELL || "/bin/zsh";
+  const shellPath =
+    process.platform === "win32"
+      ? process.env.COMSPEC || "cmd.exe"
+      : process.env.SHELL || "/bin/zsh";
   const sessionId = `terminal-${Date.now()}`;
   const projectRoot = getProjectRoot();
   const shellName = path.basename(shellPath);
-  let args = [];
+  const cols = Number.isInteger(options.cols) ? Math.max(20, options.cols) : 120;
+  const rows = Number.isInteger(options.rows) ? Math.max(8, options.rows) : 34;
+  let args = process.platform === "win32" ? ["/Q"] : ["-i"];
 
-  if (process.platform === "win32") {
-    args = [];
-  } else if (shellName === "zsh") {
+  if (shellName === "zsh") {
     args = ["-i", "-f"];
   } else if (shellName === "bash") {
     args = ["--noprofile", "--norc", "-i"];
-  } else {
-    args = ["-i"];
   }
 
-  const terminalProcess = spawn(shellPath, args, {
+  const terminalProcess = pty.spawn(shellPath, args, {
+    cols,
     cwd: projectRoot,
+    name: "xterm-256color",
+    rows,
     env: {
       ...process.env,
       COLORTERM: "truecolor",
@@ -61,7 +78,9 @@ function createTerminalSession(webContents) {
     id: sessionId,
     process: terminalProcess,
     shellPath,
-    webContentsId: webContents.id
+    webContentsId: webContents.id,
+    cols,
+    rows
   };
 
   const sendToRenderer = (channel, payload) => {
@@ -70,23 +89,16 @@ function createTerminalSession(webContents) {
     }
   };
 
-  terminalProcess.stdout.on("data", (chunk) => {
+  terminalProcess.onData((chunk) => {
     sendToRenderer("terminal:data", {
-      data: chunk.toString("utf8"),
+      data: chunk,
       sessionId
     });
   });
 
-  terminalProcess.stderr.on("data", (chunk) => {
-    sendToRenderer("terminal:data", {
-      data: chunk.toString("utf8"),
-      sessionId
-    });
-  });
-
-  terminalProcess.on("close", (code, signal) => {
+  terminalProcess.onExit(({ exitCode, signal }) => {
     sendToRenderer("terminal:exit", {
-      code,
+      code: exitCode,
       sessionId,
       signal
     });
@@ -95,28 +107,6 @@ function createTerminalSession(webContents) {
       terminalSession = null;
     }
   });
-
-  terminalProcess.on("error", (error) => {
-    sendToRenderer("terminal:data", {
-      data: `\r\n[Jungle] Terminal failed to start: ${error.message}\r\n`,
-      sessionId
-    });
-  });
-
-  setTimeout(() => {
-    if (terminalSession?.id === sessionId) {
-      if (shellName === "zsh") {
-        terminalProcess.stdin.write("PROMPT=$'\\033[1;32mjungle\\033[0m % '\r");
-      } else if (shellName === "bash") {
-        terminalProcess.stdin.write("export PS1='jungle % '\r");
-      }
-
-      terminalProcess.stdin.write("clear\r");
-      terminalProcess.stdin.write(
-        `printf '\\033[1;32mJungle terminal attached.\\033[0m\\nProject: %s\\nShell: %s\\n\\n' "${projectRoot}" "${shellName}"\r`
-      );
-    }
-  }, 180);
 
   return terminalSession;
 }
@@ -133,11 +123,12 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
-      nodeIntegration: false
+      nodeIntegration: false,
+      sandbox: false
     }
   });
 
-  mainWindow.loadFile(path.join(__dirname, "renderer", "index.html"));
+  mainWindow.loadFile(path.join(__dirname, "renderer", "v2", "index.html"));
 
   mainWindow.on("closed", () => {
     disposeTerminalSession();
@@ -145,11 +136,72 @@ function createWindow() {
   });
 }
 
+async function runToolBridgeIfConfigured() {
+  const requestPath = process.env.JUNGLE_TOOL_REQUEST_PATH;
+  const responsePath = process.env.JUNGLE_TOOL_RESPONSE_PATH;
+  if (!requestPath || !responsePath) {
+    return;
+  }
+
+  let response;
+  try {
+    const request = readJsonFile(requestPath);
+    const type = request?.type || "jungle:start-run";
+    const payload = request?.payload || {};
+    const requestId = request?.requestId || `req_${Date.now()}`;
+
+    if (type !== "jungle:start-run") {
+      throw new Error(`Unsupported tool request type: ${type}`);
+    }
+
+    const result = await jungleManager.startRun(
+      {
+        command: "",
+        projectName: payload.projectName || "Jungle",
+        scenarioName: payload.scenarioName || "Tool bridge smoke",
+        steps:
+          Array.isArray(payload.steps) && payload.steps.length > 0
+            ? payload.steps
+            : [{ action: "assert", target: "tool request received" }],
+        url: payload.url || "http://127.0.0.1:3000"
+      },
+      (runtimeEvent) => {
+        if (!mainWindow?.webContents.isDestroyed()) {
+          mainWindow.webContents.send("jungle:run-event", runtimeEvent);
+        }
+      }
+    );
+
+    response = {
+      completedAt: new Date().toISOString(),
+      ok: true,
+      requestId,
+      result
+    };
+  } catch (error) {
+    response = {
+      completedAt: new Date().toISOString(),
+      error: error.message,
+      ok: false,
+      requestId: null
+    };
+  }
+
+  writeJsonFile(responsePath, response);
+
+  if (process.env.JUNGLE_TOOL_EXIT_ON_COMPLETE === "1") {
+    setTimeout(() => {
+      app.quit();
+    }, 250);
+  }
+}
+
 app.whenReady().then(() => {
   app.setName("Jungle");
   jungleManager = new JungleManager(getProjectRoot());
   agenticLoopManager = new AgenticLoopManager(getProjectRoot());
   createWindow();
+  runToolBridgeIfConfigured();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -168,12 +220,14 @@ app.on("before-quit", () => {
   disposeTerminalSession();
 });
 
-ipcMain.handle("terminal:create", (event) => {
-  const session = createTerminalSession(event.sender);
+ipcMain.handle("terminal:create", (event, options) => {
+  const session = createTerminalSession(event.sender, options || {});
 
   return {
+    cols: session.cols,
     cwd: session.cwd,
     home: os.homedir(),
+    rows: session.rows,
     sessionId: session.id,
     shellPath: session.shellPath
   };
@@ -188,7 +242,28 @@ ipcMain.on("terminal:input", (event, payload) => {
     return;
   }
 
-  terminalSession.process.stdin.write(payload.data);
+  terminalSession.process.write(payload.data);
+});
+
+ipcMain.on("terminal:resize", (event, payload) => {
+  if (!payload || payload.sessionId !== terminalSession?.id) {
+    return;
+  }
+
+  if (event.sender.id !== terminalSession.webContentsId) {
+    return;
+  }
+
+  const cols = Number.isInteger(payload.cols) ? Math.max(20, payload.cols) : null;
+  const rows = Number.isInteger(payload.rows) ? Math.max(8, payload.rows) : null;
+
+  if (!cols || !rows) {
+    return;
+  }
+
+  terminalSession.cols = cols;
+  terminalSession.rows = rows;
+  terminalSession.process.resize(cols, rows);
 });
 
 ipcMain.handle("jungle:list-runs", () => {
@@ -220,6 +295,20 @@ ipcMain.handle("jungle:run-operational-example", async () => {
   return runOperationalExample(getProjectRoot());
 });
 
+ipcMain.handle("jungle:orchestrate-task", async (event, payload) => {
+  if (!agenticLoopManager) {
+    throw new Error("Agentic loop manager unavailable");
+  }
+
+  const emitEvent = (runtimeEvent) => {
+    if (!event.sender.isDestroyed()) {
+      event.sender.send("agentic:event", runtimeEvent);
+    }
+  };
+
+  return agenticLoopManager.orchestrateTask(payload || {}, emitEvent);
+});
+
 ipcMain.handle("agentic:list-forests", () => {
   return agenticLoopManager ? agenticLoopManager.listForests() : [];
 });
@@ -237,6 +326,18 @@ ipcMain.handle("agentic:create-draft", async (_, payload) => {
     throw new Error("Agentic loop manager unavailable");
   }
   return agenticLoopManager.createDraft(payload || {});
+});
+
+ipcMain.handle("agentic:orchestrate-task", async (event, payload) => {
+  if (!agenticLoopManager) {
+    throw new Error("Agentic loop manager unavailable");
+  }
+  const emitEvent = (runtimeEvent) => {
+    if (!event.sender.isDestroyed()) {
+      event.sender.send("agentic:event", runtimeEvent);
+    }
+  };
+  return agenticLoopManager.orchestrateTask(payload || {}, emitEvent);
 });
 
 ipcMain.handle("agentic:confirm-and-run", async (event, payload) => {

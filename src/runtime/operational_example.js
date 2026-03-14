@@ -2,6 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const http = require("node:http");
 const { chromium } = require("playwright");
+const { analyzeOperationalSemantics } = require("./semantics");
 
 function parseDotEnv(projectRoot) {
   const envPath = path.join(projectRoot, ".env");
@@ -246,6 +247,7 @@ async function runOperationalExample(projectRoot) {
   const parsedState = parseStateFromHtml(html);
   const uiInteraction = await runUiInteractionCheck(url, path.join(projectRoot, "db", "runs"));
   const semantic = await runGeminiSemanticCheck(apiKey, html);
+  const semanticLocal = analyzeOperationalSemantics(parsedState, uiInteraction, semantic);
 
   server.close();
 
@@ -256,9 +258,11 @@ async function runOperationalExample(projectRoot) {
     parsedState,
     uiInteraction,
     semantic,
+    semanticLocal,
     overallPass:
       Object.values(parsedState).every(Boolean) &&
       uiInteraction.pass === true &&
+      semanticLocal.overallPass === true &&
       semantic.pass === true &&
       semantic.status === "ok"
   };

@@ -1,0 +1,227 @@
+flow:
+  id: jungle_orchestrator
+  name: Jungle Orchestrator
+  version: 1
+  description: "Task-to-Playwright orchestration pipeline for Langflow."
+
+nodes:
+  - id: input_payload
+    type: input
+    label: Input Payload
+    outputs: [payload]
+    fields:
+      - projectName
+      - url
+      - task
+      - objective
+      - notes
+      - additions
+      - forestId
+      - skipCodex
+      - codexTimeoutMs
+
+  - id: normalize_input
+    type: python_function
+    label: Normalize Input
+    source: "pipeline.stages.normalize_input"
+    inputs: [payload]
+    outputs: [normalized]
+
+  - id: inspect_website
+    type: tool
+    label: Inspect Website
+    contract:
+      input:
+        - normalized.url
+      output:
+        - title
+        - url
+        - headings[]
+        - buttonSelectors[]
+        - textTargets[]
+        - inputs[]
+    outputs: [inspection]
+
+  - id: generate_plan
+    type: llm
+    label: Generate Procedure Plan
+    prompt_contract:
+      input:
+        - normalized.objective
+        - normalized.task
+        - normalized.notes
+        - inspection
+      output_json:
+        - summary
+        - confirmMessage
+        - steps[]
+        - notes
+    outputs: [plan]
+
+  - id: validate_or_fallback
+    type: python_function
+    label: Validate or Fallback Procedure
+    source: "pipeline.stages.choose_procedure"
+    inputs: [plan, inspection, normalized]
+    outputs: [procedure]
+
+  - id: build_parser
+    type: python_function
+    label: Build Request Parser
+    source: "pipeline.stages.build_request_parser"
+    inputs: [procedure]
+    outputs: [parser]
+
+  - id: generate_executor
+    type: python_function
+    label: Generate Executor Metadata
+    source: "pipeline.stages.generate_executor"
+    inputs: [parser]
+    outputs: [executor]
+
+  - id: codex_router
+    type: condition
+    label: Codex Branch Router
+    condition: "normalized.skipCodex == false"
+    outputs: [run_codex, skip_codex]
+
+  - id: codex_mcp_plan
+    type: tool
+    label: Codex MCP Planner
+    optional: true
+    inputs: [normalized, procedure, inspection]
+    outputs: [codex]
+
+  - id: codex_skipped
+    type: constant
+    label: Codex Skipped
+    value:
+      status: skipped
+      pass: false
+      reason: "Codex branch skipped"
+      stdout: ""
+      stderr: ""
+    outputs: [codex]
+
+  - id: run_playwright
+    type: tool
+    label: Playwright Runner
+    contract:
+      input:
+        - normalized.url
+        - procedure
+        - parser
+        - executor
+      output:
+        - status
+        - summary
+        - steps[]
+        - artifacts[]
+        - videoPath
+    outputs: [run_result]
+
+  - id: persist_run
+    type: tool
+    label: Persist Run
+    contract:
+      input:
+        - normalized
+        - procedure
+        - parser
+        - executor
+        - codex
+        - run_result
+      output:
+        - runId
+        - forestId
+        - treeId
+        - status
+        - summary
+        - artifacts[]
+    outputs: [run]
+
+  - id: result
+    type: output
+    label: Final Orchestration Result
+    shape:
+      - forestId
+      - treeId
+      - objective
+      - procedure
+      - parser
+      - executor
+      - codex
+      - run
+
+edges:
+  - from: input_payload.payload
+    to: normalize_input.payload
+  - from: normalize_input.normalized
+    to: inspect_website.normalized
+  - from: normalize_input.normalized
+    to: generate_plan.normalized
+  - from: inspect_website.inspection
+    to: generate_plan.inspection
+  - from: generate_plan.plan
+    to: validate_or_fallback.plan
+  - from: inspect_website.inspection
+    to: validate_or_fallback.inspection
+  - from: normalize_input.normalized
+    to: validate_or_fallback.normalized
+  - from: validate_or_fallback.procedure
+    to: build_parser.procedure
+  - from: build_parser.parser
+    to: generate_executor.parser
+  - from: normalize_input.normalized
+    to: codex_router.normalized
+  - from: codex_router.run_codex
+    to: codex_mcp_plan.trigger
+  - from: normalize_input.normalized
+    to: codex_mcp_plan.normalized
+  - from: validate_or_fallback.procedure
+    to: codex_mcp_plan.procedure
+  - from: inspect_website.inspection
+    to: codex_mcp_plan.inspection
+  - from: codex_router.skip_codex
+    to: codex_skipped.trigger
+  - from: normalize_input.normalized
+    to: run_playwright.normalized
+  - from: validate_or_fallback.procedure
+    to: run_playwright.procedure
+  - from: build_parser.parser
+    to: run_playwright.parser
+  - from: generate_executor.executor
+    to: run_playwright.executor
+  - from: normalize_input.normalized
+    to: persist_run.normalized
+  - from: validate_or_fallback.procedure
+    to: persist_run.procedure
+  - from: build_parser.parser
+    to: persist_run.parser
+  - from: generate_executor.executor
+    to: persist_run.executor
+  - from: run_playwright.run_result
+    to: persist_run.run_result
+  - from: codex_mcp_plan.codex
+    to: persist_run.codex
+  - from: codex_skipped.codex
+    to: persist_run.codex
+  - from: persist_run.run
+    to: result.run
+  - from: normalize_input.normalized.objective
+    to: result.objective
+  - from: validate_or_fallback.procedure
+    to: result.procedure
+  - from: build_parser.parser
+    to: result.parser
+  - from: generate_executor.executor
+    to: result.executor
+  - from: codex_mcp_plan.codex
+    to: result.codex
+  - from: codex_skipped.codex
+    to: result.codex
+  - from: persist_run.run.forestId
+    to: result.forestId
+  - from: persist_run.run.treeId
+    to: result.treeId
+

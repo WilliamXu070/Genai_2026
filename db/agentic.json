@@ -1,0 +1,1425 @@
+{
+  "schemaVersion": "0.1.0",
+  "forests": [
+    {
+      "forestId": "forest_1773502218389",
+      "projectName": "Animation Physics",
+      "url": "http://127.0.0.1:8088",
+      "objective": "Validate the ball animation is running continuously for at least 10 seconds, confirm the rotation/speed/energy readouts change over time, and fail if motion appears static.",
+      "createdAt": "2026-03-14T15:30:18.389Z",
+      "updatedAt": "2026-03-14T15:31:25.233Z",
+      "trees": [
+        {
+          "treeId": "tree_1773502265489",
+          "version": 3,
+          "status": "failed",
+          "createdAt": "2026-03-14T15:31:05.489Z",
+          "updatedAt": "2026-03-14T15:31:25.233Z",
+          "procedure": {
+            "summary": "Validate Ball Physics Inside Rotating Square flow and core interactions for objective: Validate the rotating box physics demo by ensuring the ball animation runs continuously for 10 seconds and that the rotation, speed, and energy readouts change over time, indicating a dynamic simulation.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:8088/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Ball Physics Inside Rotating Square"
+              },
+              {
+                "action": "captureText",
+                "target": "#title",
+                "value": "beforeState"
+              },
+              {
+                "action": "click",
+                "target": "text=Submit"
+              },
+              {
+                "action": "assertChanged",
+                "target": "#title",
+                "value": "beforeState"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "This test validates the core functionality of the rotating box physics demo by ensuring the simulation runs continuously and the readouts reflect dynamic changes. The screenshots can be used for visual confirmation of the animation."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:8088/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Ball Physics Inside Rotating Square",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "captureText",
+                "originalAction": "captureText",
+                "target": "#title",
+                "value": "beforeState",
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Submit",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "assertChanged",
+                "originalAction": "assertChanged",
+                "target": "#title",
+                "value": "beforeState",
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773502285233",
+          "confirmedAt": "2026-03-14T15:31:25.233Z"
+        },
+        {
+          "treeId": "tree_1773502241359",
+          "version": 2,
+          "status": "failed",
+          "createdAt": "2026-03-14T15:30:41.359Z",
+          "updatedAt": "2026-03-14T15:31:01.113Z",
+          "procedure": {
+            "summary": "Validate Ball Physics Inside Rotating Square flow and core interactions for objective: Validate the rotating box physics demo animation runs continuously for at least 10 seconds, confirming dynamic readouts and failing if motion appears static.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:8088/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Ball Physics Inside Rotating Square"
+              },
+              {
+                "action": "captureText",
+                "target": "#title",
+                "value": "beforeState"
+              },
+              {
+                "action": "click",
+                "target": "text=Submit"
+              },
+              {
+                "action": "assertChanged",
+                "target": "#title",
+                "value": "beforeState"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "This test validates the dynamic nature of the rotating box physics demo by checking if the speed, angle, and energy readouts change over a 10-second period. A screenshot is taken for visual confirmation."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:8088/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Ball Physics Inside Rotating Square",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "captureText",
+                "originalAction": "captureText",
+                "target": "#title",
+                "value": "beforeState",
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Submit",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "assertChanged",
+                "originalAction": "assertChanged",
+                "target": "#title",
+                "value": "beforeState",
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773502261113",
+          "confirmedAt": "2026-03-14T15:31:01.113Z"
+        },
+        {
+          "treeId": "tree_1773502218390",
+          "version": 1,
+          "status": "failed",
+          "createdAt": "2026-03-14T15:30:18.390Z",
+          "updatedAt": "2026-03-14T15:30:38.177Z",
+          "procedure": {
+            "summary": "Validate Ball Physics Inside Rotating Square flow and core interactions for objective: Validate the continuous animation of the rotating box physics demo and verify dynamic updates to speed, angle, and energy readouts.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:8088/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Ball Physics Inside Rotating Square"
+              },
+              {
+                "action": "captureText",
+                "target": "#title",
+                "value": "beforeState"
+              },
+              {
+                "action": "click",
+                "target": "text=Submit"
+              },
+              {
+                "action": "assertChanged",
+                "target": "#title",
+                "value": "beforeState"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "This test assumes the presence of elements with IDs 'speed-readout', 'angle-readout', 'energy-readout', and 'sim'.,The 10-second wait time can be adjusted based on the expected animation speed.,The 'notEqual' assertions ensure that the readouts are dynamically updating, indicating that the simulation is running.,If any of the assertions fail, the test will indicate that the animation is not running as expected.,Consider adding visual validation to confirm the ball is moving if readout changes are minimal."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:8088/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Ball Physics Inside Rotating Square",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "captureText",
+                "originalAction": "captureText",
+                "target": "#title",
+                "value": "beforeState",
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Submit",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "assertChanged",
+                "originalAction": "assertChanged",
+                "target": "#title",
+                "value": "beforeState",
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773502238176",
+          "confirmedAt": "2026-03-14T15:30:38.177Z"
+        }
+      ]
+    },
+    {
+      "forestId": "forest_1773501029401",
+      "projectName": "Animation Demo",
+      "url": "http://127.0.0.1:59173",
+      "objective": "Click the animation button and verify UI state transitions to completed",
+      "createdAt": "2026-03-14T15:10:29.401Z",
+      "updatedAt": "2026-03-14T15:10:48.209Z",
+      "trees": [
+        {
+          "treeId": "tree_1773501029402",
+          "version": 1,
+          "status": "validated",
+          "createdAt": "2026-03-14T15:10:29.402Z",
+          "updatedAt": "2026-03-14T15:10:48.209Z",
+          "procedure": {
+            "summary": "Validate Button Animation Validation flow and core interactions for objective: Test button animation and verify completion status.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:59173/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Button Animation Validation"
+              },
+              {
+                "action": "captureText",
+                "target": "#status",
+                "value": "beforeState"
+              },
+              {
+                "action": "click",
+                "target": "#run-animation"
+              },
+              {
+                "action": "assertChanged",
+                "target": "#status",
+                "value": "beforeState"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "Verifies that clicking the 'Run animation' button triggers the animation and the status updates to 'Completed'."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:59173/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Button Animation Validation",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "captureText",
+                "originalAction": "captureText",
+                "target": "#status",
+                "value": "beforeState",
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "click",
+                "originalAction": "click",
+                "target": "#run-animation",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "assertChanged",
+                "originalAction": "assertChanged",
+                "target": "#status",
+                "value": "beforeState",
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773501048208",
+          "confirmedAt": "2026-03-14T15:10:48.209Z"
+        }
+      ]
+    },
+    {
+      "forestId": "forest_1773500701395",
+      "projectName": "Animation Demo",
+      "url": "http://127.0.0.1:61306",
+      "objective": "Click the animation button and verify UI state transitions to completed",
+      "createdAt": "2026-03-14T15:05:01.395Z",
+      "updatedAt": "2026-03-14T15:05:02.034Z",
+      "trees": [
+        {
+          "treeId": "tree_1773500701396",
+          "version": 1,
+          "status": "validated",
+          "createdAt": "2026-03-14T15:05:01.396Z",
+          "updatedAt": "2026-03-14T15:05:02.034Z",
+          "procedure": {
+            "summary": "Validate Button Animation Validation flow and core interactions for objective: Test button animation and verify status update.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:61306/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Button Animation Validation"
+              },
+              {
+                "action": "captureText",
+                "target": "#status",
+                "value": "beforeState"
+              },
+              {
+                "action": "click",
+                "target": "#run-animation"
+              },
+              {
+                "action": "assertChanged",
+                "target": "#status",
+                "value": "beforeState"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "This test clicks the 'Run animation' button and verifies that the status text updates to 'Animation completed!' after the animation completes. It also checks the title is visible before starting."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:61306/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Button Animation Validation",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "captureText",
+                "originalAction": "captureText",
+                "target": "#status",
+                "value": "beforeState",
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "click",
+                "originalAction": "click",
+                "target": "#run-animation",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "assertChanged",
+                "originalAction": "assertChanged",
+                "target": "#status",
+                "value": "beforeState",
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773500702034",
+          "confirmedAt": "2026-03-14T15:05:02.034Z"
+        }
+      ]
+    },
+    {
+      "forestId": "forest_1773500356833",
+      "projectName": "Animation Demo",
+      "url": "http://127.0.0.1:55812",
+      "objective": "Click the animation button and verify UI state transitions to completed",
+      "createdAt": "2026-03-14T14:59:16.833Z",
+      "updatedAt": "2026-03-14T14:59:17.320Z",
+      "trees": [
+        {
+          "treeId": "tree_1773500356833",
+          "version": 1,
+          "status": "validated",
+          "createdAt": "2026-03-14T14:59:16.833Z",
+          "updatedAt": "2026-03-14T14:59:17.320Z",
+          "procedure": {
+            "summary": "This test validates the button animation functionality by clicking the 'Run animation' button and verifying the status text changes to 'Completed'.",
+            "confirmMessage": "Animation button click and status text verification successful.",
+            "steps": [
+              {
+                "action": "Assert visibility of the title",
+                "target": "#title",
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "action": "Click the 'Run animation' button",
+                "target": "#run-animation"
+              },
+              {
+                "action": "Wait for the status text to change to 'Completed'",
+                "target": "#status",
+                "assert": {
+                  "textContent": "Completed"
+                }
+              }
+            ],
+            "notes": "This test focuses on the core functionality of the animation button. It verifies that clicking the button triggers the animation and that the status text updates correctly.  The test uses robust selectors to ensure maintainability.  The test assumes the initial state of the status text is not 'Completed'."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "Assert visibility of the title",
+                "target": "#title",
+                "value": null,
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "index": 1,
+                "action": "Click the 'Run animation' button",
+                "target": "#run-animation",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "Wait for the status text to change to 'Completed'",
+                "target": "#status",
+                "value": null,
+                "assert": {
+                  "textContent": "Completed"
+                }
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773500357319",
+          "confirmedAt": "2026-03-14T14:59:17.320Z"
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "runId": "agentic_run_1773502285233",
+      "forestId": "forest_1773502218389",
+      "treeId": "tree_1773502265489",
+      "createdAt": "2026-03-14T15:31:25.233Z",
+      "status": "fail",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:8088/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Ball Physics Inside Rotating Square",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "captureText",
+          "target": "#title",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "click",
+          "target": "text=Submit",
+          "status": "fail",
+          "note": "locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\semantic_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\21aeb1d6d9b1807625a3459cb222dd79.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\final_1773502284934.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\request_parser.json"
+        }
+      ],
+      "summary": "Failed at step 4: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\21aeb1d6d9b1807625a3459cb222dd79.webm",
+      "semantics": {
+        "overallPass": false,
+        "verdict": "fail",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=4"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=7"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=2364573 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=fail failedSteps=1"
+          }
+        ],
+        "right": [
+          "steps_present: steps=4",
+          "artifacts_present: artifacts=7",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=2364573 headerValid=true",
+          "run_status_consistent: status=fail failedSteps=1"
+        ],
+        "wrong": [
+          "run_summary: Failed at step 4: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n",
+          "failed_step_note: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n"
+        ],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\21aeb1d6d9b1807625a3459cb222dd79.webm",
+          "sizeBytes": 2364573,
+          "valid": true
+        }
+      }
+    },
+    {
+      "runId": "agentic_run_1773502261113",
+      "forestId": "forest_1773502218389",
+      "treeId": "tree_1773502241359",
+      "createdAt": "2026-03-14T15:31:01.113Z",
+      "status": "fail",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:8088/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Ball Physics Inside Rotating Square",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "captureText",
+          "target": "#title",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "click",
+          "target": "text=Submit",
+          "status": "fail",
+          "note": "locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502241359_1773502241494\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502241359_1773502241494\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502241359_1773502241494\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502241359_1773502241494\\semantic_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502241359_1773502241494\\ab4570f22de09ba39fce4624c0ec8f2f.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502241359_1773502241494\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502241359_1773502241494\\final_1773502260757.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502241359_1773502241494\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502241359_1773502241494\\request_parser.json"
+        }
+      ],
+      "summary": "Failed at step 4: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502241359_1773502241494\\ab4570f22de09ba39fce4624c0ec8f2f.webm",
+      "semantics": {
+        "overallPass": false,
+        "verdict": "fail",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=4"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=7"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=2369818 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=fail failedSteps=1"
+          }
+        ],
+        "right": [
+          "steps_present: steps=4",
+          "artifacts_present: artifacts=7",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=2369818 headerValid=true",
+          "run_status_consistent: status=fail failedSteps=1"
+        ],
+        "wrong": [
+          "run_summary: Failed at step 4: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n",
+          "failed_step_note: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n"
+        ],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502241359_1773502241494\\ab4570f22de09ba39fce4624c0ec8f2f.webm",
+          "sizeBytes": 2369818,
+          "valid": true
+        }
+      }
+    },
+    {
+      "runId": "agentic_run_1773502238176",
+      "forestId": "forest_1773502218389",
+      "treeId": "tree_1773502218390",
+      "createdAt": "2026-03-14T15:30:38.176Z",
+      "status": "fail",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:8088/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Ball Physics Inside Rotating Square",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "captureText",
+          "target": "#title",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "click",
+          "target": "text=Submit",
+          "status": "fail",
+          "note": "locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502218390_1773502218573\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502218390_1773502218573\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502218390_1773502218573\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502218390_1773502218573\\semantic_report.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502218390_1773502218573\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502218390_1773502218573\\d807555109fc762753f83b72e5d5120d.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502218390_1773502218573\\final_1773502237856.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502218390_1773502218573\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502218390_1773502218573\\request_parser.json"
+        }
+      ],
+      "summary": "Failed at step 4: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502218390_1773502218573\\d807555109fc762753f83b72e5d5120d.webm",
+      "semantics": {
+        "overallPass": false,
+        "verdict": "fail",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=4"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=7"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=2372561 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=fail failedSteps=1"
+          }
+        ],
+        "right": [
+          "steps_present: steps=4",
+          "artifacts_present: artifacts=7",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=2372561 headerValid=true",
+          "run_status_consistent: status=fail failedSteps=1"
+        ],
+        "wrong": [
+          "run_summary: Failed at step 4: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n",
+          "failed_step_note: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n"
+        ],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502218390_1773502218573\\d807555109fc762753f83b72e5d5120d.webm",
+          "sizeBytes": 2372561,
+          "valid": true
+        }
+      }
+    },
+    {
+      "runId": "agentic_run_1773501048208",
+      "forestId": "forest_1773501029401",
+      "treeId": "tree_1773501029402",
+      "createdAt": "2026-03-14T15:10:48.208Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:59173/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Button Animation Validation",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "captureText",
+          "target": "#status",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "click",
+          "target": "#run-animation",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "assertChanged",
+          "target": "#status",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\semantic_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\4aa563075fc5749521684e441952f7c6.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\final_1773501047967.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\step_1773501044936.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\4aa563075fc5749521684e441952f7c6.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=6"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=275230 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=6",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=275230 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773501029401_tree_1773501029402_1773501029533\\4aa563075fc5749521684e441952f7c6.webm",
+          "sizeBytes": 275230,
+          "valid": true
+        }
+      }
+    },
+    {
+      "runId": "agentic_run_1773500702034",
+      "forestId": "forest_1773500701395",
+      "treeId": "tree_1773500701396",
+      "createdAt": "2026-03-14T15:05:02.034Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:61306/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Button Animation Validation",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "captureText",
+          "target": "#status",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "click",
+          "target": "#run-animation",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "assertChanged",
+          "target": "#status",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\semantic_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\c7ebda74250f345d213b512fa6918337.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\final_1773500701888.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\step_1773500701859.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\c7ebda74250f345d213b512fa6918337.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=6"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=24325 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=6",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=24325 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500701395_tree_1773500701396_1773500701529\\c7ebda74250f345d213b512fa6918337.webm",
+          "sizeBytes": 24325,
+          "valid": true
+        }
+      }
+    },
+    {
+      "runId": "agentic_run_1773500357319",
+      "forestId": "forest_1773500356833",
+      "treeId": "tree_1773500356833",
+      "createdAt": "2026-03-14T14:59:17.319Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "Assert visibility of the title",
+          "target": "#title",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "Click the 'Run animation' button",
+          "target": "#run-animation",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "Wait for the status text to change to 'Completed'",
+          "target": "#status",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500356833_tree_1773500356833_1773500356834\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500356833_tree_1773500356833_1773500356834\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500356833_tree_1773500356833_1773500356834\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500356833_tree_1773500356833_1773500356834\\semantic_report.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500356833_tree_1773500356833_1773500356834\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500356833_tree_1773500356833_1773500356834\\ebcb151ea4e56651b8bdf077f21d3537.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500356833_tree_1773500356833_1773500356834\\final_1773500357051.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500356833_tree_1773500356833_1773500356834\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500356833_tree_1773500356833_1773500356834\\request_parser.json"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500356833_tree_1773500356833_1773500356834\\ebcb151ea4e56651b8bdf077f21d3537.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=3"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=7"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=3025 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=3",
+          "artifacts_present: artifacts=7",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=3025 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773500356833_tree_1773500356833_1773500356834\\ebcb151ea4e56651b8bdf077f21d3537.webm",
+          "sizeBytes": 3025,
+          "valid": true
+        }
+      }
+    }
+  ]
+}

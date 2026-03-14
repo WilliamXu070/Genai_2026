@@ -18,6 +18,9 @@ async function run() {
   assert.ok(report.uiInteraction.preClick.appTitleVisible, "ui title not visible in browser");
   assert.ok(report.uiInteraction.postClick.runStateText === "pass", "ui state did not transition");
   assert.ok(report.semantic, "semantic result missing");
+  assert.ok(report.semanticLocal, "local semantic result missing");
+  assert.ok(report.semanticLocal.checks.length > 0, "local semantic checks should be populated");
+  assert.ok(report.semanticLocal.right.length > 0, "local semantic right-list should be populated");
 
   console.log("operational_example.test.js passed");
 }

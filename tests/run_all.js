@@ -6,9 +6,15 @@ const tests = [
   "runner.test.js",
   "manager.test.js",
   "runtime.test.js",
+  "semantics.test.js",
   "operational_example.test.js",
   "agentic_loop.test.js",
-  "agentic_examples.test.js"
+  "agentic_examples.test.js",
+  "agentic_orchestration_semantics.test.js",
+  "jungle_tool_bridge.test.js",
+  "jungle_tool_closed_loop.test.js",
+  "ui_terminal_bridge.test.js",
+  "sandbox_backend.test.js"
 ];
 
 for (const file of tests) {

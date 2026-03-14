@@ -1,0 +1,12 @@
+{
+  "projectName": "Jungle",
+  "url": "http://127.0.0.1:3000",
+  "task": "Click run and verify state changes from idle to pass",
+  "objective": "",
+  "notes": "Smoke-test critical flow with resilient selectors.",
+  "additions": "Capture full-page screenshot at the end.",
+  "forestId": null,
+  "skipCodex": true,
+  "codexTimeoutMs": 120000
+}
+

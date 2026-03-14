@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "0.1.0",
+  "runs": [
+    {
+      "runId": "run_1773502319143",
+      "projectName": "Testing",
+      "scenarioName": "sandbox_check",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T15:31:59.143Z",
+      "updatedAt": "2026-03-14T15:31:59.507Z",
+      "startedAt": "2026-03-14T15:31:59.144Z",
+      "endedAt": "2026-03-14T15:31:59.507Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\runs\\run_1773502319143\\1773502319506_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\runs\\run_1773502319143\\1773502319507_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "sandbox-ok",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    }
+  ]
+}

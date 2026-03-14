@@ -1,0 +1,30 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "Assert visibility of the title",
+      "target": "#title",
+      "value": null,
+      "assert": {
+        "isVisible": true
+      }
+    },
+    {
+      "index": 1,
+      "action": "Click the 'Run animation' button",
+      "target": "#run-animation",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "Wait for the status text to change to 'Completed'",
+      "target": "#status",
+      "value": null,
+      "assert": {
+        "textContent": "Completed"
+      }
+    }
+  ]
+}

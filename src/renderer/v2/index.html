@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jungle V2</title>
+    <link rel="stylesheet" href="../../../node_modules/xterm/css/xterm.css" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="landing-shell">
+      <header class="window-top">
+        <div class="menu-area">
+          <button
+            id="menu-toggle"
+            class="menu-toggle"
+            type="button"
+            aria-haspopup="menu"
+            aria-expanded="false"
+            aria-controls="menu-panel"
+            aria-label="Open menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+
+          <div id="menu-panel" class="menu-panel" role="menu" hidden>
+            <button type="button" class="menu-item" disabled role="menuitem">Workspace (coming soon)</button>
+            <button type="button" class="menu-item" disabled role="menuitem">Run History (coming soon)</button>
+            <button type="button" class="menu-item" disabled role="menuitem">Settings (coming soon)</button>
+          </div>
+        </div>
+
+        <div class="brand-center">
+          <h1>JUNGLE</h1>
+        </div>
+
+        <div class="top-right">
+          <span id="session-status" class="status-pill">Connecting</span>
+        </div>
+      </header>
+
+      <section class="terminal-wrap">
+        <article class="terminal-card" aria-label="Jungle terminal">
+          <div class="terminal-toolbar">
+            <div class="toolbar-path" id="cwd-label">Initializing shell...</div>
+            <div class="toolbar-meta" id="version-text">Jungle</div>
+          </div>
+
+          <div class="terminal-host" id="terminal-host" aria-label="Interactive terminal"></div>
+        </article>
+      </section>
+    </main>
+    <script src="../../../node_modules/xterm/lib/xterm.js"></script>
+    <script src="../../../node_modules/@xterm/addon-fit/lib/addon-fit.js"></script>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

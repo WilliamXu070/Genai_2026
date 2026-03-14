@@ -1,0 +1,343 @@
+{
+  "schemaVersion": "1.0.0",
+  "projects": [
+    {
+      "projectId": "project_1773498986082_a9407878",
+      "name": "Jungle Timeline Sandbox",
+      "repoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+      "defaultBranch": "main",
+      "createdAt": "2026-03-14T14:36:26.082Z",
+      "updatedAt": "2026-03-14T14:36:26.083Z"
+    }
+  ],
+  "forests": [
+    {
+      "forestId": "forest_1773498986083_9db1a3f8",
+      "projectId": "project_1773498986082_a9407878",
+      "name": "web-react-auth",
+      "baseRuntimeImage": "ghcr.io/jungle/web-react-auth@sha256:111aaa",
+      "services": [],
+      "startCommand": "npm run dev",
+      "baseUrl": "http://127.0.0.1:3000",
+      "healthCheck": {
+        "type": "http",
+        "path": "/"
+      },
+      "supportedPerturbations": [
+        "none",
+        "slow_network",
+        "expired_auth"
+      ],
+      "observability": [
+        "console",
+        "network",
+        "trace",
+        "video"
+      ],
+      "createdAt": "2026-03-14T14:36:26.083Z",
+      "updatedAt": "2026-03-14T14:36:26.083Z"
+    }
+  ],
+  "scenarios": [
+    {
+      "scenarioId": "scenario_1773498986090_5c24ab18",
+      "projectId": "project_1773498986082_a9407878",
+      "name": "signup_with_existing_email",
+      "planJson": {
+        "label": "signup_with_existing_email",
+        "steps": [
+          {
+            "action": "goto",
+            "target": "/"
+          },
+          {
+            "action": "click",
+            "target": "text=Sign Up"
+          },
+          {
+            "action": "fill",
+            "target": "input[name=email]",
+            "value": "test@example.com"
+          },
+          {
+            "action": "click",
+            "target": "button[type=submit]"
+          }
+        ],
+        "assertions": [
+          {
+            "type": "url_contains",
+            "value": "/dashboard"
+          },
+          {
+            "type": "text_visible",
+            "value": "Dashboard"
+          }
+        ]
+      },
+      "parserVersion": "v1",
+      "executorVersion": "v1",
+      "metadata": {},
+      "createdAt": "2026-03-14T14:36:26.090Z",
+      "updatedAt": "2026-03-14T14:36:26.090Z"
+    },
+    {
+      "scenarioId": "scenario_1773498986084_761749cb",
+      "projectId": "project_1773498986082_a9407878",
+      "name": "signup_happy_path",
+      "planJson": {
+        "label": "signup_happy_path",
+        "steps": [
+          {
+            "action": "goto",
+            "target": "/"
+          },
+          {
+            "action": "click",
+            "target": "text=Sign Up"
+          },
+          {
+            "action": "fill",
+            "target": "input[name=email]",
+            "value": "test@example.com"
+          },
+          {
+            "action": "click",
+            "target": "button[type=submit]"
+          }
+        ],
+        "assertions": [
+          {
+            "type": "url_contains",
+            "value": "/dashboard"
+          },
+          {
+            "type": "text_visible",
+            "value": "Dashboard"
+          }
+        ]
+      },
+      "parserVersion": "v1",
+      "executorVersion": "v1",
+      "metadata": {},
+      "createdAt": "2026-03-14T14:36:26.084Z",
+      "updatedAt": "2026-03-14T14:36:26.084Z"
+    }
+  ],
+  "environmentVersions": [
+    {
+      "environmentVersionId": "env_1773498986084_54bd0579",
+      "projectId": "project_1773498986082_a9407878",
+      "forestId": "forest_1773498986083_9db1a3f8",
+      "parentEnvironmentVersionId": null,
+      "label": "v1",
+      "gitCommit": "abc1234",
+      "dirtyPatchRef": null,
+      "lockfileHash": "lockhash_v1",
+      "dockerImageDigest": "ghcr.io/jungle/web-react-auth@sha256:222bbb",
+      "envFingerprint": {
+        "NODE_ENV": "development",
+        "FEATURE_FLAG_AUTH": "on"
+      },
+      "ports": [
+        3000,
+        5432
+      ],
+      "workingDir": null,
+      "startupCommand": "npm run dev",
+      "baseUrl": "http://127.0.0.1:3000",
+      "notes": null,
+      "createdAt": "2026-03-14T14:36:26.084Z",
+      "updatedAt": "2026-03-14T14:36:26.084Z"
+    }
+  ],
+  "runs": [
+    {
+      "runId": "run_1773498986091_85ff2180",
+      "projectId": "project_1773498986082_a9407878",
+      "forestId": "forest_1773498986083_9db1a3f8",
+      "scenarioId": "scenario_1773498986090_5c24ab18",
+      "environmentVersionId": "env_1773498986084_54bd0579",
+      "parentRunId": "run_1773498986085_82a3d181",
+      "runType": "branch",
+      "branchName": "existing-email-branch",
+      "perturbationProfile": "expired_auth",
+      "source": "ui-branch",
+      "requestInput": {
+        "branchFromRunId": "run_1773498986085_82a3d181",
+        "reason": "Branch from previous run"
+      },
+      "status": "fail",
+      "startedAt": "2026-03-14T14:36:26.091Z",
+      "endedAt": "2026-03-14T14:36:26.092Z",
+      "failedStep": 2,
+      "resultSummary": "Auth expired before submit",
+      "consoleErrors": [],
+      "networkFailures": [],
+      "metrics": {},
+      "createdAt": "2026-03-14T14:36:26.091Z",
+      "updatedAt": "2026-03-14T14:36:26.092Z"
+    },
+    {
+      "runId": "run_1773498986089_2269d427",
+      "projectId": "project_1773498986082_a9407878",
+      "forestId": "forest_1773498986083_9db1a3f8",
+      "scenarioId": "scenario_1773498986084_761749cb",
+      "environmentVersionId": "env_1773498986084_54bd0579",
+      "parentRunId": "run_1773498986085_82a3d181",
+      "runType": "redo",
+      "branchName": "main",
+      "perturbationProfile": "slow_network",
+      "source": "ui-rerun",
+      "requestInput": {
+        "replayOf": "run_1773498986085_82a3d181",
+        "reason": "Redo previous test"
+      },
+      "status": "pass",
+      "startedAt": "2026-03-14T14:36:26.089Z",
+      "endedAt": "2026-03-14T14:36:26.090Z",
+      "failedStep": null,
+      "resultSummary": "Rerun passed",
+      "consoleErrors": [],
+      "networkFailures": [],
+      "metrics": {},
+      "createdAt": "2026-03-14T14:36:26.089Z",
+      "updatedAt": "2026-03-14T14:36:26.090Z"
+    },
+    {
+      "runId": "run_1773498986085_82a3d181",
+      "projectId": "project_1773498986082_a9407878",
+      "forestId": "forest_1773498986083_9db1a3f8",
+      "scenarioId": "scenario_1773498986084_761749cb",
+      "environmentVersionId": "env_1773498986084_54bd0579",
+      "parentRunId": null,
+      "runType": "new",
+      "branchName": "main",
+      "perturbationProfile": "slow_network",
+      "source": "mcp",
+      "requestInput": {},
+      "status": "fail",
+      "startedAt": "2026-03-14T14:36:26.085Z",
+      "endedAt": "2026-03-14T14:36:26.089Z",
+      "failedStep": 4,
+      "resultSummary": "Submit did not reach /dashboard",
+      "consoleErrors": [
+        "TypeError: cannot read property 'id' of undefined"
+      ],
+      "networkFailures": [],
+      "metrics": {},
+      "createdAt": "2026-03-14T14:36:26.085Z",
+      "updatedAt": "2026-03-14T14:36:26.089Z"
+    }
+  ],
+  "runSteps": [
+    {
+      "stepId": "step_1773498986087_ad4de2fb",
+      "runId": "run_1773498986085_82a3d181",
+      "stepIndex": 4,
+      "action": "click",
+      "target": "button[type=submit]",
+      "status": "fail",
+      "note": "did not navigate",
+      "startedAt": "2026-03-14T14:36:26.087Z",
+      "endedAt": null,
+      "durationMs": null,
+      "updatedAt": "2026-03-14T14:36:26.087Z",
+      "createdAt": "2026-03-14T14:36:26.087Z"
+    },
+    {
+      "stepId": "step_1773498986086_20aa4eae",
+      "runId": "run_1773498986085_82a3d181",
+      "stepIndex": 3,
+      "action": "fill",
+      "target": "input[name=email]",
+      "status": "pass",
+      "note": null,
+      "startedAt": "2026-03-14T14:36:26.086Z",
+      "endedAt": null,
+      "durationMs": null,
+      "updatedAt": "2026-03-14T14:36:26.086Z",
+      "createdAt": "2026-03-14T14:36:26.086Z"
+    },
+    {
+      "stepId": "step_1773498986086_dbedcc90",
+      "runId": "run_1773498986085_82a3d181",
+      "stepIndex": 2,
+      "action": "click",
+      "target": "text=Sign Up",
+      "status": "pass",
+      "note": null,
+      "startedAt": "2026-03-14T14:36:26.086Z",
+      "endedAt": null,
+      "durationMs": null,
+      "updatedAt": "2026-03-14T14:36:26.086Z",
+      "createdAt": "2026-03-14T14:36:26.086Z"
+    },
+    {
+      "stepId": "step_1773498986085_5cc4a445",
+      "runId": "run_1773498986085_82a3d181",
+      "stepIndex": 1,
+      "action": "goto",
+      "target": "/",
+      "status": "pass",
+      "note": null,
+      "startedAt": "2026-03-14T14:36:26.085Z",
+      "endedAt": null,
+      "durationMs": null,
+      "updatedAt": "2026-03-14T14:36:26.085Z",
+      "createdAt": "2026-03-14T14:36:26.085Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "artifactId": "artifact_1773498986088_9392bf74",
+      "runId": "run_1773498986085_82a3d181",
+      "type": "trace",
+      "path": "sandbox_artifacts/run_1773498986085_82a3d181/trace.zip",
+      "metadata": {},
+      "createdAt": "2026-03-14T14:36:26.088Z"
+    },
+    {
+      "artifactId": "artifact_1773498986087_6548204a",
+      "runId": "run_1773498986085_82a3d181",
+      "type": "video",
+      "path": "sandbox_artifacts/run_1773498986085_82a3d181/video.webm",
+      "metadata": {},
+      "createdAt": "2026-03-14T14:36:26.087Z"
+    }
+  ],
+  "stateSnapshots": [
+    {
+      "snapshotId": "snapshot_1773498986088_83cfb876",
+      "runId": "run_1773498986085_82a3d181",
+      "dbSnapshotRef": "snapshots/run_1773498986085_82a3d181/db.dump",
+      "authSnapshotRef": "snapshots/run_1773498986085_82a3d181/auth.json",
+      "fsSnapshotRef": "snapshots/run_1773498986085_82a3d181/fs.tar.gz",
+      "envResolved": {},
+      "hotloadTier": "full",
+      "createdAt": "2026-03-14T14:36:26.088Z",
+      "updatedAt": "2026-03-14T14:36:26.088Z"
+    }
+  ],
+  "comparisons": [
+    {
+      "comparisonId": "compare_1773498986093_b3c52366",
+      "baseRunId": "run_1773498986085_82a3d181",
+      "candidateRunId": "run_1773498986089_2269d427",
+      "diff": {
+        "statusChanged": true,
+        "baseStatus": "fail",
+        "candidateStatus": "pass",
+        "failedStepChanged": true,
+        "baseFailedStep": 4,
+        "candidateFailedStep": null,
+        "perturbationChanged": false,
+        "basePerturbation": "slow_network",
+        "candidatePerturbation": "slow_network",
+        "consoleErrorDelta": -1,
+        "networkFailureDelta": 0
+      },
+      "createdAt": "2026-03-14T14:36:26.093Z"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "requestId": "req-tmp-bridge-html-001",
+  "type": "jungle:start-run",
+  "payload": {
+    "projectName": "Testing",
+    "scenarioName": "codex-bridge-file-create",
+    "steps": [
+      "create-file"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "requestId": "dbg",
+  "type": "jungle:start-run",
+  "payload": {
+    "projectName": "Jungle",
+    "scenarioName": "dbg",
+    "steps": [
+      {
+        "action": "assert",
+        "target": "x"
+      }
+    ],
+    "url": "http://127.0.0.1:3000"
+  }
+}

@@ -1,6 +1,5 @@
 const { contextBridge, ipcRenderer } = require("electron");
-const path = require("node:path");
-const packageJson = require(path.join(__dirname, "..", "package.json"));
+const packageJson = require("../package.json");
 
 contextBridge.exposeInMainWorld("appInfo", {
   name: "Jungle",
@@ -8,7 +7,7 @@ contextBridge.exposeInMainWorld("appInfo", {
 });
 
 contextBridge.exposeInMainWorld("terminalApi", {
-  createSession: () => ipcRenderer.invoke("terminal:create"),
+  createSession: (options) => ipcRenderer.invoke("terminal:create", options),
   onData: (callback) => {
     const listener = (_, payload) => callback(payload);
     ipcRenderer.on("terminal:data", listener);
@@ -27,6 +26,9 @@ contextBridge.exposeInMainWorld("terminalApi", {
   },
   sendInput: (sessionId, data) => {
     ipcRenderer.send("terminal:input", { data, sessionId });
+  },
+  resize: (sessionId, cols, rows) => {
+    ipcRenderer.send("terminal:resize", { cols, rows, sessionId });
   }
 });
 
@@ -42,6 +44,7 @@ contextBridge.exposeInMainWorld("jungleApi", {
     };
   },
   startRun: (payload) => ipcRenderer.invoke("jungle:start-run", payload),
+  orchestrateTask: (payload) => ipcRenderer.invoke("jungle:orchestrate-task", payload),
   runOperationalExample: () => ipcRenderer.invoke("jungle:run-operational-example")
 });
 
@@ -50,6 +53,7 @@ contextBridge.exposeInMainWorld("agenticApi", {
   listTrees: (forestId) => ipcRenderer.invoke("agentic:list-trees", forestId),
   listRuns: (forestId) => ipcRenderer.invoke("agentic:list-runs", forestId),
   createDraft: (payload) => ipcRenderer.invoke("agentic:create-draft", payload),
+  orchestrateTask: (payload) => ipcRenderer.invoke("agentic:orchestrate-task", payload),
   confirmAndRun: (payload) => ipcRenderer.invoke("agentic:confirm-and-run", payload),
   redoRun: (payload) => ipcRenderer.invoke("agentic:redo-run", payload),
   forkTree: (payload) => ipcRenderer.invoke("agentic:fork-tree", payload),

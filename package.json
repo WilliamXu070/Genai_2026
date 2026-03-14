@@ -13,7 +13,8 @@
     "start": "electron .",
     "dev": "electron .",
     "test": "node tests/run_all.js",
-    "simulate:ops": "node src/runtime/operational_example.js"
+    "simulate:ops": "node src/runtime/operational_example.js",
+    "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js"
   },
   "devDependencies": {
     "electron": "^35.0.0",
@@ -21,6 +22,7 @@
   },
   "dependencies": {
     "@xterm/addon-fit": "^0.11.0",
+    "node-pty": "^1.1.0",
     "xterm": "^5.3.0"
   }
 }

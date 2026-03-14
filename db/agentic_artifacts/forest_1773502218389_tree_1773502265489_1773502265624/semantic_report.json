@@ -1,0 +1,55 @@
+{
+  "overallPass": false,
+  "verdict": "fail",
+  "checks": [
+    {
+      "key": "steps_present",
+      "pass": true,
+      "detail": "steps=4"
+    },
+    {
+      "key": "artifacts_present",
+      "pass": true,
+      "detail": "artifacts=7"
+    },
+    {
+      "key": "parser_artifact",
+      "pass": true,
+      "detail": "parserArtifacts=1"
+    },
+    {
+      "key": "executor_artifact",
+      "pass": true,
+      "detail": "executorArtifacts=1"
+    },
+    {
+      "key": "video_valid_webm",
+      "pass": true,
+      "detail": "exists=true size=2364573 headerValid=true"
+    },
+    {
+      "key": "run_status_consistent",
+      "pass": true,
+      "detail": "status=fail failedSteps=1"
+    }
+  ],
+  "right": [
+    "steps_present: steps=4",
+    "artifacts_present: artifacts=7",
+    "parser_artifact: parserArtifacts=1",
+    "executor_artifact: executorArtifacts=1",
+    "video_valid_webm: exists=true size=2364573 headerValid=true",
+    "run_status_consistent: status=fail failedSteps=1"
+  ],
+  "wrong": [
+    "run_summary: Failed at step 4: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n",
+    "failed_step_note: locator.click: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('text=Submit').first()\u001b[22m\n"
+  ],
+  "video": {
+    "exists": true,
+    "headerValid": true,
+    "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773502218389_tree_1773502265489_1773502265624\\21aeb1d6d9b1807625a3459cb222dd79.webm",
+    "sizeBytes": 2364573,
+    "valid": true
+  }
+}

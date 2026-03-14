@@ -2,6 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
 const { chromium } = require("playwright");
+const { analyzeRunSemantics } = require("./semantics");
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -9,6 +10,10 @@ function ensureDir(dir) {
 
 function nowIso() {
   return new Date().toISOString();
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function parseDotEnv(projectRoot) {
@@ -126,7 +131,8 @@ class AgenticStore {
       steps: runInput.steps,
       artifacts: runInput.artifacts,
       summary: runInput.summary,
-      videoPath: runInput.videoPath || null
+      videoPath: runInput.videoPath || null,
+      semantics: runInput.semantics || null
     };
     db.runs.unshift(run);
 
@@ -211,21 +217,31 @@ async function inspectWebsite(url) {
 
 function fallbackProcedure(inspection, objective, notes) {
   const firstHeading = inspection.headings?.[0] || inspection.title || "main page";
-  const buttonTarget = inspection.buttonSelectors?.[0] || `text=${inspection.buttons?.[0] || "Submit"}`;
+  const buttonTarget = inspection.buttonSelectors?.[0] || null;
   const stateTarget = inspection.textTargets?.[0] || "body";
+  const hasInteractiveControl = Boolean(buttonTarget);
+
+  const steps = hasInteractiveControl
+    ? [
+        { action: "goto", target: inspection.url || "/" },
+        { action: "assertVisible", target: `text=${firstHeading}` },
+        { action: "captureText", target: stateTarget, value: "beforeState" },
+        { action: "click", target: buttonTarget },
+        { action: "assertChanged", target: stateTarget, value: "beforeState" },
+        { action: "screenshot", target: "fullPage" }
+      ]
+    : [
+        { action: "goto", target: inspection.url || "/" },
+        { action: "assertVisible", target: `text=${firstHeading}` },
+        { action: "scrollPage", target: "down" },
+        { action: "screenshot", target: "fullPage" }
+      ];
 
   return {
     summary: `Validate ${firstHeading} flow and core interactions for objective: ${objective}`,
     confirmMessage:
       "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
-    steps: [
-      { action: "goto", target: inspection.url || "/" },
-      { action: "assertVisible", target: `text=${firstHeading}` },
-      { action: "captureText", target: stateTarget, value: "beforeState" },
-      { action: "click", target: buttonTarget },
-      { action: "assertChanged", target: stateTarget, value: "beforeState" },
-      { action: "screenshot", target: "fullPage" }
-    ],
+    steps,
     notes: notes || ""
   };
 }
@@ -347,11 +363,40 @@ async function runCodexMcpStep({ objective, url, inspection, timeoutMs = 120000,
 }
 
 function buildRequestParser(procedure) {
+  const normalizeAction = (action) => {
+    const raw = String(action || "").trim();
+    const key = raw.toLowerCase();
+    if (!key) return null;
+    if (["goto", "click", "fill", "assertvisible", "asserttext", "capturetext", "assertchanged", "screenshot", "scrollpage"].includes(key)) {
+      return key;
+    }
+    if (key.includes("goto") || key.includes("navigate")) return "goto";
+    if (key.includes("click") || key.includes("press")) return "click";
+    if (key.includes("fill") || key.includes("type") || key.includes("enter")) return "fill";
+    if (key.includes("assert") && key.includes("visible")) return "assertvisible";
+    if (key.includes("assert") && (key.includes("text") || key.includes("content"))) return "asserttext";
+    if (key.includes("capture") && key.includes("text")) return "capturetext";
+    if (key.includes("assert") && key.includes("change")) return "assertchanged";
+    if (key.includes("screenshot") || key.includes("screen shot")) return "screenshot";
+    if (key.includes("scroll")) return "scrollpage";
+    return null;
+  };
+
+  const toRuntimeAction = (normalized) => {
+    if (normalized === "assertvisible") return "assertVisible";
+    if (normalized === "asserttext") return "assertText";
+    if (normalized === "capturetext") return "captureText";
+    if (normalized === "assertchanged") return "assertChanged";
+    if (normalized === "scrollpage") return "scrollPage";
+    return normalized;
+  };
+
   return {
     parserVersion: "0.1.0",
     normalizedSteps: (procedure.steps || []).map((s, i) => ({
       index: i,
-      action: s.action,
+      action: toRuntimeAction(normalizeAction(s.action)),
+      originalAction: s.action,
       target: s.target,
       value: s.value || null,
       assert: s.assert || null
@@ -359,38 +404,41 @@ function buildRequestParser(procedure) {
   };
 }
 
-function stepToCode(step) {
+function stepToCode(step, actionDelayMs = 3000) {
   const target = JSON.stringify(step.target || "body");
   const value = JSON.stringify(step.value || "");
+  const delay = Number(actionDelayMs) || 0;
 
   switch (step.action) {
     case "goto":
-      return `await page.goto(${target}, { waitUntil: 'domcontentloaded' });`;
+      return `await page.goto(${target}, { waitUntil: 'domcontentloaded' });\n  await page.waitForTimeout(${delay});`;
     case "click":
-      return `await page.locator(${target}).first().click();`;
+      return `await page.locator(${target}).first().click();\n  await page.waitForTimeout(${delay});`;
     case "fill":
-      return `await page.locator(${target}).first().fill(${value});`;
+      return `await page.locator(${target}).first().fill(${value});\n  await page.waitForTimeout(${delay});`;
     case "assertVisible":
-      return `await expect(page.locator(${target}).first()).toBeVisible();`;
+      return `await expect(page.locator(${target}).first()).toBeVisible();\n  await page.waitForTimeout(${delay});`;
     case "assertText":
-      return `await expect(page.locator(${target}).first()).toContainText(${value});`;
+      return `await expect(page.locator(${target}).first()).toContainText(${value});\n  await page.waitForTimeout(${delay});`;
     case "captureText":
-      return `stateStore[${value}] = await page.locator(${target}).first().innerText();`;
+      return `stateStore[${value}] = await page.locator(${target}).first().innerText();\n  await page.waitForTimeout(${delay});`;
     case "assertChanged":
-      return `await page.waitForFunction(({ sel, prev }) => { const el = document.querySelector(sel); return !!el && (el.innerText || el.textContent || '').trim() !== prev; }, { sel: ${target}, prev: (stateStore[${value}] || '') }, { timeout: 5000 });`;
+      return `await page.waitForFunction(({ sel, prev }) => { const el = document.querySelector(sel); return !!el && (el.innerText || el.textContent || '').trim() !== prev; }, { sel: ${target}, prev: (stateStore[${value}] || '') }, { timeout: 5000 });\n  await page.waitForTimeout(${delay});`;
     case "screenshot":
-      return `await page.screenshot({ path: path.join(artifactsDir, 'step_${Date.now()}.png'), fullPage: true });`;
+      return `await page.screenshot({ path: path.join(artifactsDir, 'step_${Date.now()}.png'), fullPage: true });\n  await page.waitForTimeout(${delay});`;
+    case "scrollPage":
+      return `await page.evaluate(async () => { const maxY = document.documentElement.scrollHeight - window.innerHeight; let y = 0; const stride = Math.max(120, Math.floor(window.innerHeight * 0.75)); while (y < maxY) { y = Math.min(maxY, y + stride); window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 250)); } });\n  await page.waitForTimeout(${delay});`;
     default:
       return `// TODO unsupported action: ${step.action}`;
   }
 }
 
-function generatePlaywrightProgram(parser) {
-  const lines = parser.normalizedSteps.map((s) => stepToCode(s)).join("\n  ");
+function generatePlaywrightProgram(parser, actionDelayMs = 3000) {
+  const lines = parser.normalizedSteps.map((s) => stepToCode(s, actionDelayMs)).join("\n  ");
   return `const path = require('node:path');\nconst fs = require('node:fs');\nconst { chromium, expect } = require('playwright');\n\nasync function run({ baseUrl, artifactsDir }) {\n  const browser = await chromium.launch({ headless: true });\n  const context = await browser.newContext({ recordVideo: { dir: artifactsDir, size: { width: 1280, height: 720 } } });\n  const page = await context.newPage();\n  const stateStore = {};\n  try {\n  ${lines}\n  } finally {\n    await context.close();\n    await browser.close();\n  }\n}\n\nmodule.exports = { run };\n`;
 }
 
-async function executeProcedure(url, parser, artifactsDir) {
+async function executeProcedure(url, parser, artifactsDir, actionDelayMs = 3000) {
   ensureDir(artifactsDir);
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -410,22 +458,28 @@ async function executeProcedure(url, parser, artifactsDir) {
         if (step.action === "goto") {
           const dest = step.target?.startsWith("http") ? step.target : new URL(step.target || "/", url).toString();
           await page.goto(dest, { waitUntil: "domcontentloaded", timeout: 30000 });
+          await sleep(actionDelayMs);
         } else if (step.action === "click") {
           await page.locator(step.target).first().click({ timeout: 10000 });
+          await sleep(actionDelayMs);
         } else if (step.action === "fill") {
           await page.locator(step.target).first().fill(step.value || "", { timeout: 10000 });
+          await sleep(actionDelayMs);
         } else if (step.action === "assertVisible") {
           await page.locator(step.target).first().waitFor({ state: "visible", timeout: 10000 });
+          await sleep(actionDelayMs);
         } else if (step.action === "assertText") {
           const txt = await page.locator(step.target).first().innerText({ timeout: 10000 });
           if (!txt.includes(step.value || "")) {
             throw new Error(`Text assertion failed: expected includes '${step.value}' got '${txt}'`);
           }
+          await sleep(actionDelayMs);
         } else if (step.action === "captureText") {
           stateStore[step.value || `step_${step.index}`] = await page
             .locator(step.target)
             .first()
             .innerText({ timeout: 10000 });
+          await sleep(actionDelayMs);
         } else if (step.action === "assertChanged") {
           const key = step.value || `step_${step.index - 1}`;
           const prev = stateStore[key] || "";
@@ -442,8 +496,24 @@ async function executeProcedure(url, parser, artifactsDir) {
             { selector: step.target, before: prev },
             { timeout: 5000 }
           );
+          await sleep(actionDelayMs);
         } else if (step.action === "screenshot") {
           await page.screenshot({ path: path.join(artifactsDir, `step_${Date.now()}.png`), fullPage: true });
+          await sleep(actionDelayMs);
+        } else if (step.action === "scrollPage") {
+          await page.evaluate(async () => {
+            const maxY = document.documentElement.scrollHeight - window.innerHeight;
+            let y = 0;
+            const stride = Math.max(120, Math.floor(window.innerHeight * 0.75));
+            while (y < maxY) {
+              y = Math.min(maxY, y + stride);
+              window.scrollTo(0, y);
+              await new Promise((resolve) => setTimeout(resolve, 250));
+            }
+          });
+          await sleep(actionDelayMs);
+        } else {
+          throw new Error(`Unsupported action '${step.action || step.originalAction || "unknown"}'`);
         }
       } catch (error) {
         s.status = "fail";
@@ -515,17 +585,116 @@ class AgenticLoopManager {
     return { forestId: forest.forestId, tree };
   }
 
+  runMeetsQualityGate(run) {
+    if (!run || run.status !== "pass") {
+      return false;
+    }
+    const steps = Array.isArray(run.steps) ? run.steps : [];
+    const semanticsOk = Boolean(run.semantics?.overallPass);
+    const hasInteraction = steps.some((s) =>
+      ["click", "fill", "scrollpage"].includes(String(s.action || "").toLowerCase())
+    );
+    const hasAssertion = steps.some((s) => String(s.action || "").toLowerCase().includes("assert"));
+    return semanticsOk && hasInteraction && hasAssertion;
+  }
+
+  async orchestrateTask(input, emitEvent) {
+    const objective =
+      (typeof input.task === "string" && input.task.trim()) ||
+      (typeof input.objective === "string" && input.objective.trim()) ||
+      "Validate critical user flow";
+    const maxAttempts = Number(input.maxAttempts || 3);
+    let last = null;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      emitEvent?.({ type: "agentic_status", value: `Starting orchestration loop attempt ${attempt}/${maxAttempts}...` });
+      emitEvent?.({ type: "agentic_status", value: "Converting task into test procedure..." });
+
+      const draft = await this.createDraft({
+        additions: input.additions,
+        forestId: input.forestId,
+        notes: [input.notes || "", attempt > 1 ? "Retry: use canonical actions only (goto, click, fill, assertVisible, assertText, captureText, assertChanged, screenshot)." : ""].filter(Boolean).join("\n"),
+        objective,
+        projectName: input.projectName || "Jungle",
+        url: input.url
+      });
+
+      emitEvent?.({
+        type: "agentic_status",
+        value: `Generated ${draft.tree.requestParser.normalizedSteps.length} step(s). Executing with Playwright...`
+      });
+
+      const runResult = await this.confirmAndRun(
+        {
+          additions: input.additions || "",
+          codexTimeoutMs: input.codexTimeoutMs,
+          forestId: draft.forestId,
+          forceFallback: attempt > 1,
+          skipCodex: input.skipCodex,
+          treeId: draft.tree.treeId,
+          url: input.url
+        },
+        emitEvent
+      );
+
+      last = {
+        forestId: draft.forestId,
+        objective,
+        procedure: draft.tree.procedure,
+        run: runResult.run,
+        tree: draft.tree,
+        treeId: draft.tree.treeId
+      };
+
+      if (this.runMeetsQualityGate(runResult.run)) {
+        return last;
+      }
+
+      emitEvent?.({
+        type: "agentic_status",
+        value: `Quality gate failed on attempt ${attempt}. Retrying with hardened fallback procedure...`
+      });
+      input.forestId = draft.forestId;
+    }
+
+    return last;
+  }
+
   async confirmAndRun(input, emitEvent) {
     const trees = this.store.listTrees(input.forestId);
     const tree = trees.find((t) => t.treeId === input.treeId);
     if (!tree) throw new Error("Tree not found for confirmation");
 
-    const finalProcedure = {
+    let finalProcedure = {
       ...tree.procedure,
       notes: [tree.procedure.notes || "", input.additions || ""].filter(Boolean).join("\n")
     };
 
+    if (input.forceFallback) {
+      const inspection = await inspectWebsite(input.url);
+      finalProcedure = fallbackProcedure(
+        inspection,
+        finalProcedure.summary || "Validate critical user flow",
+        finalProcedure.notes || ""
+      );
+    }
+
     const parser = buildRequestParser(finalProcedure);
+    const hasUnsupportedAction = parser.normalizedSteps.some((step) => !step.action);
+    if (hasUnsupportedAction) {
+      emitEvent?.({
+        type: "agentic_status",
+        value: "Detected unsupported step actions from planner. Switching to deterministic fallback procedure."
+      });
+      const inspection = await inspectWebsite(input.url);
+      finalProcedure = fallbackProcedure(
+        inspection,
+        finalProcedure.summary || "Validate critical user flow",
+        finalProcedure.notes || ""
+      );
+    }
+
+    const normalizedParser = buildRequestParser(finalProcedure);
     const artifactsDir = path.join(
       this.projectRoot,
       "db",
@@ -534,10 +703,11 @@ class AgenticLoopManager {
     );
     ensureDir(artifactsDir);
 
-    const playwrightProgram = generatePlaywrightProgram(parser);
+    const actionDelayMs = Number(input.actionDelayMs ?? 3000);
+    const playwrightProgram = generatePlaywrightProgram(normalizedParser, actionDelayMs);
     const parserPath = path.join(artifactsDir, "request_parser.json");
     const programPath = path.join(artifactsDir, "playwright_executor.generated.js");
-    fs.writeFileSync(parserPath, JSON.stringify(parser, null, 2), "utf8");
+    fs.writeFileSync(parserPath, JSON.stringify(normalizedParser, null, 2), "utf8");
     fs.writeFileSync(programPath, playwrightProgram, "utf8");
 
     emitEvent?.({ type: "agentic_status", value: "WELCOME TO THE JUNGLE" });
@@ -574,23 +744,39 @@ class AgenticLoopManager {
         : `Codex MCP unavailable (${codexMcpResult.reason}). Continuing with local planner.`
     });
 
-    const result = await executeProcedure(input.url, parser, artifactsDir);
+    const result = await executeProcedure(input.url, normalizedParser, artifactsDir, actionDelayMs);
+    const preliminaryRun = {
+      status: result.status,
+      summary: result.summary,
+      steps: result.steps,
+      artifacts: [
+        { type: "parser", path: parserPath },
+        { type: "executor", path: programPath }
+      ].concat(result.artifacts.map((p) => ({ type: p.endsWith(".webm") ? "video" : "artifact", path: p }))),
+      videoPath: result.videoPath
+    };
+    const semantics = analyzeRunSemantics(preliminaryRun, this.projectRoot);
+    const semanticsPath = path.join(artifactsDir, "semantic_report.json");
+    fs.writeFileSync(semanticsPath, JSON.stringify(semantics, null, 2), "utf8");
+
     const run = this.store.addRun(input.forestId, input.treeId, {
       status: result.status,
       steps: result.steps,
       artifacts: [
         { type: "codex_mcp", path: codexTranscriptPath },
         { type: "parser", path: parserPath },
-        { type: "executor", path: programPath }
+        { type: "executor", path: programPath },
+        { type: "semantic", path: semanticsPath }
       ].concat(result.artifacts.map((p) => ({ type: p.endsWith(".webm") ? "video" : "artifact", path: p }))),
       videoPath: result.videoPath,
-      summary: result.summary
+      summary: result.summary,
+      semantics
     });
 
     this.store.updateTree(input.forestId, input.treeId, (draft) => ({
       ...draft,
       status: run.status === "pass" ? "validated" : "failed",
-      requestParser: parser,
+      requestParser: normalizedParser,
       confirmedAt: nowIso(),
       procedure: finalProcedure
     }));

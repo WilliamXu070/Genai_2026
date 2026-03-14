@@ -1,0 +1,15 @@
+{
+  "requestId": "req-one-shot-001",
+  "type": "jungle:start-run",
+  "payload": {
+    "projectName": "Testing",
+    "scenarioName": "codex-bridge-file-create",
+    "url": "http://127.0.0.1:3000",
+    "steps": [
+      {
+        "action": "assert",
+        "target": "codex->jungle"
+      }
+    ]
+  }
+}

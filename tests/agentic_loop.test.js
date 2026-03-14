@@ -91,6 +91,21 @@ async function run() {
     const runs = manager.listRuns(draft.forestId);
     assert.ok(runs.length >= 2, "expected at least two runs in forest");
 
+    const orchestration = await manager.orchestrateTask({
+      projectName: "Test",
+      url,
+      task: "Click run and verify state changes from idle to pass",
+      notes: "single-call orchestration path",
+      additions: "",
+      skipCodex: true
+    });
+
+    assert.ok(orchestration.forestId, "orchestration missing forestId");
+    assert.ok(orchestration.treeId, "orchestration missing treeId");
+    assert.ok(orchestration.run?.runId, "orchestration missing run id");
+    assert.ok(Array.isArray(orchestration.procedure?.steps), "orchestration missing procedure steps");
+    assert.ok(orchestration.procedure.steps.length > 0, "orchestration returned empty procedure");
+
     console.log("agentic_loop.test.js passed");
   } finally {
     server.close();
