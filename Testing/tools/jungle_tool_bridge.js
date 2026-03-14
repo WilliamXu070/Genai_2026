@@ -40,6 +40,7 @@ function parseArgs(argv) {
   const steps = [];
   let mode = "headless";
   let keepOpen = false;
+  let uiWaitMs = 0;
   let storageRoot = "";
   let timeoutMs = 90000;
 
@@ -94,6 +95,10 @@ function parseArgs(argv) {
       keepOpen = true;
       continue;
     }
+    if (token === "--ui-wait-ms") {
+      uiWaitMs = Number(args.shift() || "0");
+      continue;
+    }
     if (token === "--storage-root") {
       storageRoot = args.shift() || "";
       continue;
@@ -137,6 +142,7 @@ function parseArgs(argv) {
     timeoutMs,
     mode,
     keepOpen,
+    uiWaitMs,
     storageRoot
   };
 }
@@ -172,6 +178,102 @@ function waitForFile(filePath, timeoutMs) {
   });
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function mapRequestToAgenticPayload(request, repoRoot) {
+  const payload = request?.payload || {};
+  return {
+    feature_goal: payload.objective || payload.task || payload.scenarioName || "Validate generated code behavior",
+    environment_context: payload.environmentContext || "CLI-driven Codex to orchestrator loop",
+    target_url: payload.url || request?.url || "",
+    constraints: payload.constraints || "No destructive actions",
+    severity_threshold: Number(payload.severityThreshold || 8.0),
+    max_retries: Number(payload.maxRetries || 2),
+    project_root: payload.projectRoot || repoRoot
+  };
+}
+
+function runLangflowAgentic(request, repoRoot, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const payload = mapRequestToAgenticPayload(request, repoRoot);
+    const tmpDir = path.join(repoRoot, "Testing", ".jungle_tool_io");
+    fs.mkdirSync(tmpDir, { recursive: true });
+    const payloadPath = path.join(tmpDir, `langflow_payload_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.json`);
+    fs.writeFileSync(payloadPath, JSON.stringify(payload, null, 2), "utf8");
+    const child = spawn(
+      "py",
+      ["-m", "langflow_orchestrator.pipeline.agentic_cli", "--input-file", payloadPath],
+      {
+        cwd: repoRoot,
+        env: process.env,
+        shell: true
+      }
+    );
+
+    let stdout = "";
+    let stderr = "";
+    let done = false;
+
+    const finish = (err, value) => {
+      if (done) return;
+      done = true;
+      if (err) {
+        reject(err);
+      } else {
+        resolve(value);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      try {
+        child.kill();
+      } catch (_) {
+        // ignore
+      }
+      finish(new Error(`Timed out waiting for Langflow orchestrator response after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk.toString("utf8");
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk.toString("utf8");
+    });
+    child.on("error", (error) => {
+      clearTimeout(timer);
+      finish(error);
+    });
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      try {
+        fs.unlinkSync(payloadPath);
+      } catch (_) {
+        // ignore cleanup failures
+      }
+      if (code !== 0) {
+        finish(new Error(stderr || `Langflow CLI exited with code ${code}`));
+        return;
+      }
+      const line = stdout
+        .trim()
+        .split(/\r?\n/)
+        .reverse()
+        .find((v) => v.trim().startsWith("{"));
+      if (!line) {
+        finish(new Error("Langflow CLI returned no JSON output"));
+        return;
+      }
+      try {
+        finish(null, JSON.parse(line));
+      } catch (error) {
+        finish(new Error(`Failed to parse Langflow CLI output: ${error.message}`));
+      }
+    });
+  });
+}
+
 async function main() {
   const parsed = parseArgs(process.argv.slice(2));
   const request = readInput(parsed);
@@ -198,8 +300,8 @@ async function main() {
     const child = spawn(electronBinary, [repoRoot], {
       cwd: repoRoot,
       env: {
-      ...process.env,
-      JUNGLE_TOOL_EXIT_ON_COMPLETE: parsed.keepOpen ? "0" : "1",
+        ...process.env,
+        JUNGLE_TOOL_EXIT_ON_COMPLETE: parsed.keepOpen ? "0" : "1",
         JUNGLE_TOOL_REQUEST_PATH: requestPath,
         JUNGLE_TOOL_RESPONSE_PATH: responsePath
       },
@@ -209,6 +311,10 @@ async function main() {
 
     await waitForFile(responsePath, parsed.timeoutMs);
     response = JSON.parse(fs.readFileSync(responsePath, "utf8"));
+    const waitMs = Number.isFinite(parsed.uiWaitMs) && parsed.uiWaitMs >= 0 ? parsed.uiWaitMs : 0;
+    if (waitMs > 0) {
+      await sleep(waitMs);
+    }
 
     if (parsed.keepOpen) {
       // Allow this CLI process to exit while leaving the Electron window alive.
@@ -216,6 +322,13 @@ async function main() {
     } else if (!child.killed) {
       child.kill();
     }
+  } else if (parsed.mode === "langflow-cli") {
+    response = {
+      completedAt: new Date().toISOString(),
+      ok: true,
+      requestId: request?.requestId || `req_${Date.now()}`,
+      result: await runLangflowAgentic(request, repoRoot, parsed.timeoutMs)
+    };
   } else {
     if ((request?.type || "jungle:start-run") !== "jungle:start-run") {
       throw new Error(`Unsupported tool request type: ${request?.type}`);

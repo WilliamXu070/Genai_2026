@@ -1,0 +1,6 @@
+{
+  "completedAt": "2026-03-14T17:22:33.770Z",
+  "error": "EPERM: operation not permitted, mkdir 'C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773508953770'",
+  "ok": false,
+  "requestId": null
+}

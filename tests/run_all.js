@@ -11,6 +11,7 @@ const tests = [
   "agentic_loop.test.js",
   "agentic_examples.test.js",
   "agentic_orchestration_semantics.test.js",
+  "cli_agentic_loop_feedback.test.js",
   "jungle_tool_bridge.test.js",
   "jungle_tool_closed_loop.test.js",
   "ui_terminal_bridge.test.js",

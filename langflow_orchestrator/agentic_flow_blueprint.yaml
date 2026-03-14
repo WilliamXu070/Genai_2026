@@ -1,0 +1,102 @@
+flow:
+  id: jungle_agentic_orchestrator_v2
+  name: Jungle Agentic Orchestrator V2
+  version: 1
+  description: "Agent-centric Langflow orchestration: OpenAI planning/codegen/execution + Gemini visual critique + severity gate."
+
+inputs:
+  - feature_goal
+  - environment_context
+  - target_url
+  - constraints
+  - max_retries
+  - severity_threshold
+
+nodes:
+  - id: input_payload
+    type: input
+    label: Feature + Environment Input
+    outputs: [payload]
+
+  - id: env_snapshot_tool
+    type: python_function
+    label: Environment Snapshot Tool
+    source: "pipeline.agentic_tools.build_environment_snapshot"
+    inputs: [payload]
+    outputs: [environment_snapshot]
+
+  - id: openai_orchestrator_agent
+    type: agent
+    label: OpenAI Execution Agent
+    implementation: "pipeline.openai_execution_agent.OpenAIExecutionAgent"
+    tools:
+      - environment_snapshot
+      - fallback_execution_plan
+      - execute_playwright_plan
+    model_provider: OpenAI
+    model_env_key: OPENAI_API_KEY
+    outputs: [execution_plan]
+
+  - id: playwright_execution_tool
+    type: python_function
+    label: Playwright Execution Tool
+    source: "pipeline.agentic_tools.execute_playwright_plan"
+    inputs: [execution_plan, payload.target_url]
+    outputs: [execution_result]
+
+  - id: gemini_visual_critic_agent
+    type: agent
+    label: Gemini Visual Critic Agent
+    implementation: "pipeline.gemini_critic_agent.GeminiCriticAgent"
+    model_provider: Gemini
+    model_env_key: GEMINI_API_KEY
+    inputs: [execution_plan, execution_result]
+    outputs: [critique_result]
+
+  - id: severity_gate
+    type: python_function
+    label: Severity Gate
+    source: "pipeline.agentic_orchestrator.AgenticLangflowOrchestrator.run"
+    note: "Gate rule: if critique.overall_severity > payload.severity_threshold then fail/escalate."
+    outputs: [final_result]
+
+  - id: persist_result
+    type: storage
+    label: Persist Run + Forest Summary
+    contract:
+      output_files:
+        - db/langflow_agentic_runs/orchestration_<timestamp>.json
+      fields:
+        - plan
+        - execution
+        - critique
+        - final_verdict
+        - escalated
+        - severity_threshold
+
+edges:
+  - from: input_payload.payload
+    to: env_snapshot_tool.payload
+  - from: env_snapshot_tool.environment_snapshot
+    to: openai_orchestrator_agent.environment_snapshot
+  - from: input_payload.payload
+    to: openai_orchestrator_agent.input_payload
+  - from: openai_orchestrator_agent.execution_plan
+    to: playwright_execution_tool.execution_plan
+  - from: input_payload.payload.target_url
+    to: playwright_execution_tool.target_url
+  - from: openai_orchestrator_agent.execution_plan
+    to: gemini_visual_critic_agent.execution_plan
+  - from: playwright_execution_tool.execution_result
+    to: gemini_visual_critic_agent.execution_result
+  - from: openai_orchestrator_agent.execution_plan
+    to: severity_gate.plan
+  - from: playwright_execution_tool.execution_result
+    to: severity_gate.execution
+  - from: gemini_visual_critic_agent.critique_result
+    to: severity_gate.critique
+  - from: input_payload.payload.severity_threshold
+    to: severity_gate.severity_threshold
+  - from: severity_gate.final_result
+    to: persist_result.final_result
+

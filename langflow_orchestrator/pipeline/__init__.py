@@ -1,4 +1,5 @@
 from .orchestrator import InMemoryStoreAdapter, LangflowOrchestrator, PipelineAdapters
+from .agentic_orchestrator import AgenticLangflowOrchestrator
 from .stages import (
   build_request_parser,
   choose_procedure,
@@ -11,6 +12,7 @@ from .stages import (
 
 __all__ = [
   "LangflowOrchestrator",
+  "AgenticLangflowOrchestrator",
   "PipelineAdapters",
   "InMemoryStoreAdapter",
   "normalize_input",
@@ -21,4 +23,3 @@ __all__ = [
   "generate_executor",
   "normalize_artifacts"
 ]
-

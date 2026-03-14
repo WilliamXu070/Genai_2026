@@ -21,7 +21,14 @@ Replicate Jungle's orchestration behavior:
 - `pipeline/contracts.py`: typed data contracts shared across all nodes.
 - `pipeline/stages.py`: pure stage logic (normalization, fallback planning, parser build, executor build, artifact normalization).
 - `pipeline/orchestrator.py`: end-to-end orchestration loop with pluggable adapters.
+- `pipeline/agentic_contracts.py`: contracts for agent-centric orchestration outputs.
+- `pipeline/agentic_tools.py`: environment snapshot and Playwright execution tools.
+- `pipeline/openai_execution_agent.py`: OpenAI-centered planning/codegen agent.
+- `pipeline/gemini_critic_agent.py`: Gemini critic for semantic defect severity.
+- `pipeline/agentic_orchestrator.py`: OpenAI -> Execute -> Gemini critique -> severity gate pipeline.
+- `pipeline/agentic_demo.py`: runnable demo harness for the agent-centric pipeline.
 - `flow_blueprint.yaml`: Langflow-ready node + edge blueprint and node responsibilities.
+- `agentic_flow_blueprint.yaml`: exact agent-centric Langflow graph spec (OpenAI planner/executor + Gemini critic).
 - `examples/sample_payload.json`: sample orchestration request payload.
 
 ## Pipeline Stages
@@ -77,6 +84,23 @@ Replicate Jungle's orchestration behavior:
 - `store`: persistence and IDs.
 - `event_sink`: event streaming callback.
 
+## Agent-Centric Variant
+
+For the updated architecture requested (agent-first orchestration), use:
+
+- `pipeline/agentic_orchestrator.py`
+- `agentic_flow_blueprint.yaml`
+
+Execution model routing:
+
+- OpenAI: planning + procedure synthesis + executable step plan.
+- Playwright tool: code execution + video/artifact generation.
+- Gemini: visual-semantic critique with severity scoring.
+
+Gate policy:
+
+- If `overall_severity > severity_threshold` then run is escalated/fail.
+
 ## How To Use In Langflow
 
 1. Add Python function/custom component nodes that call each stage in `pipeline/stages.py`.
@@ -89,4 +113,3 @@ Replicate Jungle's orchestration behavior:
 - `PLAYWRIGHT_RUNNER_URL`: endpoint used by your runner adapter.
 - `PLANNER_URL` or model credentials (OpenAI/Gemini) used by planner adapter.
 - Optional Codex/MCP CLI or service endpoint for codex adapter.
-

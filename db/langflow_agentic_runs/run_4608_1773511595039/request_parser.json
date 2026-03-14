@@ -1,0 +1,68 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "goto",
+      "target": "http://127.0.0.1:8088",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "wait",
+      "target": 10000,
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "assertVisible",
+      "target": "#terminal-output",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "captureText",
+      "target": "#terminal-output",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 4,
+      "action": "screenshot",
+      "target": "final_screenshot.png",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 5,
+      "action": "fill",
+      "target": "#terminal-input",
+      "value": "node Testing/cli_agentic_loop/run_cli_loop.js",
+      "assert": null
+    },
+    {
+      "index": 6,
+      "action": "wait",
+      "target": 10000,
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 7,
+      "action": "assertChanged",
+      "target": "#terminal-output",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 8,
+      "action": "screenshot",
+      "target": "final_output_screenshot.png",
+      "value": null,
+      "assert": null
+    }
+  ]
+}

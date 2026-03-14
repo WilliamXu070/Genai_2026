@@ -1,0 +1,13 @@
+{
+  "requestId": "cli_loop_1773511569433_1",
+  "type": "jungle:start-run",
+  "payload": {
+    "objective": "Smoke check CLI loop",
+    "url": "http://127.0.0.1:8088",
+    "projectRoot": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+    "environmentContext": "CLI Codex feedback loop iteration 1",
+    "constraints": "Terminal-only loop. No UI interaction required.",
+    "severityThreshold": 8,
+    "maxRetries": 2
+  }
+}

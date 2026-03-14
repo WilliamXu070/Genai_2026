@@ -14,7 +14,8 @@
     "dev": "electron .",
     "test": "node tests/run_all.js",
     "simulate:ops": "node src/runtime/operational_example.js",
-    "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js"
+    "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+    "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js"
   },
   "devDependencies": {
     "electron": "^35.0.0",

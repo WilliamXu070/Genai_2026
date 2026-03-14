@@ -61,4 +61,14 @@ const { parseArgs } = require("../Testing/tools/jungle_tool_bridge");
   assert.equal(parsed.keepOpen, true);
 })();
 
+(() => {
+  const parsed = parseArgs(["--input-json", "{}", "--mode", "langflow-cli"]);
+  assert.equal(parsed.mode, "langflow-cli");
+})();
+
+(() => {
+  const parsed = parseArgs(["--input-json", "{}", "--ui-wait-ms", "3000"]);
+  assert.equal(parsed.uiWaitMs, 3000);
+})();
+
 console.log("jungle_tool_bridge.test.js passed");
