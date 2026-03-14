@@ -1,5 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const { spawn } = require("node:child_process");
 const { chromium } = require("playwright");
 
 function ensureDir(dir) {
@@ -239,6 +240,80 @@ Additional notes: ${notes || "none"}`;
   }
 }
 
+async function runCodexMcpStep({ objective, url, inspection, timeoutMs = 120000, cwd }) {
+  return new Promise((resolve) => {
+    const prompt = [
+      "Initiate MCP testing procedure for this project.",
+      `Target URL: ${url}`,
+      `Objective: ${objective}`,
+      "Return strict JSON with keys: parser_plan, selector_strategy, risk_checks, suggested_steps.",
+      "Website context:",
+      JSON.stringify(inspection)
+    ].join("\n");
+
+    const child = spawn("codex", ["exec", prompt], {
+      shell: true,
+      cwd: cwd || process.cwd(),
+      env: process.env
+    });
+
+    let stdout = "";
+    let stderr = "";
+    let done = false;
+
+    const finish = (result) => {
+      if (done) return;
+      done = true;
+      resolve(result);
+    };
+
+    const timer = setTimeout(() => {
+      try {
+        child.kill();
+      } catch (_) {
+        // ignore
+      }
+      finish({
+        status: "timeout",
+        pass: false,
+        reason: `codex exec timed out after ${timeoutMs}ms`,
+        stdout,
+        stderr
+      });
+    }, timeoutMs);
+
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk.toString("utf8");
+    });
+
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk.toString("utf8");
+    });
+
+    child.on("error", (error) => {
+      clearTimeout(timer);
+      finish({
+        status: "error",
+        pass: false,
+        reason: error.message,
+        stdout,
+        stderr
+      });
+    });
+
+    child.on("close", (code) => {
+      clearTimeout(timer);
+      finish({
+        status: code === 0 ? "ok" : "error",
+        pass: code === 0,
+        reason: code === 0 ? "Codex MCP planning completed" : `codex exited with code ${code}`,
+        stdout,
+        stderr
+      });
+    });
+  });
+}
+
 function buildRequestParser(procedure) {
   return {
     parserVersion: "0.1.0",
@@ -408,15 +483,40 @@ class AgenticLoopManager {
     fs.writeFileSync(programPath, playwrightProgram, "utf8");
 
     emitEvent?.({ type: "agentic_status", value: "WELCOME TO THE JUNGLE" });
-    emitEvent?.({ type: "agentic_status", value: "Codex terminal -> MCP -> Request Parser -> Playwright Executor" });
+    emitEvent?.({ type: "agentic_status", value: "Codex terminal calls MCP to initiate testing procedure..." });
+
+    const inspection = await inspectWebsite(input.url);
+    const codexMcpResult = await runCodexMcpStep({
+      objective: finalProcedure.summary,
+      url: input.url,
+      inspection,
+      timeoutMs: input.codexTimeoutMs || 120000,
+      cwd: this.projectRoot
+    });
+
+    const codexTranscriptPath = path.join(artifactsDir, "codex_mcp_transcript.txt");
+    fs.writeFileSync(
+      codexTranscriptPath,
+      [`status=${codexMcpResult.status}`, `reason=${codexMcpResult.reason}`, "", codexMcpResult.stdout, "", codexMcpResult.stderr].join("\n"),
+      "utf8"
+    );
+
+    emitEvent?.({
+      type: "agentic_status",
+      value: codexMcpResult.pass
+        ? "Codex MCP planning complete. Converting into Request Parser and Playwright Executor..."
+        : `Codex MCP unavailable (${codexMcpResult.reason}). Continuing with local planner.`
+    });
 
     const result = await executeProcedure(input.url, parser, artifactsDir);
     const run = this.store.addRun(input.forestId, input.treeId, {
       status: result.status,
       steps: result.steps,
-      artifacts: [{ type: "parser", path: parserPath }, { type: "executor", path: programPath }].concat(
-        result.artifacts.map((p) => ({ type: p.endsWith(".webm") ? "video" : "artifact", path: p }))
-      ),
+      artifacts: [
+        { type: "codex_mcp", path: codexTranscriptPath },
+        { type: "parser", path: parserPath },
+        { type: "executor", path: programPath }
+      ].concat(result.artifacts.map((p) => ({ type: p.endsWith(".webm") ? "video" : "artifact", path: p }))),
       videoPath: result.videoPath,
       summary: result.summary
     });
