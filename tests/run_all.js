@@ -7,7 +7,8 @@ const tests = [
   "manager.test.js",
   "runtime.test.js",
   "operational_example.test.js",
-  "agentic_loop.test.js"
+  "agentic_loop.test.js",
+  "agentic_examples.test.js"
 ];
 
 for (const file of tests) {

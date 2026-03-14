@@ -161,11 +161,40 @@ async function inspectWebsite(url) {
           .filter(Boolean)
           .slice(0, limit);
 
+      const buttonSelectors = Array.from(document.querySelectorAll("button, [role='button']"))
+        .map((el) => {
+          if (el.id) return `#${el.id}`;
+          const text = (el.innerText || el.textContent || "").trim();
+          return text ? `text=${text}` : null;
+        })
+        .filter(Boolean)
+        .slice(0, 12);
+
+      const textTargets = Array.from(document.querySelectorAll("[id], [data-testid], .status, .state, p, div, span"))
+        .map((el) => {
+          if (["BUTTON", "A", "INPUT", "TEXTAREA", "SELECT"].includes(el.tagName)) {
+            return null;
+          }
+          const id = el.id || "";
+          const testId = el.getAttribute("data-testid") || "";
+          const selector = id ? `#${id}` : testId ? `[data-testid='${testId}']` : null;
+          if (!selector) return null;
+          const signal = `${id} ${testId}`.toLowerCase();
+          const score = /(state|status|result|output|message|count|step)/.test(signal) ? 2 : 1;
+          return { selector, score };
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.score - a.score)
+        .map((x) => x.selector)
+        .slice(0, 12);
+
       return {
         title: document.title,
         url: location.href,
         headings: takeTexts("h1, h2, h3", 12),
         buttons: takeTexts("button, [role='button']", 12),
+        buttonSelectors,
+        textTargets,
         links: takeTexts("a", 12),
         hasForms: !!document.querySelector("form"),
         inputs: Array.from(document.querySelectorAll("input, textarea, select"))
@@ -182,16 +211,19 @@ async function inspectWebsite(url) {
 
 function fallbackProcedure(inspection, objective, notes) {
   const firstHeading = inspection.headings?.[0] || inspection.title || "main page";
-  const firstButton = inspection.buttons?.[0] || "primary button";
+  const buttonTarget = inspection.buttonSelectors?.[0] || `text=${inspection.buttons?.[0] || "Submit"}`;
+  const stateTarget = inspection.textTargets?.[0] || "body";
+
   return {
     summary: `Validate ${firstHeading} flow and core interactions for objective: ${objective}`,
     confirmMessage:
       "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
     steps: [
-      { action: "goto", target: inspection.url || "/", assert: `Page title contains ${inspection.title || "expected title"}` },
+      { action: "goto", target: inspection.url || "/" },
       { action: "assertVisible", target: `text=${firstHeading}` },
-      { action: "click", target: `text=${firstButton}` },
-      { action: "assertText", target: "body", value: "pass" },
+      { action: "captureText", target: stateTarget, value: "beforeState" },
+      { action: "click", target: buttonTarget },
+      { action: "assertChanged", target: stateTarget, value: "beforeState" },
       { action: "screenshot", target: "fullPage" }
     ],
     notes: notes || ""
@@ -342,6 +374,10 @@ function stepToCode(step) {
       return `await expect(page.locator(${target}).first()).toBeVisible();`;
     case "assertText":
       return `await expect(page.locator(${target}).first()).toContainText(${value});`;
+    case "captureText":
+      return `stateStore[${value}] = await page.locator(${target}).first().innerText();`;
+    case "assertChanged":
+      return `if ((await page.locator(${target}).first().innerText()) === (stateStore[${value}] || '')) { throw new Error('Expected text change but value stayed the same'); }`;
     case "screenshot":
       return `await page.screenshot({ path: path.join(artifactsDir, 'step_${Date.now()}.png'), fullPage: true });`;
     default:
@@ -351,7 +387,7 @@ function stepToCode(step) {
 
 function generatePlaywrightProgram(parser) {
   const lines = parser.normalizedSteps.map((s) => stepToCode(s)).join("\n  ");
-  return `const path = require('node:path');\nconst fs = require('node:fs');\nconst { chromium, expect } = require('playwright');\n\nasync function run({ baseUrl, artifactsDir }) {\n  const browser = await chromium.launch({ headless: true });\n  const context = await browser.newContext({ recordVideo: { dir: artifactsDir, size: { width: 1280, height: 720 } } });\n  const page = await context.newPage();\n  try {\n  ${lines}\n  } finally {\n    await context.close();\n    await browser.close();\n  }\n}\n\nmodule.exports = { run };\n`;
+  return `const path = require('node:path');\nconst fs = require('node:fs');\nconst { chromium, expect } = require('playwright');\n\nasync function run({ baseUrl, artifactsDir }) {\n  const browser = await chromium.launch({ headless: true });\n  const context = await browser.newContext({ recordVideo: { dir: artifactsDir, size: { width: 1280, height: 720 } } });\n  const page = await context.newPage();\n  const stateStore = {};\n  try {\n  ${lines}\n  } finally {\n    await context.close();\n    await browser.close();\n  }\n}\n\nmodule.exports = { run };\n`;
 }
 
 async function executeProcedure(url, parser, artifactsDir) {
@@ -365,6 +401,7 @@ async function executeProcedure(url, parser, artifactsDir) {
   const stepResults = [];
   let status = "pass";
   let summary = "Procedure executed successfully.";
+  const stateStore = {};
 
   try {
     for (const step of parser.normalizedSteps) {
@@ -383,6 +420,18 @@ async function executeProcedure(url, parser, artifactsDir) {
           const txt = await page.locator(step.target).first().innerText({ timeout: 10000 });
           if (!txt.includes(step.value || "")) {
             throw new Error(`Text assertion failed: expected includes '${step.value}' got '${txt}'`);
+          }
+        } else if (step.action === "captureText") {
+          stateStore[step.value || `step_${step.index}`] = await page
+            .locator(step.target)
+            .first()
+            .innerText({ timeout: 10000 });
+        } else if (step.action === "assertChanged") {
+          const key = step.value || `step_${step.index - 1}`;
+          const prev = stateStore[key];
+          const now = await page.locator(step.target).first().innerText({ timeout: 10000 });
+          if (prev === now) {
+            throw new Error(`Expected target '${step.target}' to change from '${prev}', but it stayed the same.`);
           }
         } else if (step.action === "screenshot") {
           await page.screenshot({ path: path.join(artifactsDir, `step_${Date.now()}.png`), fullPage: true });
@@ -486,13 +535,21 @@ class AgenticLoopManager {
     emitEvent?.({ type: "agentic_status", value: "Codex terminal calls MCP to initiate testing procedure..." });
 
     const inspection = await inspectWebsite(input.url);
-    const codexMcpResult = await runCodexMcpStep({
-      objective: finalProcedure.summary,
-      url: input.url,
-      inspection,
-      timeoutMs: input.codexTimeoutMs || 120000,
-      cwd: this.projectRoot
-    });
+    const codexMcpResult = input.skipCodex
+      ? {
+          status: "skipped",
+          pass: false,
+          reason: "Codex step skipped by input flag",
+          stdout: "",
+          stderr: ""
+        }
+      : await runCodexMcpStep({
+          objective: finalProcedure.summary,
+          url: input.url,
+          inspection,
+          timeoutMs: input.codexTimeoutMs || 120000,
+          cwd: this.projectRoot
+        });
 
     const codexTranscriptPath = path.join(artifactsDir, "codex_mcp_transcript.txt");
     fs.writeFileSync(

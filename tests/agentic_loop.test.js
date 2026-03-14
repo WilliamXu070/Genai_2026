@@ -64,7 +64,8 @@ async function run() {
       forestId: draft.forestId,
       treeId: draft.tree.treeId,
       url,
-      additions: ""
+      additions: "",
+      skipCodex: true
     });
 
     assert.ok(runResult.run.runId, "run id missing");
@@ -82,7 +83,8 @@ async function run() {
       forestId: draft.forestId,
       treeId: fork.treeId,
       url,
-      additions: "redo variant"
+      additions: "redo variant",
+      skipCodex: true
     });
     assert.ok(redo.run.runId, "redo run missing id");
 
