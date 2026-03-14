@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jungle</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="top-bar">
+        <div class="brand-block">
+          <div class="brand-mark">J</div>
+          <div>
+            <p class="eyebrow">Visible agent verification</p>
+            <h1>Jungle</h1>
+          </div>
+        </div>
+
+        <div class="status-row">
+          <span class="status-pill">Electron shell</span>
+          <span class="status-pill">Project attached</span>
+          <span class="status-pill live" id="session-status">Starting terminal</span>
+        </div>
+      </header>
+
+      <section class="terminal-shell">
+        <section class="terminal-copy">
+          <p class="eyebrow">Embedded workspace</p>
+          <h2>The project opens in the middle of the jungle.</h2>
+          <p class="lede">
+            This landing page gives you a centered shell inside the app window,
+            ready for project commands and quick Codex access.
+          </p>
+
+          <div class="action-row">
+            <button class="primary-action" id="focus-terminal" type="button">
+              Focus terminal
+            </button>
+            <button class="secondary-action" id="launch-codex" type="button">
+              Run `codex`
+            </button>
+          </div>
+
+          <div class="meta-row">
+            <div class="meta-card">
+              <span class="meta-label">Project root</span>
+              <strong id="project-root">Loading...</strong>
+            </div>
+            <div class="meta-card">
+              <span class="meta-label">Shell</span>
+              <strong id="shell-path">Loading...</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="terminal-card" aria-label="Embedded terminal">
+          <div class="terminal-toolbar">
+            <div class="traffic-lights" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <div class="toolbar-path" id="cwd-label">Connecting...</div>
+            <div class="toolbar-caption" id="version-text">Booting Jungle</div>
+          </div>
+
+          <div class="terminal-stage">
+            <div class="terminal-output" id="terminal-output" aria-live="polite"></div>
+
+            <form class="terminal-input-row" id="terminal-form">
+              <label class="prompt-label" for="terminal-input">jungle %</label>
+              <input
+                id="terminal-input"
+                class="terminal-input"
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="Type a command and press Enter"
+              />
+            </form>
+          </div>
+        </section>
+      </section>
+
+      <section class="quick-row">
+        <button class="quick-chip" data-command="pwd" type="button">`pwd`</button>
+        <button class="quick-chip" data-command="ls" type="button">`ls`</button>
+        <button class="quick-chip" data-command="git status" type="button">`git status`</button>
+        <button class="quick-chip" data-command="npm start" type="button">`npm start`</button>
+        <button class="quick-chip" data-command="clear" type="button">`clear`</button>
+      </section>
+
+      <section class="footer-note">
+        <p>
+          The backdrop is a local jungle scene based on your reference image, so
+          the app already has the right atmosphere without waiting on extra
+          asset plumbing.
+        </p>
+      </section>
+    </main>
+    <script src="./renderer.js"></script>
+  </body>
+</html>
