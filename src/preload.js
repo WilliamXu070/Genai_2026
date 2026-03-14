@@ -29,3 +29,17 @@ contextBridge.exposeInMainWorld("terminalApi", {
     ipcRenderer.send("terminal:input", { data, sessionId });
   }
 });
+
+contextBridge.exposeInMainWorld("jungleApi", {
+  getTodoBlueprint: () => ipcRenderer.invoke("jungle:get-todo-blueprint"),
+  listRuns: () => ipcRenderer.invoke("jungle:list-runs"),
+  onRunEvent: (callback) => {
+    const listener = (_, payload) => callback(payload);
+    ipcRenderer.on("jungle:run-event", listener);
+
+    return () => {
+      ipcRenderer.removeListener("jungle:run-event", listener);
+    };
+  },
+  startRun: (payload) => ipcRenderer.invoke("jungle:start-run", payload)
+});

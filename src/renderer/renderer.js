@@ -10,6 +10,12 @@ const terminalInput = document.getElementById("terminal-input");
 const terminalOutput = document.getElementById("terminal-output");
 const versionText = document.getElementById("version-text");
 
+const runMvpButton = document.getElementById("run-mvp");
+const runLiveStatus = document.getElementById("run-live-status");
+const runLiveSteps = document.getElementById("run-live-steps");
+const runHistory = document.getElementById("run-history");
+const todoBlueprint = document.getElementById("todo-blueprint");
+
 let sessionId;
 
 function stripAnsi(value) {
@@ -44,6 +50,88 @@ function sendCommand(command, options = {}) {
 
 function focusTerminal() {
   terminalInput?.focus();
+}
+
+function renderRunHistory(runs) {
+  if (!runHistory) {
+    return;
+  }
+
+  runHistory.innerHTML = "";
+  runs.forEach((run) => {
+    const li = document.createElement("li");
+    li.textContent = `${run.runId} · ${run.status} · ${run.scenarioName}`;
+    runHistory.appendChild(li);
+  });
+
+  if (runs.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "No runs yet.";
+    runHistory.appendChild(li);
+  }
+}
+
+async function refreshRuns() {
+  if (!window.jungleApi) {
+    return;
+  }
+
+  const runs = await window.jungleApi.listRuns();
+  renderRunHistory(runs);
+}
+
+function renderTodoBlueprint(blueprint) {
+  if (!todoBlueprint) {
+    return;
+  }
+
+  todoBlueprint.innerHTML = "";
+
+  blueprint.blankBoxes.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    todoBlueprint.appendChild(li);
+  });
+
+  if (blueprint.blankBoxes.length === 0) {
+    const li = document.createElement("li");
+    li.textContent = "No blank boxes listed.";
+    todoBlueprint.appendChild(li);
+  }
+}
+
+async function bootJungleMvp() {
+  if (!window.jungleApi) {
+    return;
+  }
+
+  const off = window.jungleApi.onRunEvent((evt) => {
+    if (!runLiveStatus || !runLiveSteps) {
+      return;
+    }
+
+    if (evt.type === "status") {
+      runLiveStatus.textContent = evt.value;
+    }
+
+    if (evt.type === "step") {
+      runLiveSteps.textContent += `\n[step ${evt.index + 1}/${evt.total}] ${evt.step.action} ${evt.step.target || ""}`;
+      runLiveSteps.scrollTop = runLiveSteps.scrollHeight;
+    }
+
+    if (evt.type === "run_finished") {
+      runLiveStatus.textContent = `finished: ${evt.run.status}`;
+      refreshRuns();
+    }
+  });
+
+  window.addEventListener("beforeunload", () => {
+    off?.();
+  });
+
+  const blueprint = await window.jungleApi.getTodoBlueprint();
+  renderTodoBlueprint(blueprint);
+  refreshRuns();
 }
 
 async function bootTerminal() {
@@ -129,6 +217,28 @@ launchCodexButton?.addEventListener("click", () => {
   sendCommand("codex");
 });
 
+runMvpButton?.addEventListener("click", async () => {
+  if (!window.jungleApi) {
+    return;
+  }
+
+  runLiveStatus.textContent = "starting";
+  runLiveSteps.textContent = "Starting Jungle MVP run...";
+
+  await window.jungleApi.startRun({
+    command: "",
+    cwd: projectRootLabel?.textContent || undefined,
+    projectName: "Jungle",
+    scenarioName: "Smoke test scenario",
+    steps: [
+      { action: "goto", target: "/" },
+      { action: "assert", target: "landing loaded" },
+      { action: "assert", target: "terminal connected" }
+    ],
+    url: "http://127.0.0.1:3000"
+  });
+});
+
 quickCommandButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const command = button.getAttribute("data-command");
@@ -168,3 +278,4 @@ if (terminalInput) {
 }
 
 bootTerminal();
+bootJungleMvp();

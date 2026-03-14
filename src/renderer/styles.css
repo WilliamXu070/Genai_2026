@@ -418,3 +418,69 @@ h2 {
     justify-items: flex-start;
   }
 }
+
+.jungle-mvp {
+  width: min(1220px, 100%);
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--panel);
+  backdrop-filter: blur(24px);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.mvp-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.mvp-header-row h3 {
+  margin: 0;
+}
+
+.mvp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mvp-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(7, 16, 10, 0.66);
+  padding: 12px;
+}
+
+.mvp-log {
+  max-height: 220px;
+  overflow: auto;
+  border: 1px solid rgba(220, 255, 181, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+  margin: 8px 0 0;
+  background: rgba(4, 10, 7, 0.72);
+  white-space: pre-wrap;
+}
+
+.run-history,
+.todo-blueprint {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.run-history li,
+.todo-blueprint li {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1080px) {
+  .mvp-grid {
+    grid-template-columns: 1fr;
+  }
+}

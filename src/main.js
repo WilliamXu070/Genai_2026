@@ -2,9 +2,11 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const { spawn } = require("node:child_process");
 const os = require("node:os");
 const path = require("node:path");
+const { JungleManager } = require("./runtime/manager");
 
 let mainWindow;
 let terminalSession;
+let jungleManager;
 
 function getProjectRoot() {
   return app.getAppPath();
@@ -142,6 +144,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
   app.setName("Jungle");
+  jungleManager = new JungleManager(getProjectRoot());
   createWindow();
 
   app.on("activate", () => {
@@ -182,4 +185,29 @@ ipcMain.on("terminal:input", (event, payload) => {
   }
 
   terminalSession.process.stdin.write(payload.data);
+});
+
+ipcMain.handle("jungle:list-runs", () => {
+  return jungleManager ? jungleManager.listRuns(25) : [];
+});
+
+ipcMain.handle("jungle:get-todo-blueprint", () => {
+  if (!jungleManager) {
+    return { completed: [], blankBoxes: [] };
+  }
+  return jungleManager.getTodoBlueprint();
+});
+
+ipcMain.handle("jungle:start-run", async (event, payload) => {
+  if (!jungleManager) {
+    throw new Error("Jungle runtime manager is not initialized.");
+  }
+
+  const emitEvent = (runtimeEvent) => {
+    if (!event.sender.isDestroyed()) {
+      event.sender.send("jungle:run-event", runtimeEvent);
+    }
+  };
+
+  return jungleManager.startRun(payload || {}, emitEvent);
 });

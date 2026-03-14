@@ -11,7 +11,8 @@
     "db:status": "docker compose ps db",
     "db:stop": "docker compose stop db",
     "start": "electron .",
-    "dev": "electron ."
+    "dev": "electron .",
+    "test": "node tests/runtime.test.js"
   },
   "devDependencies": {
     "electron": "^35.0.0"

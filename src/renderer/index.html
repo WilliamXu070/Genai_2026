@@ -92,6 +92,31 @@
         <button class="quick-chip" data-command="clear" type="button">`clear`</button>
       </section>
 
+      <section class="jungle-mvp" aria-label="Jungle MVP runtime panel">
+        <div class="mvp-header-row">
+          <h3>Jungle MVP Runtime</h3>
+          <button class="primary-action" id="run-mvp" type="button">Run MVP Scenario</button>
+        </div>
+
+        <div class="mvp-grid">
+          <article class="mvp-card">
+            <p class="eyebrow">Live status</p>
+            <div id="run-live-status">Idle</div>
+            <pre id="run-live-steps" class="mvp-log">No steps yet.</pre>
+          </article>
+
+          <article class="mvp-card">
+            <p class="eyebrow">Run history</p>
+            <ul id="run-history" class="run-history"></ul>
+          </article>
+
+          <article class="mvp-card">
+            <p class="eyebrow">Blank boxes (for William)</p>
+            <ul id="todo-blueprint" class="todo-blueprint"></ul>
+          </article>
+        </div>
+      </section>
+
       <section class="footer-note">
         <p>
           The backdrop is a local jungle scene based on your reference image, so
