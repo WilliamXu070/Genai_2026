@@ -437,3 +437,76 @@ if (terminalInput) {
 bootTerminal();
 bootJungleMvp();
 bootAgenticLoop();
+
+function renderTimeline(events) {
+
+  const container = document.getElementById("timeline-events")
+  container.innerHTML = ""
+
+  if (!events.length) return
+
+  const min = new Date(events[0].timestamp).getTime()
+  const max = new Date(events[events.length-1].timestamp).getTime()
+  const span = max - min || 1
+
+  events.forEach((event, i) => {
+
+    const t = new Date(event.timestamp).getTime()
+    const percent = ((t - min) / span) * 100
+
+    const wrapper = document.createElement("div")
+    wrapper.className = "timeline-event " + (i % 2 ? "up" : "down")
+    wrapper.style.left = percent + "%"
+
+    const branch = document.createElement("div")
+    branch.className = "timeline-branch"
+
+    const node = document.createElement("div")
+    node.className = "timeline-card-node " + (event.status || "")
+
+    const time = document.createElement("div")
+    time.className = "timeline-time"
+    time.textContent = new Date(event.timestamp).toLocaleTimeString()
+
+    const text = document.createElement("div")
+    text.textContent = event.summary
+
+    node.appendChild(time)
+    node.appendChild(text)
+
+    wrapper.appendChild(branch)
+    wrapper.appendChild(node)
+
+    container.appendChild(wrapper)
+
+  })
+}
+
+const sampleTimelineEvents = [
+  {
+    timestamp: "2026-03-14T10:00:00",
+    status: "success",
+    summary:
+      "Run initialized. Jungle launched the runtime scenario and connected to the project environment. Initial instrumentation hooks were activated."
+  },
+  {
+    timestamp: "2026-03-14T10:00:03",
+    status: "success",
+    summary:
+      "The system navigated to the login page. All required assets were loaded and the DOM stabilized. Jungle prepared the credential submission step."
+  },
+  {
+    timestamp: "2026-03-14T10:00:07",
+    status: "running",
+    summary:
+      "Credential submission began. Form inputs were filled and validation handlers executed. The agent is currently waiting for authentication results."
+  },
+  {
+    timestamp: "2026-03-14T10:00:12",
+    status: "success",
+    summary:
+      "Dashboard navigation completed successfully. Page state stabilized and performance metrics were captured. The run continued to the next action."
+  }
+]
+
+renderTimeline(sampleTimelineEvents)
