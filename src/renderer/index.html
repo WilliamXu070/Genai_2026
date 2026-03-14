@@ -120,6 +120,37 @@
         </div>
       </section>
 
+      <section class="jungle-mvp" aria-label="Agentic test loop">
+        <div class="mvp-header-row">
+          <h3>WELCOME TO THE JUNGLE — Agentic Loop</h3>
+          <div class="action-row">
+            <button class="primary-action" id="agentic-create-draft" type="button">Start testing flow</button>
+            <button class="secondary-action" id="agentic-confirm-run" type="button">Confirm + run Playwright</button>
+            <button class="secondary-action" id="agentic-redo" type="button">Redo previous test</button>
+            <button class="secondary-action" id="agentic-fork" type="button">Fork previous tree</button>
+          </div>
+        </div>
+        <div class="mvp-grid">
+          <article class="mvp-card">
+            <p class="eyebrow">Procedure confirmation</p>
+            <label>URL <input id="agentic-url" class="terminal-input" value="http://127.0.0.1:3000" /></label>
+            <label>Objective <input id="agentic-objective" class="terminal-input" value="Convert task to executable Playwright test" /></label>
+            <label>Additions <input id="agentic-additions" class="terminal-input" placeholder="extra assertions, scenarios, constraints" /></label>
+            <pre id="agentic-procedure" class="mvp-log">No procedure draft yet.</pre>
+          </article>
+          <article class="mvp-card">
+            <p class="eyebrow">Forest / Tree / Loop status</p>
+            <div id="agentic-ids">forest: - | tree: -</div>
+            <pre id="agentic-log" class="mvp-log">Idle.</pre>
+          </article>
+          <article class="mvp-card">
+            <p class="eyebrow">Playback + database history</p>
+            <video id="agentic-video" controls style="width: 100%; max-height: 220px; background: #000"></video>
+            <ul id="agentic-runs" class="run-history"></ul>
+          </article>
+        </div>
+      </section>
+
       <section class="footer-note">
         <p>
           The backdrop is a local jungle scene based on your reference image, so

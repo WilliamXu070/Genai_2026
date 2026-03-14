@@ -17,7 +17,22 @@ const runLiveSteps = document.getElementById("run-live-steps");
 const runHistory = document.getElementById("run-history");
 const todoBlueprint = document.getElementById("todo-blueprint");
 
+const agenticCreateDraftButton = document.getElementById("agentic-create-draft");
+const agenticConfirmRunButton = document.getElementById("agentic-confirm-run");
+const agenticRedoButton = document.getElementById("agentic-redo");
+const agenticForkButton = document.getElementById("agentic-fork");
+const agenticUrlInput = document.getElementById("agentic-url");
+const agenticObjectiveInput = document.getElementById("agentic-objective");
+const agenticAdditionsInput = document.getElementById("agentic-additions");
+const agenticProcedure = document.getElementById("agentic-procedure");
+const agenticLog = document.getElementById("agentic-log");
+const agenticIds = document.getElementById("agentic-ids");
+const agenticVideo = document.getElementById("agentic-video");
+const agenticRuns = document.getElementById("agentic-runs");
+
 let sessionId;
+let currentForestId;
+let currentTreeId;
 
 function stripAnsi(value) {
   return value.replace(
@@ -133,6 +148,50 @@ async function bootJungleMvp() {
   const blueprint = await window.jungleApi.getTodoBlueprint();
   renderTodoBlueprint(blueprint);
   refreshRuns();
+}
+
+function appendAgenticLog(line) {
+  if (!agenticLog) return;
+  agenticLog.textContent += `\n${line}`;
+  agenticLog.scrollTop = agenticLog.scrollHeight;
+}
+
+function renderAgenticRuns(runs) {
+  if (!agenticRuns) return;
+  agenticRuns.innerHTML = "";
+  runs.slice(0, 10).forEach((run) => {
+    const li = document.createElement("li");
+    li.textContent = `${run.runId} · ${run.status} · ${run.summary}`;
+    agenticRuns.appendChild(li);
+  });
+}
+
+async function refreshAgenticRuns() {
+  if (!window.agenticApi || !currentForestId) return;
+  const runs = await window.agenticApi.listRuns(currentForestId);
+  renderAgenticRuns(runs);
+}
+
+async function bootAgenticLoop() {
+  if (!window.agenticApi) return;
+
+  const forests = await window.agenticApi.listForests();
+  if (forests.length > 0) {
+    currentForestId = forests[0].forestId;
+    const trees = await window.agenticApi.listTrees(currentForestId);
+    currentTreeId = trees[0]?.treeId;
+    if (agenticIds) {
+      agenticIds.textContent = `forest: ${currentForestId} | tree: ${currentTreeId || "-"}`;
+    }
+    refreshAgenticRuns();
+  }
+
+  const off = window.agenticApi.onEvent((evt) => {
+    if (evt.type === "agentic_status") {
+      appendAgenticLog(evt.value);
+    }
+  });
+  window.addEventListener("beforeunload", () => off?.());
 }
 
 async function bootTerminal() {
@@ -262,6 +321,81 @@ runOperationalExampleButton?.addEventListener("click", async () => {
   }
 });
 
+agenticCreateDraftButton?.addEventListener("click", async () => {
+  if (!window.agenticApi) return;
+  appendAgenticLog("Testing flow officially begins.");
+
+  const result = await window.agenticApi.createDraft({
+    forestId: currentForestId,
+    projectName: "Jungle",
+    url: agenticUrlInput?.value || "http://127.0.0.1:3000",
+    objective: agenticObjectiveInput?.value || "Convert task to Playwright procedure",
+    notes: agenticAdditionsInput?.value || ""
+  });
+
+  currentForestId = result.forestId;
+  currentTreeId = result.tree.treeId;
+  if (agenticIds) {
+    agenticIds.textContent = `forest: ${currentForestId} | tree: ${currentTreeId}`;
+  }
+  if (agenticProcedure) {
+    agenticProcedure.textContent = JSON.stringify(result.tree.procedure, null, 2);
+  }
+  appendAgenticLog(result.tree.procedure.confirmMessage || "Confirm generated procedure before execution.");
+  refreshAgenticRuns();
+});
+
+agenticConfirmRunButton?.addEventListener("click", async () => {
+  if (!window.agenticApi || !currentForestId || !currentTreeId) return;
+  appendAgenticLog("Converting procedure into Request Parser and Playwright Executor with video...");
+
+  const result = await window.agenticApi.confirmAndRun({
+    forestId: currentForestId,
+    treeId: currentTreeId,
+    additions: agenticAdditionsInput?.value || "",
+    url: agenticUrlInput?.value || "http://127.0.0.1:3000"
+  });
+
+  appendAgenticLog(`Run ${result.run.runId}: ${result.run.status}`);
+  appendAgenticLog(result.run.summary);
+
+  if (result.run.videoPath && agenticVideo) {
+    agenticVideo.src = `file:///${result.run.videoPath.replace(/\\/g, "/")}`;
+  }
+
+  refreshAgenticRuns();
+});
+
+agenticRedoButton?.addEventListener("click", async () => {
+  if (!window.agenticApi || !currentForestId || !currentTreeId) return;
+  appendAgenticLog("Redoing previous test with current tree procedure...");
+  const result = await window.agenticApi.redoRun({
+    forestId: currentForestId,
+    treeId: currentTreeId,
+    additions: agenticAdditionsInput?.value || "",
+    url: agenticUrlInput?.value || "http://127.0.0.1:3000"
+  });
+  appendAgenticLog(`Redo complete: ${result.run.status}`);
+  refreshAgenticRuns();
+});
+
+agenticForkButton?.addEventListener("click", async () => {
+  if (!window.agenticApi || !currentForestId || !currentTreeId) return;
+  const fork = await window.agenticApi.forkTree({
+    forestId: currentForestId,
+    fromTreeId: currentTreeId,
+    notes: agenticAdditionsInput?.value || "Forked variant"
+  });
+  currentTreeId = fork.treeId;
+  if (agenticIds) {
+    agenticIds.textContent = `forest: ${currentForestId} | tree: ${currentTreeId}`;
+  }
+  if (agenticProcedure) {
+    agenticProcedure.textContent = JSON.stringify(fork.procedure, null, 2);
+  }
+  appendAgenticLog(`Forked new tree version v${fork.version}.`);
+});
+
 quickCommandButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const command = button.getAttribute("data-command");
@@ -302,3 +436,4 @@ if (terminalInput) {
 
 bootTerminal();
 bootJungleMvp();
+bootAgenticLoop();

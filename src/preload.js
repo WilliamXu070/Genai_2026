@@ -44,3 +44,18 @@ contextBridge.exposeInMainWorld("jungleApi", {
   startRun: (payload) => ipcRenderer.invoke("jungle:start-run", payload),
   runOperationalExample: () => ipcRenderer.invoke("jungle:run-operational-example")
 });
+
+contextBridge.exposeInMainWorld("agenticApi", {
+  listForests: () => ipcRenderer.invoke("agentic:list-forests"),
+  listTrees: (forestId) => ipcRenderer.invoke("agentic:list-trees", forestId),
+  listRuns: (forestId) => ipcRenderer.invoke("agentic:list-runs", forestId),
+  createDraft: (payload) => ipcRenderer.invoke("agentic:create-draft", payload),
+  confirmAndRun: (payload) => ipcRenderer.invoke("agentic:confirm-and-run", payload),
+  redoRun: (payload) => ipcRenderer.invoke("agentic:redo-run", payload),
+  forkTree: (payload) => ipcRenderer.invoke("agentic:fork-tree", payload),
+  onEvent: (callback) => {
+    const listener = (_, payload) => callback(payload);
+    ipcRenderer.on("agentic:event", listener);
+    return () => ipcRenderer.removeListener("agentic:event", listener);
+  }
+});

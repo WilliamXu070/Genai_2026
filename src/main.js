@@ -4,10 +4,12 @@ const os = require("node:os");
 const path = require("node:path");
 const { JungleManager } = require("./runtime/manager");
 const { runOperationalExample } = require("./runtime/operational_example");
+const { AgenticLoopManager } = require("./runtime/agentic_loop");
 
 let mainWindow;
 let terminalSession;
 let jungleManager;
+let agenticLoopManager;
 
 function getProjectRoot() {
   return app.getAppPath();
@@ -146,6 +148,7 @@ function createWindow() {
 app.whenReady().then(() => {
   app.setName("Jungle");
   jungleManager = new JungleManager(getProjectRoot());
+  agenticLoopManager = new AgenticLoopManager(getProjectRoot());
   createWindow();
 
   app.on("activate", () => {
@@ -215,4 +218,54 @@ ipcMain.handle("jungle:start-run", async (event, payload) => {
 
 ipcMain.handle("jungle:run-operational-example", async () => {
   return runOperationalExample(getProjectRoot());
+});
+
+ipcMain.handle("agentic:list-forests", () => {
+  return agenticLoopManager ? agenticLoopManager.listForests() : [];
+});
+
+ipcMain.handle("agentic:list-trees", (_, forestId) => {
+  return agenticLoopManager && forestId ? agenticLoopManager.listTrees(forestId) : [];
+});
+
+ipcMain.handle("agentic:list-runs", (_, forestId) => {
+  return agenticLoopManager ? agenticLoopManager.listRuns(forestId) : [];
+});
+
+ipcMain.handle("agentic:create-draft", async (_, payload) => {
+  if (!agenticLoopManager) {
+    throw new Error("Agentic loop manager unavailable");
+  }
+  return agenticLoopManager.createDraft(payload || {});
+});
+
+ipcMain.handle("agentic:confirm-and-run", async (event, payload) => {
+  if (!agenticLoopManager) {
+    throw new Error("Agentic loop manager unavailable");
+  }
+  const emitEvent = (runtimeEvent) => {
+    if (!event.sender.isDestroyed()) {
+      event.sender.send("agentic:event", runtimeEvent);
+    }
+  };
+  return agenticLoopManager.confirmAndRun(payload || {}, emitEvent);
+});
+
+ipcMain.handle("agentic:redo-run", async (event, payload) => {
+  if (!agenticLoopManager) {
+    throw new Error("Agentic loop manager unavailable");
+  }
+  const emitEvent = (runtimeEvent) => {
+    if (!event.sender.isDestroyed()) {
+      event.sender.send("agentic:event", runtimeEvent);
+    }
+  };
+  return agenticLoopManager.redoRun(payload || {}, emitEvent);
+});
+
+ipcMain.handle("agentic:fork-tree", async (_, payload) => {
+  if (!agenticLoopManager) {
+    throw new Error("Agentic loop manager unavailable");
+  }
+  return agenticLoopManager.forkTree(payload || {});
 });
