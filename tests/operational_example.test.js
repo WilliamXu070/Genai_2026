@@ -14,6 +14,9 @@ async function run() {
   assert.ok(fs.existsSync(outPath), "report should exist");
   assert.ok(report.parsedState.hasAppTitle, "app title cue missing");
   assert.ok(report.parsedState.hasScenarioPanel, "scenario panel cue missing");
+  assert.ok(report.uiInteraction, "ui interaction result missing");
+  assert.ok(report.uiInteraction.preClick.appTitleVisible, "ui title not visible in browser");
+  assert.ok(report.uiInteraction.postClick.runStateText === "pass", "ui state did not transition");
   assert.ok(report.semantic, "semantic result missing");
 
   console.log("operational_example.test.js passed");

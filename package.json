@@ -16,7 +16,8 @@
     "simulate:ops": "node src/runtime/operational_example.js"
   },
   "devDependencies": {
-    "electron": "^35.0.0"
+    "electron": "^35.0.0",
+    "playwright": "^1.58.2"
   },
   "dependencies": {
     "@xterm/addon-fit": "^0.11.0",

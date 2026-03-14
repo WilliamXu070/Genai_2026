@@ -1,6 +1,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const http = require("node:http");
+const { chromium } = require("playwright");
 
 function parseDotEnv(projectRoot) {
   const envPath = path.join(projectRoot, ".env");
@@ -123,6 +124,61 @@ function parseStateFromHtml(html) {
   };
 }
 
+async function runUiInteractionCheck(url, artifactsDir) {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  const result = {
+    preClick: {},
+    postClick: {},
+    screenshotPath: null,
+    pass: false,
+    reason: ""
+  };
+
+  try {
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
+
+    result.preClick = {
+      appTitleVisible: await page.locator("#app-title").isVisible(),
+      scenarioPanelVisible: await page.locator("#scenario-panel").isVisible(),
+      resultPanelVisible: await page.locator("#result-panel").isVisible(),
+      executeButtonVisible: await page.locator("#execute-btn").isVisible(),
+      runStateText: await page.locator("#run-state").innerText(),
+      summaryText: await page.locator("#result-summary").innerText()
+    };
+
+    await page.click("#execute-btn");
+
+    result.postClick = {
+      runStateText: await page.locator("#run-state").innerText(),
+      summaryText: await page.locator("#result-summary").innerText()
+    };
+
+    const screenshotPath = path.join(artifactsDir, `operational_ui_${Date.now()}.png`);
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    result.screenshotPath = screenshotPath;
+
+    const preOk =
+      result.preClick.appTitleVisible &&
+      result.preClick.scenarioPanelVisible &&
+      result.preClick.resultPanelVisible &&
+      result.preClick.executeButtonVisible;
+    const postOk =
+      result.postClick.runStateText.trim() === "pass" &&
+      result.postClick.summaryText.includes("successful");
+
+    result.pass = preOk && postOk;
+    result.reason = result.pass
+      ? "DOM render and interaction transitions validated in browser."
+      : "DOM interaction assertions failed.";
+
+    return result;
+  } finally {
+    await browser.close();
+  }
+}
+
 async function runGeminiSemanticCheck(apiKey, html) {
   if (!apiKey) {
     return {
@@ -184,24 +240,27 @@ async function runOperationalExample(projectRoot) {
   const url = `http://127.0.0.1:${port}`;
 
   let html = "";
-  try {
-    const res = await fetch(url);
-    html = await res.text();
-  } finally {
-    server.close();
-  }
+  const res = await fetch(url);
+  html = await res.text();
 
   const parsedState = parseStateFromHtml(html);
+  const uiInteraction = await runUiInteractionCheck(url, path.join(projectRoot, "db", "runs"));
   const semantic = await runGeminiSemanticCheck(apiKey, html);
+
+  server.close();
 
   const report = {
     generatedAt: new Date().toISOString(),
     scenario: "Hardcoded website builder + semantic validation",
     url,
     parsedState,
+    uiInteraction,
     semantic,
     overallPass:
-      Object.values(parsedState).every(Boolean) && semantic.pass === true && semantic.status === "ok"
+      Object.values(parsedState).every(Boolean) &&
+      uiInteraction.pass === true &&
+      semantic.pass === true &&
+      semantic.status === "ok"
   };
 
   const outPath = path.join(projectRoot, "db", "runs", `operational_example_${Date.now()}.json`);
