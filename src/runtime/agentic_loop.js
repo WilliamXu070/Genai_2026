@@ -377,7 +377,7 @@ function stepToCode(step) {
     case "captureText":
       return `stateStore[${value}] = await page.locator(${target}).first().innerText();`;
     case "assertChanged":
-      return `if ((await page.locator(${target}).first().innerText()) === (stateStore[${value}] || '')) { throw new Error('Expected text change but value stayed the same'); }`;
+      return `await page.waitForFunction(({ sel, prev }) => { const el = document.querySelector(sel); return !!el && (el.innerText || el.textContent || '').trim() !== prev; }, { sel: ${target}, prev: (stateStore[${value}] || '') }, { timeout: 5000 });`;
     case "screenshot":
       return `await page.screenshot({ path: path.join(artifactsDir, 'step_${Date.now()}.png'), fullPage: true });`;
     default:
@@ -428,11 +428,20 @@ async function executeProcedure(url, parser, artifactsDir) {
             .innerText({ timeout: 10000 });
         } else if (step.action === "assertChanged") {
           const key = step.value || `step_${step.index - 1}`;
-          const prev = stateStore[key];
-          const now = await page.locator(step.target).first().innerText({ timeout: 10000 });
-          if (prev === now) {
-            throw new Error(`Expected target '${step.target}' to change from '${prev}', but it stayed the same.`);
-          }
+          const prev = stateStore[key] || "";
+
+          await page.waitForFunction(
+            ({ selector, before }) => {
+              const el = document.querySelector(selector);
+              if (!el) {
+                return false;
+              }
+              const current = (el.innerText || el.textContent || "").trim();
+              return current !== before;
+            },
+            { selector: step.target, before: prev },
+            { timeout: 5000 }
+          );
         } else if (step.action === "screenshot") {
           await page.screenshot({ path: path.join(artifactsDir, `step_${Date.now()}.png`), fullPage: true });
         }
