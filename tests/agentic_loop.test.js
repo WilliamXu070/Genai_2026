@@ -71,6 +71,24 @@ async function run() {
     assert.ok(["pass", "fail"].includes(runResult.run.status), "unexpected run status");
     assert.ok(Array.isArray(runResult.run.artifacts), "missing artifacts");
 
+    const fork = await manager.forkTree({
+      forestId: draft.forestId,
+      fromTreeId: draft.tree.treeId,
+      notes: "fork variation"
+    });
+    assert.ok(fork.treeId, "fork tree missing id");
+
+    const redo = await manager.redoRun({
+      forestId: draft.forestId,
+      treeId: fork.treeId,
+      url,
+      additions: "redo variant"
+    });
+    assert.ok(redo.run.runId, "redo run missing id");
+
+    const runs = manager.listRuns(draft.forestId);
+    assert.ok(runs.length >= 2, "expected at least two runs in forest");
+
     console.log("agentic_loop.test.js passed");
   } finally {
     server.close();

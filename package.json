@@ -12,7 +12,7 @@
     "db:stop": "docker compose stop db",
     "start": "electron .",
     "dev": "electron .",
-    "test": "node tests/runtime.test.js && node tests/operational_example.test.js && node tests/agentic_loop.test.js",
+    "test": "node tests/run_all.js",
     "simulate:ops": "node src/runtime/operational_example.js"
   },
   "devDependencies": {
