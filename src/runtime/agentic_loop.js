@@ -3,6 +3,7 @@ const path = require("node:path");
 const { spawn } = require("node:child_process");
 const { chromium } = require("playwright");
 const { analyzeRunSemantics } = require("./semantics");
+const { RunCriticAgent } = require("./critic_agent");
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -132,7 +133,8 @@ class AgenticStore {
       artifacts: runInput.artifacts,
       summary: runInput.summary,
       videoPath: runInput.videoPath || null,
-      semantics: runInput.semantics || null
+      semantics: runInput.semantics || null,
+      critique: runInput.critique || null
     };
     db.runs.unshift(run);
 
@@ -144,9 +146,50 @@ class AgenticStore {
       tree.updatedAt = nowIso();
     }
     if (forest) forest.updatedAt = nowIso();
+    if (forest) {
+      const forestRuns = db.runs.filter((r) => r.forestId === forestId);
+      forest.summary = this.buildForestSummary(forestRuns);
+    }
 
     this.write(db);
     return run;
+  }
+
+  buildForestSummary(forestRuns) {
+    const totalRuns = forestRuns.length;
+    const passRuns = forestRuns.filter((r) => r.status === "pass").length;
+    const failRuns = totalRuns - passRuns;
+    const issueCounts = new Map();
+
+    forestRuns.forEach((run) => {
+      (run.critique?.issues || []).forEach((issue) => {
+        const key = issue.id || "unknown_issue";
+        issueCounts.set(key, (issueCounts.get(key) || 0) + 1);
+      });
+    });
+
+    const recurringIssues = Array.from(issueCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([id, count]) => ({ id, count }));
+
+    const avgReadiness =
+      totalRuns > 0
+        ? forestRuns.reduce((sum, run) => sum + Number(run.critique?.readinessScore || (run.status === "pass" ? 100 : 0)), 0) /
+          totalRuns
+        : 0;
+
+    return {
+      totalRuns,
+      passRuns,
+      failRuns,
+      passRate: totalRuns > 0 ? Number(((passRuns / totalRuns) * 100).toFixed(2)) : 0,
+      avgReadiness: Number(avgReadiness.toFixed(2)),
+      latestRunId: forestRuns[0]?.runId || null,
+      latestStatus: forestRuns[0]?.status || null,
+      recurringIssues,
+      updatedAt: nowIso()
+    };
   }
 
   listRuns(forestId) {
@@ -218,7 +261,11 @@ async function inspectWebsite(url) {
 function fallbackProcedure(inspection, objective, notes) {
   const firstHeading = inspection.headings?.[0] || inspection.title || "main page";
   const buttonTarget = inspection.buttonSelectors?.[0] || null;
-  const stateTarget = inspection.textTargets?.[0] || "body";
+  const dynamicSignals = /(state|status|result|output|message|count|step|speed|angle|energy|progress|value)/i;
+  const stateTarget =
+    inspection.textTargets?.find((selector) => dynamicSignals.test(selector)) ||
+    inspection.textTargets?.[0] ||
+    "body";
   const hasInteractiveControl = Boolean(buttonTarget);
 
   const steps = hasInteractiveControl
@@ -233,6 +280,7 @@ function fallbackProcedure(inspection, objective, notes) {
     : [
         { action: "goto", target: inspection.url || "/" },
         { action: "assertVisible", target: `text=${firstHeading}` },
+        { action: "wait", target: "time", value: 10000 },
         { action: "scrollPage", target: "down" },
         { action: "screenshot", target: "fullPage" }
       ];
@@ -367,7 +415,7 @@ function buildRequestParser(procedure) {
     const raw = String(action || "").trim();
     const key = raw.toLowerCase();
     if (!key) return null;
-    if (["goto", "click", "fill", "assertvisible", "asserttext", "capturetext", "assertchanged", "screenshot", "scrollpage"].includes(key)) {
+    if (["goto", "click", "fill", "assertvisible", "asserttext", "capturetext", "assertchanged", "screenshot", "scrollpage", "wait"].includes(key)) {
       return key;
     }
     if (key.includes("goto") || key.includes("navigate")) return "goto";
@@ -379,6 +427,7 @@ function buildRequestParser(procedure) {
     if (key.includes("assert") && key.includes("change")) return "assertchanged";
     if (key.includes("screenshot") || key.includes("screen shot")) return "screenshot";
     if (key.includes("scroll")) return "scrollpage";
+    if (key === "wait" || key.includes("wait") || key.includes("delay")) return "wait";
     return null;
   };
 
@@ -428,6 +477,8 @@ function stepToCode(step, actionDelayMs = 3000) {
       return `await page.screenshot({ path: path.join(artifactsDir, 'step_${Date.now()}.png'), fullPage: true });\n  await page.waitForTimeout(${delay});`;
     case "scrollPage":
       return `await page.evaluate(async () => { const maxY = document.documentElement.scrollHeight - window.innerHeight; let y = 0; const stride = Math.max(120, Math.floor(window.innerHeight * 0.75)); while (y < maxY) { y = Math.min(maxY, y + stride); window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 250)); } });\n  await page.waitForTimeout(${delay});`;
+    case "wait":
+      return `await page.waitForTimeout(${Number(step.value) || 10000});\n  await page.waitForTimeout(${delay});`;
     default:
       return `// TODO unsupported action: ${step.action}`;
   }
@@ -512,6 +563,9 @@ async function executeProcedure(url, parser, artifactsDir, actionDelayMs = 3000)
             }
           });
           await sleep(actionDelayMs);
+        } else if (step.action === "wait") {
+          await page.waitForTimeout(Number(step.value) || 10000);
+          await sleep(actionDelayMs);
         } else {
           throw new Error(`Unsupported action '${step.action || step.originalAction || "unknown"}'`);
         }
@@ -550,6 +604,7 @@ class AgenticLoopManager {
   constructor(projectRoot) {
     this.projectRoot = projectRoot;
     this.store = new AgenticStore(projectRoot);
+    this.criticAgent = new RunCriticAgent(projectRoot);
   }
 
   listForests() {
@@ -759,6 +814,20 @@ class AgenticLoopManager {
     const semanticsPath = path.join(artifactsDir, "semantic_report.json");
     fs.writeFileSync(semanticsPath, JSON.stringify(semantics, null, 2), "utf8");
 
+    const critique = await this.criticAgent.analyze({
+      objective: finalProcedure.summary || "Validate critical user flow",
+      procedure: finalProcedure,
+      run: {
+        status: result.status,
+        summary: result.summary,
+        steps: result.steps,
+        videoPath: result.videoPath,
+        semantics
+      }
+    });
+    const critiquePath = path.join(artifactsDir, "critique_report.json");
+    fs.writeFileSync(critiquePath, JSON.stringify(critique, null, 2), "utf8");
+
     const run = this.store.addRun(input.forestId, input.treeId, {
       status: result.status,
       steps: result.steps,
@@ -766,11 +835,13 @@ class AgenticLoopManager {
         { type: "codex_mcp", path: codexTranscriptPath },
         { type: "parser", path: parserPath },
         { type: "executor", path: programPath },
-        { type: "semantic", path: semanticsPath }
+        { type: "semantic", path: semanticsPath },
+        { type: "critique", path: critiquePath }
       ].concat(result.artifacts.map((p) => ({ type: p.endsWith(".webm") ? "video" : "artifact", path: p }))),
       videoPath: result.videoPath,
       summary: result.summary,
-      semantics
+      semantics,
+      critique
     });
 
     this.store.updateTree(input.forestId, input.treeId, (draft) => ({

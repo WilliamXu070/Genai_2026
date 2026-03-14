@@ -1,0 +1,53 @@
+{
+  "overallPass": true,
+  "verdict": "pass",
+  "checks": [
+    {
+      "key": "steps_present",
+      "pass": true,
+      "detail": "steps=4"
+    },
+    {
+      "key": "artifacts_present",
+      "pass": true,
+      "detail": "artifacts=8"
+    },
+    {
+      "key": "parser_artifact",
+      "pass": true,
+      "detail": "parserArtifacts=1"
+    },
+    {
+      "key": "executor_artifact",
+      "pass": true,
+      "detail": "executorArtifacts=1"
+    },
+    {
+      "key": "video_valid_webm",
+      "pass": true,
+      "detail": "exists=true size=1502861 headerValid=true"
+    },
+    {
+      "key": "run_status_consistent",
+      "pass": true,
+      "detail": "status=pass failedSteps=0"
+    }
+  ],
+  "right": [
+    "steps_present: steps=4",
+    "artifacts_present: artifacts=8",
+    "parser_artifact: parserArtifacts=1",
+    "executor_artifact: executorArtifacts=1",
+    "video_valid_webm: exists=true size=1502861 headerValid=true",
+    "run_status_consistent: status=pass failedSteps=0",
+    "run_summary: Procedure executed successfully."
+  ],
+  "wrong": [],
+  "video": {
+    "exists": true,
+    "headerValid": true,
+    "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773503020151_tree_1773503020153_1773503020290\\1297f3b1c30a11c0db87a4d76644a80d.webm",
+    "sizeBytes": 1502861,
+    "valid": true
+  }
+}

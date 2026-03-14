@@ -2,6 +2,74 @@
   "schemaVersion": "0.1.0",
   "runs": [
     {
+      "runId": "run_1773503107534",
+      "projectName": "Testing",
+      "scenarioName": "codex_bridge_smoke",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T15:45:07.534Z",
+      "updatedAt": "2026-03-14T15:45:07.888Z",
+      "startedAt": "2026-03-14T15:45:07.535Z",
+      "endedAt": "2026-03-14T15:45:07.887Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\runs\\run_1773503107534\\1773503107886_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\runs\\run_1773503107534\\1773503107887_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "codex-to-jungle",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773502741970",
+      "projectName": "Testing",
+      "scenarioName": "codex_bridge_smoke",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T15:39:01.970Z",
+      "updatedAt": "2026-03-14T15:39:02.332Z",
+      "startedAt": "2026-03-14T15:39:01.971Z",
+      "endedAt": "2026-03-14T15:39:02.332Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\runs\\run_1773502741970\\1773502742331_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\runs\\run_1773502741970\\1773502742332_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "codex-to-jungle",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
       "runId": "run_1773502319143",
       "projectName": "Testing",
       "scenarioName": "sandbox_check",

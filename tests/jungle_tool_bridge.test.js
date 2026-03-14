@@ -55,4 +55,10 @@ const { parseArgs } = require("../Testing/tools/jungle_tool_bridge");
   assert.equal(parsed.storageRoot, ".\\Testing");
 })();
 
+(() => {
+  const parsed = parseArgs(["--input-json", "{}", "--mode", "electron", "--keep-open"]);
+  assert.equal(parsed.mode, "electron");
+  assert.equal(parsed.keepOpen, true);
+})();
+
 console.log("jungle_tool_bridge.test.js passed");

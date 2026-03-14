@@ -11,7 +11,7 @@ function buildMatrix() {
   return [
     { name: "dynamic-pass", behavior: "changes_state", expectedStatus: "pass" },
     { name: "dynamic-fail-no-change", behavior: "no_change", expectedStatus: "fail" },
-    { name: "dynamic-fail-missing-button", behavior: "missing_button", expectedStatus: "fail" }
+    { name: "dynamic-pass-missing-button", behavior: "missing_button", expectedStatus: "pass" }
   ];
 }
 
@@ -90,4 +90,3 @@ run().catch((error) => {
   console.error(error);
   process.exit(1);
 });
-

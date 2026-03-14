@@ -39,6 +39,7 @@ function parseArgs(argv) {
   let url = "";
   const steps = [];
   let mode = "headless";
+  let keepOpen = false;
   let storageRoot = "";
   let timeoutMs = 90000;
 
@@ -89,6 +90,10 @@ function parseArgs(argv) {
       mode = args.shift() || "headless";
       continue;
     }
+    if (token === "--keep-open") {
+      keepOpen = true;
+      continue;
+    }
     if (token === "--storage-root") {
       storageRoot = args.shift() || "";
       continue;
@@ -124,7 +129,16 @@ function parseArgs(argv) {
     }
   }
 
-  return { inputFile, inputJson, inputStdin, inlineRequest, timeoutMs, mode, storageRoot };
+  return {
+    inputFile,
+    inputJson,
+    inputStdin,
+    inlineRequest,
+    timeoutMs,
+    mode,
+    keepOpen,
+    storageRoot
+  };
 }
 
 function readInput({ inputFile, inputJson, inputStdin, inlineRequest }) {
@@ -184,18 +198,22 @@ async function main() {
     const child = spawn(electronBinary, [repoRoot], {
       cwd: repoRoot,
       env: {
-        ...process.env,
-        JUNGLE_TOOL_EXIT_ON_COMPLETE: "1",
+      ...process.env,
+      JUNGLE_TOOL_EXIT_ON_COMPLETE: parsed.keepOpen ? "0" : "1",
         JUNGLE_TOOL_REQUEST_PATH: requestPath,
         JUNGLE_TOOL_RESPONSE_PATH: responsePath
       },
+      detached: parsed.keepOpen,
       stdio: "ignore"
     });
 
     await waitForFile(responsePath, parsed.timeoutMs);
     response = JSON.parse(fs.readFileSync(responsePath, "utf8"));
 
-    if (!child.killed) {
+    if (parsed.keepOpen) {
+      // Allow this CLI process to exit while leaving the Electron window alive.
+      child.unref();
+    } else if (!child.killed) {
       child.kill();
     }
   } else {

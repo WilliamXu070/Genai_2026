@@ -1,0 +1,37 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "goto",
+      "originalAction": "goto",
+      "target": "http://127.0.0.1:8088/",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Ball Physics Inside Rotating Square",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "scrollPage",
+      "originalAction": "scrollPage",
+      "target": "down",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "fullPage",
+      "value": null,
+      "assert": null
+    }
+  ]
+}
