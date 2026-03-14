@@ -41,5 +41,6 @@ contextBridge.exposeInMainWorld("jungleApi", {
       ipcRenderer.removeListener("jungle:run-event", listener);
     };
   },
-  startRun: (payload) => ipcRenderer.invoke("jungle:start-run", payload)
+  startRun: (payload) => ipcRenderer.invoke("jungle:start-run", payload),
+  runOperationalExample: () => ipcRenderer.invoke("jungle:run-operational-example")
 });

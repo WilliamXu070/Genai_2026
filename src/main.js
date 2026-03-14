@@ -3,6 +3,7 @@ const { spawn } = require("node:child_process");
 const os = require("node:os");
 const path = require("node:path");
 const { JungleManager } = require("./runtime/manager");
+const { runOperationalExample } = require("./runtime/operational_example");
 
 let mainWindow;
 let terminalSession;
@@ -210,4 +211,8 @@ ipcMain.handle("jungle:start-run", async (event, payload) => {
   };
 
   return jungleManager.startRun(payload || {}, emitEvent);
+});
+
+ipcMain.handle("jungle:run-operational-example", async () => {
+  return runOperationalExample(getProjectRoot());
 });

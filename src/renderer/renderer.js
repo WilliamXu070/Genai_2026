@@ -11,6 +11,7 @@ const terminalOutput = document.getElementById("terminal-output");
 const versionText = document.getElementById("version-text");
 
 const runMvpButton = document.getElementById("run-mvp");
+const runOperationalExampleButton = document.getElementById("run-operational-example");
 const runLiveStatus = document.getElementById("run-live-status");
 const runLiveSteps = document.getElementById("run-live-steps");
 const runHistory = document.getElementById("run-history");
@@ -237,6 +238,28 @@ runMvpButton?.addEventListener("click", async () => {
     ],
     url: "http://127.0.0.1:3000"
   });
+});
+
+runOperationalExampleButton?.addEventListener("click", async () => {
+  if (!window.jungleApi) {
+    return;
+  }
+
+  runLiveStatus.textContent = "operational_example_running";
+  runLiveSteps.textContent = "Running hardcoded website builder + Gemini semantic validation...";
+
+  try {
+    const result = await window.jungleApi.runOperationalExample();
+    runLiveStatus.textContent = result.report.overallPass
+      ? "operational_example_pass"
+      : "operational_example_fail";
+    runLiveSteps.textContent += `\nReport: ${result.outPath}`;
+    runLiveSteps.textContent += `\nSemantic status: ${result.report.semantic.status}`;
+    runLiveSteps.textContent += `\nSemantic reason: ${result.report.semantic.reason || "ok"}`;
+  } catch (error) {
+    runLiveStatus.textContent = "operational_example_error";
+    runLiveSteps.textContent += `\nError: ${error.message}`;
+  }
 });
 
 quickCommandButtons.forEach((button) => {
