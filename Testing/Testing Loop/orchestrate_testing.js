@@ -50,8 +50,8 @@ function validateLangflowInput(payload) {
     return { valid: false, errors: ["payload must be a JSON object"] };
   }
 
-  if (!payload.target_url || typeof payload.target_url !== "string" || !payload.target_url.trim()) {
-    errors.push("target_url is required and must be a non-empty string");
+  if (payload.target_url !== undefined && (typeof payload.target_url !== "string" || !payload.target_url.trim())) {
+    errors.push("target_url must be a non-empty string when provided");
   }
   if (payload.severity_threshold !== undefined) {
     const n = Number(payload.severity_threshold);
@@ -149,18 +149,21 @@ function parseBridgeOutput(stdout) {
 }
 
 function buildBridgeRequest(input, iteration) {
+  const payload = {
+    objective: input.feature_goal,
+    projectRoot: input.project_root,
+    environmentContext: input.environment_context,
+    constraints: input.constraints,
+    severityThreshold: input.severity_threshold,
+    maxRetries: input.max_retries
+  };
+  if (input.target_url) {
+    payload.url = input.target_url;
+  }
   return {
     requestId: `orchestrate_testing_${Date.now()}_${iteration}`,
     type: "jungle:start-run",
-    payload: {
-      objective: input.feature_goal,
-      url: input.target_url,
-      projectRoot: input.project_root,
-      environmentContext: input.environment_context,
-      constraints: input.constraints,
-      severityThreshold: input.severity_threshold,
-      maxRetries: input.max_retries
-    }
+    payload
   };
 }
 

@@ -3,53 +3,80 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jungle V2</title>
+    <title>Jungle Test Catalog</title>
     <link rel="stylesheet" href="../../../node_modules/xterm/css/xterm.css" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="landing-shell">
-      <header class="window-top">
-        <div class="menu-area">
-          <button
-            id="menu-toggle"
-            class="menu-toggle"
-            type="button"
-            aria-haspopup="menu"
-            aria-expanded="false"
-            aria-controls="menu-panel"
-            aria-label="Open menu"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-
-          <div id="menu-panel" class="menu-panel" role="menu" hidden>
-            <button type="button" class="menu-item" disabled role="menuitem">Workspace (coming soon)</button>
-            <button type="button" class="menu-item" disabled role="menuitem">Run History (coming soon)</button>
-            <button type="button" class="menu-item" disabled role="menuitem">Settings (coming soon)</button>
-          </div>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <h1>Jungle Catalog</h1>
+          <p>Read-only orchestration view with editable test versions.</p>
         </div>
-
-        <div class="brand-center">
-          <h1>JUNGLE</h1>
-        </div>
-
-        <div class="top-right">
-          <span id="session-status" class="status-pill">Connecting</span>
+        <div class="status-wrap">
+          <span id="session-status" class="status-pill">Loading catalog</span>
+          <span id="version-text" class="version-pill">Jungle</span>
         </div>
       </header>
 
-      <section class="terminal-wrap">
-        <article class="terminal-card" aria-label="Jungle terminal">
-          <div class="terminal-toolbar">
-            <div class="toolbar-path" id="cwd-label">Initializing shell...</div>
-            <div class="toolbar-meta" id="version-text">Jungle</div>
+      <section class="layout-grid">
+        <aside class="panel panel-list">
+          <div class="panel-header">
+            <h2>Project Tests</h2>
+            <input id="search-input" type="text" placeholder="Search tests..." />
+          </div>
+          <ul id="test-list" class="test-list"></ul>
+        </aside>
+
+        <section class="panel panel-detail">
+          <div class="panel-header">
+            <h2 id="test-title">Select a test</h2>
+            <span id="test-status" class="status-chip">-</span>
           </div>
 
-          <div class="terminal-host" id="terminal-host" aria-label="Interactive terminal"></div>
-        </article>
+          <div class="meta-row">
+            <div><strong>Test ID:</strong> <span id="test-id">-</span></div>
+            <div><strong>Latest version:</strong> <span id="test-version">-</span></div>
+            <div><strong>Updated:</strong> <span id="test-updated">-</span></div>
+          </div>
+
+          <label for="test-objective">Objective</label>
+          <textarea id="test-objective" rows="4"></textarea>
+
+          <label for="test-notes">Editor notes</label>
+          <textarea id="test-notes" rows="3" placeholder="Describe requested changes"></textarea>
+
+          <div class="button-row">
+            <button id="save-version" type="button">Save New Version</button>
+            <button id="regenerate-test" type="button">Regenerate</button>
+            <button id="refresh-tests" type="button">Refresh</button>
+          </div>
+
+          <h3>Version History</h3>
+          <ul id="version-list" class="version-list"></ul>
+        </section>
+
+        <section class="panel panel-runs">
+          <div class="panel-header">
+            <h2>Latest Result</h2>
+          </div>
+          <div class="run-meta" id="run-meta">No run selected.</div>
+          <video id="run-video" controls></video>
+          <ul id="artifact-list" class="artifact-list"></ul>
+        </section>
+      </section>
+
+      <section class="panel panel-terminal">
+        <div class="panel-header">
+          <h2>Codex Session</h2>
+          <div class="button-row">
+            <button id="terminal-restart" type="button">New Terminal</button>
+            <button id="terminal-close" type="button">Close Terminal</button>
+          </div>
+        </div>
+        <div id="terminal-meta" class="run-meta">No active codex session.</div>
+        <div id="terminal-host" class="terminal-host"></div>
       </section>
     </main>
     <script src="../../../node_modules/xterm/lib/xterm.js"></script>

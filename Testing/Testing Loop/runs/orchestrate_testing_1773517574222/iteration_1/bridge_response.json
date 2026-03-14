@@ -1,0 +1,126 @@
+{
+  "completedAt": "2026-03-14T19:46:14.260Z",
+  "ok": true,
+  "requestId": "orchestrate_testing_1773517574223_1",
+  "result": {
+    "plan": {
+      "objective": "Fix root route so npm-started app serves homepage at slash path",
+      "rationale": "Fallback deterministic plan based on environment snapshot.",
+      "app_bootstrap": {
+        "required": false,
+        "reason": "Fallback plan assumes app is already available at target URL.",
+        "workspace": ".",
+        "files": [],
+        "install_command": "",
+        "start_command": "",
+        "startup_timeout_ms": 60000
+      },
+      "steps": [
+        {
+          "action": "goto",
+          "target": "http://127.0.0.1:3000"
+        },
+        {
+          "action": "assertVisible",
+          "target": "body"
+        },
+        {
+          "action": "wait",
+          "target": "time",
+          "value": 10000
+        },
+        {
+          "action": "scrollPage",
+          "target": "down"
+        },
+        {
+          "action": "screenshot",
+          "target": "fullPage"
+        }
+      ],
+      "assertions": [
+        "Page renders",
+        "No fatal runtime errors during observation window"
+      ],
+      "success_criteria": [
+        "Execution completes",
+        "Video artifact exists"
+      ]
+    },
+    "execution": {
+      "status": "pass",
+      "summary": "Procedure executed successfully.",
+      "steps": [],
+      "video_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\langflow_agentic_runs\\run_25684_1773517576548\\08e157a5a016d46f3c6c8d4cfa2d01b9.webm",
+      "artifacts": [
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\langflow_agentic_runs\\run_25684_1773517576548\\08e157a5a016d46f3c6c8d4cfa2d01b9.webm",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\langflow_agentic_runs\\run_25684_1773517576548\\final_1773517587020.png",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\langflow_agentic_runs\\run_25684_1773517576548\\playwright_executor.generated.js",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\langflow_agentic_runs\\run_25684_1773517576548\\request_parser.json",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\langflow_agentic_runs\\run_25684_1773517576548\\step_1773517586991.png"
+      ],
+      "generated_code_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\langflow_agentic_runs\\run_25684_1773517576548\\playwright_executor.generated.js",
+      "parser_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\langflow_agentic_runs\\run_25684_1773517576548\\request_parser.json",
+      "stdout": "{\"status\":\"pass\",\"summary\":\"Procedure executed successfully.\",\"steps\":[],\"video_path\":\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\db\\\\langflow_agentic_runs\\\\run_25684_1773517576548\\\\08e157a5a016d46f3c6c8d4cfa2d01b9.webm\",\"artifacts\":[\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\db\\\\langflow_agentic_runs\\\\run_25684_1773517576548\\\\08e157a5a016d46f3c6c8d4cfa2d01b9.webm\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\db\\\\langflow_agentic_runs\\\\run_25684_1773517576548\\\\final_1773517587020.png\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\db\\\\langflow_agentic_runs\\\\run_25684_1773517576548\\\\playwright_executor.generated.js\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\db\\\\langflow_agentic_runs\\\\run_25684_1773517576548\\\\request_parser.json\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\db\\\\langflow_agentic_runs\\\\run_25684_1773517576548\\\\step_1773517586991.png\"]}",
+      "stderr": "",
+      "app_runtime": {
+        "status": "already_running",
+        "target_url": "http://127.0.0.1:3000",
+        "ready": true,
+        "started_by_orchestrator": false,
+        "workspace": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing",
+        "start_command": "",
+        "install_command": "",
+        "log_path": null,
+        "pid": null,
+        "error_message": ""
+      }
+    },
+    "critique": {
+      "verdict": "pass",
+      "overall_severity": 7.8,
+      "summary": "Deterministic visual-critique baseline.",
+      "defects": [
+        {
+          "id": "video_too_short_or_sparse",
+          "severity_0_10": 7.8,
+          "description": "Video exists but appears too small for reliable visual interpretation.",
+          "evidence": "size_bytes=31625",
+          "recommendation": "Increase observation window and action delay before judging animation quality."
+        }
+      ],
+      "strengths": [
+        "Execution finished without runtime failure.",
+        "Plan includes passive observation window."
+      ],
+      "recommendations": [
+        "Increase observation window and action delay before judging animation quality."
+      ],
+      "source": "deterministic",
+      "critic_chain": {
+        "video": {
+          "video_input_used": true,
+          "video_reason": "inline_video_attached",
+          "video_bytes": 31625
+        },
+        "raw_model_outputs": {
+          "stage1_text": null,
+          "stage2_text": null,
+          "stage3_text": null
+        },
+        "raw_model_diagnostics": {
+          "stage1": {
+            "ok": false,
+            "reason": "missing_gemini_api_key"
+          },
+          "stage2": null,
+          "stage3": null
+        }
+      }
+    },
+    "final_verdict": "pass",
+    "escalated": false,
+    "severity_threshold": 8,
+    "pass_condition": "execution.status == pass AND critique.overall_severity <= 8.0"
+  }
+}

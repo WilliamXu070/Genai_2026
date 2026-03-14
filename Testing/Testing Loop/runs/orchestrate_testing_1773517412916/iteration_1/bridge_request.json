@@ -1,0 +1,13 @@
+{
+  "requestId": "orchestrate_testing_1773517412917_1",
+  "type": "jungle:start-run",
+  "payload": {
+    "objective": "Fix root route so npm-started app serves homepage at slash path",
+    "projectRoot": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing",
+    "environmentContext": "Local run via npm start",
+    "constraints": "No destructive actions",
+    "severityThreshold": 8,
+    "maxRetries": 1,
+    "url": "http://127.0.0.1:8093"
+  }
+}

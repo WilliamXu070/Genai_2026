@@ -27,8 +27,8 @@ function validateBridgeRequest(request) {
     return { valid: errors.length === 0, errors };
   }
   const payload = request.payload;
-  if (!isNonEmptyString(payload.url || "")) {
-    errors.push("payload.url is required and must be a non-empty string");
+  if (payload.url !== undefined && !isNonEmptyString(payload.url || "")) {
+    errors.push("payload.url must be a non-empty string when provided");
   }
   if (!isNonEmptyString(payload.objective || payload.task || payload.scenarioName || "")) {
     errors.push("payload must include one of objective/task/scenarioName");

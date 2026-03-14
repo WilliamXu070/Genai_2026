@@ -8,6 +8,7 @@ from .agentic_contracts import AgenticInput, OrchestrationOutput
 from .agentic_tools import build_environment_snapshot, ensure_target_app, execute_playwright_plan
 from .env_bootstrap import load_project_env
 from .gemini_critic_agent import GeminiCriticAgent
+from .openai_environment_agent import OpenAIEnvironmentAgent
 from .openai_execution_agent import OpenAIExecutionAgent
 
 
@@ -15,14 +16,13 @@ class AgenticLangflowOrchestrator:
   def __init__(self, project_root: str):
     self.project_root = str(Path(project_root).resolve())
     self.loaded_env = load_project_env(self.project_root)
+    self.environment_agent = OpenAIEnvironmentAgent()
     self.openai_agent = OpenAIExecutionAgent()
     self.critic_agent = GeminiCriticAgent()
 
   def run(self, payload: AgenticInput) -> OrchestrationOutput:
     feature_goal = payload.get("feature_goal") or "Validate feature behavior"
     target_url = payload.get("target_url") or ""
-    if not target_url:
-      raise ValueError("target_url is required")
 
     severity_threshold = float(payload.get("severity_threshold", 8.0))
     snapshot = build_environment_snapshot(
@@ -33,8 +33,17 @@ class AgenticLangflowOrchestrator:
       constraints=payload.get("constraints", "")
     )
 
-    plan = self.openai_agent.plan(snapshot)
-    server_session = ensure_target_app(self.project_root, target_url, plan)
+    environment_plan = self.environment_agent.plan(snapshot)
+    # initial planning for bootstrap hints; execution plan is generated after URL resolution
+    seed_plan = {
+      "objective": feature_goal,
+      "rationale": "Seed plan for environment bootstrap.",
+      "app_bootstrap": environment_plan.get("app_bootstrap", {}),
+      "steps": [],
+      "assertions": [],
+      "success_criteria": []
+    }
+    server_session = ensure_target_app(self.project_root, target_url, seed_plan, environment_plan)
     if not server_session.ready:
       execution = {
         "status": "fail",
@@ -48,9 +57,20 @@ class AgenticLangflowOrchestrator:
         "stdout": "",
         "stderr": server_session.error_message
       }
+      plan = {
+        "objective": feature_goal,
+        "rationale": environment_plan.get("summary", "Environment bootstrap failed."),
+        "app_bootstrap": environment_plan.get("app_bootstrap", {}),
+        "steps": [],
+        "assertions": [],
+        "success_criteria": []
+      }
     else:
+      resolved_url = server_session.target_url
+      snapshot_with_url = {**snapshot, "target_url": resolved_url}
+      plan = self.openai_agent.plan(snapshot_with_url)
       try:
-        execution = execute_playwright_plan(self.project_root, plan, target_url)
+        execution = execute_playwright_plan(self.project_root, plan, resolved_url)
       finally:
         if server_session.started_by_orchestrator:
           server_session.stop()

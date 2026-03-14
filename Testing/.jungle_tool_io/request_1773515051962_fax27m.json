@@ -1,0 +1,15 @@
+{
+  "requestId": "codex_manual_1",
+  "type": "jungle:start-run",
+  "payload": {
+    "projectName": "Testing",
+    "scenarioName": "ui_open",
+    "url": "http://127.0.0.1:3000",
+    "steps": [
+      {
+        "action": "assert",
+        "target": "ok"
+      }
+    ]
+  }
+}

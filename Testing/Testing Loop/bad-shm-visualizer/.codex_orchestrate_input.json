@@ -1,0 +1,9 @@
+{
+  "feature_goal": "Fix root route so npm-started app serves homepage at slash path",
+  "target_url": "http://127.0.0.1:8093",
+  "environment_context": "Local run via npm start",
+  "constraints": "No destructive actions",
+  "severity_threshold": 8,
+  "max_retries": 1,
+  "project_root": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing"
+}

@@ -20,6 +20,17 @@ const {
 })();
 
 (() => {
+  const validNoUrl = validateBridgeRequest({
+    requestId: "r1b",
+    type: "jungle:start-run",
+    payload: {
+      objective: "test without explicit url"
+    }
+  });
+  assert.equal(validNoUrl.valid, true);
+})();
+
+(() => {
   const invalid = validateBridgeRequest({
     requestId: "",
     type: "wrong",

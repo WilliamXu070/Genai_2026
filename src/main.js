@@ -6,11 +6,13 @@ const pty = require("node-pty");
 const { JungleManager } = require("./runtime/manager");
 const { runOperationalExample } = require("./runtime/operational_example");
 const { AgenticLoopManager } = require("./runtime/agentic_loop");
+const { CatalogService } = require("./catalog/service");
 
 let mainWindow;
-let terminalSession;
+const terminalSessions = new Map();
 let jungleManager;
 let agenticLoopManager;
+let catalogService;
 
 function readJsonFile(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -25,22 +27,17 @@ function getProjectRoot() {
 }
 
 function disposeTerminalSession() {
-  if (terminalSession?.process) {
+  for (const session of terminalSessions.values()) {
     try {
-      terminalSession.process.kill();
+      session.process.kill();
     } catch (_) {
       // ignore process disposal failures
     }
   }
-
-  terminalSession = null;
+  terminalSessions.clear();
 }
 
 function createTerminalSession(webContents, options = {}) {
-  if (terminalSession?.process) {
-    disposeTerminalSession();
-  }
-
   const shellPath =
     process.platform === "win32"
       ? process.env.COMSPEC || "cmd.exe"
@@ -73,7 +70,7 @@ function createTerminalSession(webContents, options = {}) {
     }
   });
 
-  terminalSession = {
+  const session = {
     cwd: projectRoot,
     id: sessionId,
     process: terminalProcess,
@@ -82,6 +79,7 @@ function createTerminalSession(webContents, options = {}) {
     cols,
     rows
   };
+  terminalSessions.set(sessionId, session);
 
   const sendToRenderer = (channel, payload) => {
     if (!webContents.isDestroyed()) {
@@ -103,12 +101,30 @@ function createTerminalSession(webContents, options = {}) {
       signal
     });
 
-    if (terminalSession?.id === sessionId) {
-      terminalSession = null;
-    }
+    terminalSessions.delete(sessionId);
   });
 
-  return terminalSession;
+  return session;
+}
+
+function disposeSingleTerminalSession(sessionId, senderId) {
+  if (!sessionId) {
+    return false;
+  }
+  const session = terminalSessions.get(sessionId);
+  if (!session) {
+    return false;
+  }
+  if (senderId && senderId !== session.webContentsId) {
+    return false;
+  }
+  try {
+    session.process.kill();
+  } catch (_) {
+    // ignore process disposal failures
+  }
+  terminalSessions.delete(sessionId);
+  return true;
 }
 
 function createWindow() {
@@ -200,6 +216,7 @@ app.whenReady().then(() => {
   app.setName("Jungle");
   jungleManager = new JungleManager(getProjectRoot());
   agenticLoopManager = new AgenticLoopManager(getProjectRoot());
+  catalogService = new CatalogService(getProjectRoot());
   createWindow();
   runToolBridgeIfConfigured();
 
@@ -234,23 +251,31 @@ ipcMain.handle("terminal:create", (event, options) => {
 });
 
 ipcMain.on("terminal:input", (event, payload) => {
-  if (!payload || payload.sessionId !== terminalSession?.id) {
+  if (!payload?.sessionId) {
+    return;
+  }
+  const session = terminalSessions.get(payload.sessionId);
+  if (!session) {
     return;
   }
 
-  if (event.sender.id !== terminalSession.webContentsId) {
+  if (event.sender.id !== session.webContentsId) {
     return;
   }
 
-  terminalSession.process.write(payload.data);
+  session.process.write(payload.data);
 });
 
 ipcMain.on("terminal:resize", (event, payload) => {
-  if (!payload || payload.sessionId !== terminalSession?.id) {
+  if (!payload?.sessionId) {
+    return;
+  }
+  const session = terminalSessions.get(payload.sessionId);
+  if (!session) {
     return;
   }
 
-  if (event.sender.id !== terminalSession.webContentsId) {
+  if (event.sender.id !== session.webContentsId) {
     return;
   }
 
@@ -261,9 +286,13 @@ ipcMain.on("terminal:resize", (event, payload) => {
     return;
   }
 
-  terminalSession.cols = cols;
-  terminalSession.rows = rows;
-  terminalSession.process.resize(cols, rows);
+  session.cols = cols;
+  session.rows = rows;
+  session.process.resize(cols, rows);
+});
+
+ipcMain.handle("terminal:dispose", (event, sessionId) => {
+  return disposeSingleTerminalSession(sessionId, event.sender.id);
 });
 
 ipcMain.handle("jungle:list-runs", () => {
@@ -369,4 +398,32 @@ ipcMain.handle("agentic:fork-tree", async (_, payload) => {
     throw new Error("Agentic loop manager unavailable");
   }
   return agenticLoopManager.forkTree(payload || {});
+});
+
+ipcMain.handle("catalog:list-tests", () => {
+  if (!catalogService) {
+    return [];
+  }
+  return catalogService.listTests();
+});
+
+ipcMain.handle("catalog:get-test", (_, testId) => {
+  if (!catalogService) {
+    return null;
+  }
+  return catalogService.getTest(testId);
+});
+
+ipcMain.handle("catalog:update-test", (_, payload) => {
+  if (!catalogService) {
+    throw new Error("Catalog service unavailable");
+  }
+  return catalogService.updateTest(payload || {});
+});
+
+ipcMain.handle("catalog:regenerate-test", (_, payload) => {
+  if (!catalogService) {
+    throw new Error("Catalog service unavailable");
+  }
+  return catalogService.regenerateTest(payload || {});
 });

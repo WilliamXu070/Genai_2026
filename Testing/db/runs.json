@@ -2,6 +2,40 @@
   "schemaVersion": "0.1.0",
   "runs": [
     {
+      "runId": "run_1773517403449",
+      "projectName": "Testing",
+      "scenarioName": "ui_open",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T19:43:23.451Z",
+      "updatedAt": "2026-03-14T19:43:23.805Z",
+      "startedAt": "2026-03-14T19:43:23.452Z",
+      "endedAt": "2026-03-14T19:43:23.805Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\runs\\run_1773517403449\\1773517403804_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\runs\\run_1773517403449\\1773517403805_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "ok",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
       "runId": "run_1773503107534",
       "projectName": "Testing",
       "scenarioName": "codex_bridge_smoke",

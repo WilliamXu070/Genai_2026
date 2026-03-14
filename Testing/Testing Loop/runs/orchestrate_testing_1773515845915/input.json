@@ -1,0 +1,9 @@
+{
+  "feature_goal": "Autonomous env bootstrap test without explicit url",
+  "target_url": "",
+  "environment_context": "no-url test",
+  "constraints": "no destructive actions",
+  "severity_threshold": 8,
+  "max_retries": 1,
+  "project_root": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+}

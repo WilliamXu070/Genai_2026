@@ -1,0 +1,12 @@
+{
+  "requestId": "orchestrate_testing_1773515860899_1",
+  "type": "jungle:start-run",
+  "payload": {
+    "objective": "Autonomous env bootstrap test without explicit url",
+    "projectRoot": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+    "environmentContext": "no-url test",
+    "constraints": "no destructive actions",
+    "severityThreshold": 8,
+    "maxRetries": 1
+  }
+}

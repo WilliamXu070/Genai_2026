@@ -1,0 +1,33 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "goto",
+      "target": "http://127.0.0.1:8093",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "wait",
+      "target": null,
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "assertVisible",
+      "target": "selector-for-visualization-element",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "screenshot",
+      "target": "bad_shm_visualizer_test.png",
+      "value": null,
+      "assert": null
+    }
+  ]
+}

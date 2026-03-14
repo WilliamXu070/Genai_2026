@@ -62,7 +62,7 @@
       <h1 id="title">Ball Physics Inside Rotating Square</h1>
       <div class="hud">
         <span class="chip" id="speed-readout">Speed: 0.00</span>
-        <span class="chip" id="angle-readout">Rotation: 0.0°</span>
+        <span class="chip" id="angle-readout">Rotation: 0.0 deg</span>
         <span class="chip" id="energy-readout">Energy: 0.00</span>
       </div>
       <canvas id="sim" width="620" height="620" aria-label="Physics simulation canvas"></canvas>
@@ -79,12 +79,17 @@
         centerX: canvas.width / 2,
         centerY: canvas.height / 2,
         boxHalfSize: 220,
+        cornerRadius: 54,
         angle: 0,
         angularVelocity: 0.44,
         gravity: 790,
-        restitution: 0.91,
-        friction: 0.996,
-        airDrag: 0.999
+        restitution: 0.9,
+        friction: 0.2,
+        airDrag: 0.999,
+        quadraticDrag: 0.0007,
+        maxSpeed: 760,
+        targetSubstep: 1 / 300,
+        maxSubsteps: 14
       };
 
       const ball = {
@@ -113,16 +118,72 @@
         };
       }
 
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function dot(ax, ay, bx, by) {
+        return ax * bx + ay * by;
+      }
+
+      function toLocalVector(vx, vy, angle) {
+        const c = Math.cos(angle);
+        const s = Math.sin(angle);
+        return { x: c * vx + s * vy, y: -s * vx + c * vy };
+      }
+
+      function toWorldVector(vx, vy, angle) {
+        const c = Math.cos(angle);
+        const s = Math.sin(angle);
+        return { x: c * vx - s * vy, y: s * vx + c * vy };
+      }
+
+      function toLocalVelocity(vx, vy, localPos, angle) {
+        const rotated = toLocalVector(vx, vy, angle);
+        return {
+          x: rotated.x + world.angularVelocity * localPos.y,
+          y: rotated.y - world.angularVelocity * localPos.x
+        };
+      }
+
+      function wallVelocityAtLocal(localX, localY, angle) {
+        const rWorld = toWorldVector(localX, localY, angle);
+        return {
+          x: -world.angularVelocity * rWorld.y,
+          y: world.angularVelocity * rWorld.x
+        };
+      }
+
+      function buildRoundedRectPath(context, halfSize, radius) {
+        const x = -halfSize;
+        const y = -halfSize;
+        const w = halfSize * 2;
+        const h = halfSize * 2;
+        const r = clamp(radius, 0, halfSize);
+        context.beginPath();
+        context.moveTo(x + r, y);
+        context.lineTo(x + w - r, y);
+        context.quadraticCurveTo(x + w, y, x + w, y + r);
+        context.lineTo(x + w, y + h - r);
+        context.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        context.lineTo(x + r, y + h);
+        context.quadraticCurveTo(x, y + h, x, y + h - r);
+        context.lineTo(x, y + r);
+        context.quadraticCurveTo(x, y, x + r, y);
+        context.closePath();
+      }
+
       function drawRotatingSquare() {
         ctx.save();
         ctx.translate(world.centerX, world.centerY);
         ctx.rotate(world.angle);
-        const side = world.boxHalfSize * 2;
         ctx.fillStyle = "rgba(75, 115, 170, 0.08)";
-        ctx.fillRect(-world.boxHalfSize, -world.boxHalfSize, side, side);
+        buildRoundedRectPath(ctx, world.boxHalfSize, world.cornerRadius);
+        ctx.fill();
         ctx.strokeStyle = "#3466a2";
         ctx.lineWidth = 6;
-        ctx.strokeRect(-world.boxHalfSize, -world.boxHalfSize, side, side);
+        buildRoundedRectPath(ctx, world.boxHalfSize, world.cornerRadius);
+        ctx.stroke();
         ctx.restore();
       }
 
@@ -136,49 +197,210 @@
         ctx.stroke();
       }
 
-      function resolveCollision(dt) {
-        const localPos = toLocal(ball.x, ball.y, world.angle);
-        const localVel = toLocal(ball.x + ball.vx * dt, ball.y + ball.vy * dt, world.angle);
-        let vxLocal = (localVel.x - localPos.x) / dt;
-        let vyLocal = (localVel.y - localPos.y) / dt;
-        let collided = false;
-        const max = world.boxHalfSize - ball.radius;
+      function signedDistanceRoundedRect(localPos, halfSize, radius) {
+        const base = Math.max(0, halfSize - radius);
+        const dx = Math.abs(localPos.x) - base;
+        const dy = Math.abs(localPos.y) - base;
+        const ox = Math.max(dx, 0);
+        const oy = Math.max(dy, 0);
+        return Math.hypot(ox, oy) + Math.min(Math.max(dx, dy), 0) - radius;
+      }
 
-        if (localPos.x > max) {
-          localPos.x = max;
-          vxLocal = -Math.abs(vxLocal) * world.restitution;
-          vyLocal *= world.friction;
-          collided = true;
-        } else if (localPos.x < -max) {
-          localPos.x = -max;
-          vxLocal = Math.abs(vxLocal) * world.restitution;
-          vyLocal *= world.friction;
-          collided = true;
+      function roundedRectCollisionInfo(localPos, halfSize, radius) {
+        const r = clamp(radius, 0, halfSize);
+        const core = Math.max(0, halfSize - r);
+        const sx = localPos.x < 0 ? -1 : 1;
+        const sy = localPos.y < 0 ? -1 : 1;
+        const absX = Math.abs(localPos.x);
+        const absY = Math.abs(localPos.y);
+
+        if (r > 0 && absX > core && absY > core) {
+          const cx = sx * core;
+          const cy = sy * core;
+          let dx = localPos.x - cx;
+          let dy = localPos.y - cy;
+          let len = Math.hypot(dx, dy);
+          if (len < 1e-8) {
+            dx = sx;
+            dy = sy;
+            len = 1;
+          }
+          const ux = dx / len;
+          const uy = dy / len;
+          return {
+            nx: -ux,
+            ny: -uy,
+            contactX: cx + ux * r,
+            contactY: cy + uy * r
+          };
         }
 
-        if (localPos.y > max) {
-          localPos.y = max;
-          vyLocal = -Math.abs(vyLocal) * world.restitution;
-          vxLocal *= world.friction;
-          collided = true;
-        } else if (localPos.y < -max) {
-          localPos.y = -max;
-          vyLocal = Math.abs(vyLocal) * world.restitution;
-          vxLocal *= world.friction;
-          collided = true;
+        const distX = halfSize - absX;
+        const distY = halfSize - absY;
+        if (distX < distY) {
+          return {
+            nx: -sx,
+            ny: 0,
+            contactX: sx * halfSize,
+            contactY: clamp(localPos.y, -core, core)
+          };
         }
 
-        const worldPos = toWorld(localPos.x, localPos.y, world.angle);
-        const worldVel = toWorld(localPos.x + vxLocal * dt, localPos.y + vyLocal * dt, world.angle);
-        ball.x = worldPos.x;
-        ball.y = worldPos.y;
-        ball.vx = (worldVel.x - worldPos.x) / dt;
-        ball.vy = (worldVel.y - worldPos.y) / dt;
+        return {
+          nx: 0,
+          ny: -sy,
+          contactX: clamp(localPos.x, -core, core),
+          contactY: sy * halfSize
+        };
+      }
 
-        if (collided) {
-          ball.vx += Math.cos(world.angle + Math.PI / 2) * world.angularVelocity * 42;
-          ball.vy += Math.sin(world.angle + Math.PI / 2) * world.angularVelocity * 42;
+      function confineInsideRoundedRect(localPos, halfSize, radius) {
+        const sdf = signedDistanceRoundedRect(localPos, halfSize, radius);
+        if (sdf <= 0) {
+          return localPos;
         }
+        const hit = roundedRectCollisionInfo(localPos, halfSize, radius);
+        return {
+          x: localPos.x + hit.nx * (sdf + 0.02),
+          y: localPos.y + hit.ny * (sdf + 0.02)
+        };
+      }
+
+      function findSweptCollision(localPos, localVel, halfSize, radius, maxTime) {
+        if (maxTime <= 1e-8) {
+          return null;
+        }
+
+        const startSdf = signedDistanceRoundedRect(localPos, halfSize, radius);
+        if (startSdf > 0) {
+          const hitNow = roundedRectCollisionInfo(localPos, halfSize, radius);
+          return { toi: 0, ...hitNow };
+        }
+
+        const endPos = {
+          x: localPos.x + localVel.x * maxTime,
+          y: localPos.y + localVel.y * maxTime
+        };
+        const endSdf = signedDistanceRoundedRect(endPos, halfSize, radius);
+        if (endSdf <= 0) {
+          return null;
+        }
+
+        let lo = 0;
+        let hi = maxTime;
+        for (let i = 0; i < 18; i += 1) {
+          const mid = (lo + hi) * 0.5;
+          const midPos = {
+            x: localPos.x + localVel.x * mid,
+            y: localPos.y + localVel.y * mid
+          };
+          const midSdf = signedDistanceRoundedRect(midPos, halfSize, radius);
+          if (midSdf <= 0) {
+            lo = mid;
+          } else {
+            hi = mid;
+          }
+        }
+
+        const impactPos = {
+          x: localPos.x + localVel.x * hi,
+          y: localPos.y + localVel.y * hi
+        };
+        const hit = roundedRectCollisionInfo(impactPos, halfSize, radius);
+        return { toi: hi, ...hit };
+      }
+
+      function resolveCollisionsCCD(dt) {
+        const halfSize = world.boxHalfSize - ball.radius;
+        const cornerRadius = Math.max(0, world.cornerRadius - ball.radius);
+        const maxImpacts = 18;
+        const pushOut = 0.03;
+        const minStep = 1e-4;
+        const frameStartAngle = world.angle;
+
+        let remaining = dt;
+        let elapsed = 0;
+        let impacts = 0;
+
+        while (remaining > 1e-6 && impacts < maxImpacts) {
+          const angle = frameStartAngle + world.angularVelocity * elapsed;
+          const localPos = toLocal(ball.x, ball.y, angle);
+          const localVel = toLocalVelocity(ball.vx, ball.vy, localPos, angle);
+          const hit = findSweptCollision(localPos, localVel, halfSize, cornerRadius, remaining);
+
+          if (!hit) {
+            ball.x += ball.vx * remaining;
+            ball.y += ball.vy * remaining;
+            elapsed += remaining;
+            remaining = 0;
+            break;
+          }
+
+          const toi = Math.max(0, Math.min(remaining, hit.toi));
+          if (toi > 0) {
+            ball.x += ball.vx * toi;
+            ball.y += ball.vy * toi;
+            elapsed += toi;
+            remaining -= toi;
+          }
+
+          const impactAngle = frameStartAngle + world.angularVelocity * elapsed;
+          const normalWorld = toWorldVector(hit.nx, hit.ny, impactAngle);
+          const wallVel = wallVelocityAtLocal(hit.contactX, hit.contactY, impactAngle);
+
+          const relVx = ball.vx - wallVel.x;
+          const relVy = ball.vy - wallVel.y;
+          const vRelN = dot(relVx, relVy, normalWorld.x, normalWorld.y);
+
+          if (vRelN < 0) {
+            const tx = -normalWorld.y;
+            const ty = normalWorld.x;
+            const relTan = dot(relVx, relVy, tx, ty);
+            const outRelN = -world.restitution * vRelN;
+            const outRelTan = relTan * Math.max(0, 1 - world.friction);
+
+            ball.vx = wallVel.x + normalWorld.x * outRelN + tx * outRelTan;
+            ball.vy = wallVel.y + normalWorld.y * outRelN + ty * outRelTan;
+          }
+
+          ball.x += normalWorld.x * pushOut;
+          ball.y += normalWorld.y * pushOut;
+
+          remaining = Math.max(0, remaining - minStep);
+          impacts += 1;
+        }
+
+        const endAngle = frameStartAngle + world.angularVelocity * dt;
+        const finalLocal = toLocal(ball.x, ball.y, endAngle);
+        const confinedLocal = confineInsideRoundedRect(finalLocal, halfSize, cornerRadius);
+        const finalWorld = toWorld(confinedLocal.x, confinedLocal.y, endAngle);
+        ball.x = finalWorld.x;
+        ball.y = finalWorld.y;
+      }
+
+      function integratePhysics(dt) {
+        ball.vy += world.gravity * dt;
+
+        const speed = Math.hypot(ball.vx, ball.vy);
+        if (speed > 1e-6) {
+          const quadDrop = world.quadraticDrag * speed * dt;
+          const quadScale = Math.max(0, 1 - quadDrop);
+          ball.vx *= world.airDrag * quadScale;
+          ball.vy *= world.airDrag * quadScale;
+        } else {
+          ball.vx *= world.airDrag;
+          ball.vy *= world.airDrag;
+        }
+
+        const cappedSpeed = Math.hypot(ball.vx, ball.vy);
+        if (cappedSpeed > world.maxSpeed) {
+          const scale = world.maxSpeed / cappedSpeed;
+          ball.vx *= scale;
+          ball.vy *= scale;
+        }
+
+        resolveCollisionsCCD(dt);
+        world.angle += world.angularVelocity * dt;
       }
 
       let last = performance.now();
@@ -187,14 +409,15 @@
         const dt = Math.min(0.033, (now - last) / 1000);
         last = now;
 
-        world.angle += world.angularVelocity * dt;
-        ball.vy += world.gravity * dt;
-        ball.vx *= world.airDrag;
-        ball.vy *= world.airDrag;
-        ball.x += ball.vx * dt;
-        ball.y += ball.vy * dt;
+        const preStepSpeed = Math.hypot(ball.vx, ball.vy);
+        const stepByTravel = Math.ceil((preStepSpeed * dt) / Math.max(1, ball.radius * 0.35));
+        const stepByTime = Math.ceil(dt / world.targetSubstep);
+        const substeps = clamp(Math.max(1, stepByTravel, stepByTime), 1, world.maxSubsteps);
+        const subDt = dt / substeps;
 
-        resolveCollision(dt);
+        for (let i = 0; i < substeps; i += 1) {
+          integratePhysics(subDt);
+        }
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawRotatingSquare();
@@ -203,7 +426,7 @@
         const speed = Math.hypot(ball.vx, ball.vy);
         const kinetic = 0.5 * speed * speed;
         speedReadout.textContent = `Speed: ${speed.toFixed(2)}`;
-        angleReadout.textContent = `Rotation: ${((world.angle * 180) / Math.PI).toFixed(1)}°`;
+        angleReadout.textContent = `Rotation: ${((world.angle * 180) / Math.PI).toFixed(1)} deg`;
         energyReadout.textContent = `Energy: ${kinetic.toFixed(2)}`;
 
         requestAnimationFrame(tick);
@@ -213,4 +436,3 @@
     </script>
   </body>
 </html>
-

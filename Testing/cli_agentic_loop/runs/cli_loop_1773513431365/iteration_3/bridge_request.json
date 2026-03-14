@@ -1,0 +1,13 @@
+{
+  "requestId": "cli_loop_1773513919302_3",
+  "type": "jungle:start-run",
+  "payload": {
+    "objective": "...",
+    "url": "http://127.0.0.1:8088",
+    "projectRoot": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+    "environmentContext": "CLI Codex feedback loop iteration 3",
+    "constraints": "Terminal-only loop. No UI interaction required.",
+    "severityThreshold": 8,
+    "maxRetries": 2
+  }
+}

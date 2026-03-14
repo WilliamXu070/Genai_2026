@@ -1,0 +1,13 @@
+{
+  "requestId": "orchestrate_testing_1773514130250_1",
+  "type": "jungle:start-run",
+  "payload": {
+    "objective": "Validate newly implemented feature behavior end-to-end",
+    "url": "http://127.0.0.1:8088",
+    "projectRoot": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+    "environmentContext": "Local development branch test run",
+    "constraints": "No destructive actions",
+    "severityThreshold": 8,
+    "maxRetries": 2
+  }
+}

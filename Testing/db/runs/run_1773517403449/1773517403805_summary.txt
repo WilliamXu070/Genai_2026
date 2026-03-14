@@ -1,0 +1,13 @@
+{
+  "status": "pass",
+  "reason": "Scenario executed with mock runner and app readiness check passed.",
+  "steps": [
+    {
+      "index": 0,
+      "action": "assert",
+      "target": "ok",
+      "status": "pass",
+      "note": "Executed by MVP runner"
+    }
+  ]
+}

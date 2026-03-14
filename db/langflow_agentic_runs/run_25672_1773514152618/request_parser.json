@@ -1,0 +1,40 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "goto",
+      "target": "http://127.0.0.1:8088",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "wait",
+      "target": null,
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "assertVisible",
+      "target": "#terminal-output",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "captureText",
+      "target": "#terminal-output",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 4,
+      "action": "screenshot",
+      "target": "final_screenshot.png",
+      "value": null,
+      "assert": null
+    }
+  ]
+}

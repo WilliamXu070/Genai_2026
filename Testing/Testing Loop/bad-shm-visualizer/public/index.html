@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shm Spring Visualizer (Bad Build)</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <h1 id="title">SHM Spring Visualizer (Bad)</h1>
+      <p class="subtitle">Intentionally poor physics and UX for test-loop validation.</p>
+
+      <section class="panel">
+        <div class="controls">
+          <button id="toggle-sim">Start / Stop</button>
+          <button id="reset-sim">Reset</button>
+        </div>
+        <div class="readouts">
+          <span>Position: <strong id="pos-readout">0.00</strong></span>
+          <span>Velocity: <strong id="vel-readout">0.00</strong></span>
+          <span>KE: <strong id="ke-readout">0.00</strong></span>
+          <span>PE: <strong id="pe-readout">0.00</strong></span>
+          <span>Total Energy: <strong id="energy-readout">0.00</strong></span>
+        </div>
+      </section>
+
+      <section class="viz-wrap">
+        <canvas id="shm-canvas" width="980" height="300"></canvas>
+      </section>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>

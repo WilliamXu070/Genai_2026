@@ -1,0 +1,83 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  background: #f8f5ea;
+  color: #161616;
+}
+
+.shell {
+  width: min(1040px, 96vw);
+  margin: 16px auto;
+  border: 3px solid #1f2a44;
+  border-radius: 12px;
+  background: #fffdf4;
+  padding: 14px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+}
+
+.subtitle {
+  margin: 0 0 12px;
+  color: #404b66;
+}
+
+.panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  border: 2px solid #111;
+  padding: 8px;
+  background: #edf4ff;
+  border-radius: 8px;
+}
+
+button {
+  border: 2px solid #111;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #f2c84b;
+  color: #111;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+}
+
+.readouts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 14px;
+}
+
+.viz-wrap {
+  border: 3px solid #111;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow-x: auto;
+}
+
+#shm-canvas {
+  display: block;
+  width: 980px;
+  height: 300px;
+}
+
+@media (max-width: 720px) {
+  .panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

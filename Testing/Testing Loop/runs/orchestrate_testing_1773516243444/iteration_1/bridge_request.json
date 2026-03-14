@@ -1,0 +1,13 @@
+{
+  "requestId": "orchestrate_testing_1773516243445_1",
+  "type": "jungle:start-run",
+  "payload": {
+    "objective": "Test bad SHM visualizer physics and UX",
+    "projectRoot": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+    "environmentContext": "bad-shm-visualizer local run",
+    "constraints": "No destructive actions",
+    "severityThreshold": 8,
+    "maxRetries": 2,
+    "url": "http://127.0.0.1:8093"
+  }
+}

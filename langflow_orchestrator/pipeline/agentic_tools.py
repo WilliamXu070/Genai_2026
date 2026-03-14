@@ -174,6 +174,35 @@ def _is_url_reachable(url: str, timeout_sec: float = 2.0) -> bool:
     return False
 
 
+def _candidate_urls(requested_url: str, env_plan: Dict[str, Any]) -> List[str]:
+  candidates: List[str] = []
+  if requested_url:
+    candidates.append(requested_url)
+  resolved = str(env_plan.get("resolved_target_url", "") or "").strip()
+  if resolved:
+    candidates.append(resolved)
+  model_candidates = env_plan.get("candidate_urls", [])
+  if isinstance(model_candidates, list):
+    candidates.extend([str(x).strip() for x in model_candidates if str(x).strip()])
+  defaults = [
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:8080",
+    "http://127.0.0.1:8088",
+    "http://127.0.0.1:8093"
+  ]
+  candidates.extend(defaults)
+  # stable de-dup
+  out: List[str] = []
+  seen = set()
+  for c in candidates:
+    if c in seen:
+      continue
+    seen.add(c)
+    out.append(c)
+  return out
+
+
 def _write_bootstrap_files(root: Path, workspace: Path, files: List[Dict[str, Any]]) -> None:
   for f in files:
     rel = str(f.get("path", "")).strip()
@@ -212,23 +241,35 @@ def _default_start_command(workspace: Path) -> str:
   return ""
 
 
-def ensure_target_app(project_root: str, target_url: str, plan: ExecutionPlan) -> LocalServerSession:
+def ensure_target_app(
+  project_root: str,
+  target_url: str,
+  plan: ExecutionPlan,
+  environment_plan: Dict[str, Any] | None = None
+) -> LocalServerSession:
   root = Path(project_root).resolve()
-  bootstrap = plan.get("app_bootstrap", {}) if isinstance(plan, dict) else {}
-  if not isinstance(bootstrap, dict):
-    bootstrap = {}
+  env_plan = environment_plan or {}
+  bootstrap = {}
+  if isinstance(env_plan.get("app_bootstrap"), dict):
+    bootstrap = dict(env_plan.get("app_bootstrap") or {})
+  if not bootstrap and isinstance(plan, dict) and isinstance(plan.get("app_bootstrap"), dict):
+    bootstrap = dict(plan.get("app_bootstrap") or {})
   workspace = _resolve_workspace(root, bootstrap)
+  candidates = _candidate_urls(target_url, env_plan)
 
-  if _is_url_reachable(target_url):
-    return LocalServerSession(
-      status="already_running",
-      target_url=target_url,
-      ready=True,
-      started_by_orchestrator=False,
-      workspace=str(workspace),
-      start_command="",
-      install_command=""
-    )
+  for url in candidates:
+    if _is_url_reachable(url):
+      return LocalServerSession(
+        status="already_running",
+        target_url=url,
+        ready=True,
+        started_by_orchestrator=False,
+        workspace=str(workspace),
+        start_command="",
+        install_command=""
+      )
+
+  effective_target = candidates[0] if candidates else ""
 
   files = bootstrap.get("files", [])
   if isinstance(files, list) and files:
@@ -257,16 +298,26 @@ def ensure_target_app(project_root: str, target_url: str, plan: ExecutionPlan) -
 
   start_command = str(bootstrap.get("start_command", "") or "").strip() or _default_start_command(workspace)
   if not start_command:
-    return LocalServerSession(
-      status="missing_start_command",
-      target_url=target_url,
-      ready=False,
-      started_by_orchestrator=False,
-      workspace=str(workspace),
-      start_command="",
-      install_command=install_command,
-      error_message="No start_command provided and no package script (dev/start) detected."
-    )
+    # Last-ditch fallback for a static HTML folder.
+    if (workspace / "index.html").exists():
+      start_command = "npx http-server -p 8093 -c-1 ."
+      effective_target = effective_target or "http://127.0.0.1:8093"
+      candidates = _candidate_urls(effective_target, env_plan)
+    else:
+      return LocalServerSession(
+        status="missing_start_command",
+        target_url=effective_target,
+        ready=False,
+        started_by_orchestrator=False,
+        workspace=str(workspace),
+        start_command="",
+        install_command=install_command,
+        error_message="No start_command provided and no package script (dev/start) detected."
+      )
+
+  if not effective_target:
+    effective_target = "http://127.0.0.1:3000"
+    candidates = _candidate_urls(effective_target, env_plan)
 
   runs_dir = root / "db" / "langflow_agentic_runs"
   runs_dir.mkdir(parents=True, exist_ok=True)
@@ -286,7 +337,7 @@ def ensure_target_app(project_root: str, target_url: str, plan: ExecutionPlan) -
   except Exception as exc:
     return LocalServerSession(
       status="start_failed",
-      target_url=target_url,
+      target_url=effective_target,
       ready=False,
       started_by_orchestrator=False,
       workspace=str(workspace),
@@ -299,10 +350,11 @@ def ensure_target_app(project_root: str, target_url: str, plan: ExecutionPlan) -
   timeout_ms = int(bootstrap.get("startup_timeout_ms", 60000) or 60000)
   deadline = time.time() + (timeout_ms / 1000.0)
   while time.time() < deadline:
-    if _is_url_reachable(target_url):
+    ready_url = next((u for u in candidates if _is_url_reachable(u)), "")
+    if ready_url:
       session = LocalServerSession(
         status="started",
-        target_url=target_url,
+        target_url=ready_url,
         ready=True,
         started_by_orchestrator=True,
         workspace=str(workspace),
@@ -315,7 +367,7 @@ def ensure_target_app(project_root: str, target_url: str, plan: ExecutionPlan) -
     if child.poll() is not None:
       return LocalServerSession(
         status="start_exited_early",
-        target_url=target_url,
+        target_url=effective_target,
         ready=False,
         started_by_orchestrator=False,
         workspace=str(workspace),
@@ -328,7 +380,7 @@ def ensure_target_app(project_root: str, target_url: str, plan: ExecutionPlan) -
 
   session = LocalServerSession(
     status="startup_timeout",
-    target_url=target_url,
+    target_url=effective_target,
     ready=False,
     started_by_orchestrator=True,
     workspace=str(workspace),

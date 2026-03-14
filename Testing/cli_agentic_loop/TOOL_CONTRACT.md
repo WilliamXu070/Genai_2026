@@ -14,7 +14,7 @@ Top-level:
     "objective": "string (required if task/scenarioName missing)",
     "task": "string (optional)",
     "scenarioName": "string (optional)",
-    "url": "string (required, target localhost/app URL)",
+    "url": "string (optional, explicit target localhost/app URL)",
     "projectRoot": "string (optional, absolute preferred)",
     "environmentContext": "string (optional)",
     "constraints": "string (optional)",
@@ -26,8 +26,8 @@ Top-level:
 
 Rules:
 - `type` must be `jungle:start-run`.
-- `payload.url` must be present.
 - At least one of `payload.objective`, `payload.task`, `payload.scenarioName` must be present.
+- If `payload.url` is omitted, orchestrator resolves/starts the app agentically.
 - `severityThreshold` is clamped/validated to `0..10`.
 - `maxRetries` is clamped/validated to `0..10`.
 

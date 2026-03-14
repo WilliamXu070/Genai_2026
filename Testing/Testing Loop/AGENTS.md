@@ -27,7 +27,7 @@ The JSON payload passed to `orchestrate_testing` must follow:
 ```json
 {
   "feature_goal": "string (optional)",
-  "target_url": "string (required)",
+  "target_url": "string (optional, if omitted orchestrator resolves/starts app)",
   "environment_context": "string (optional)",
   "constraints": "string (optional)",
   "severity_threshold": "number (optional, default 8.0)",

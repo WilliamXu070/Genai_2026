@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld("appInfo", {
 
 contextBridge.exposeInMainWorld("terminalApi", {
   createSession: (options) => ipcRenderer.invoke("terminal:create", options),
+  disposeSession: (sessionId) => ipcRenderer.invoke("terminal:dispose", sessionId),
   onData: (callback) => {
     const listener = (_, payload) => callback(payload);
     ipcRenderer.on("terminal:data", listener);
@@ -62,4 +63,11 @@ contextBridge.exposeInMainWorld("agenticApi", {
     ipcRenderer.on("agentic:event", listener);
     return () => ipcRenderer.removeListener("agentic:event", listener);
   }
+});
+
+contextBridge.exposeInMainWorld("catalogApi", {
+  listTests: () => ipcRenderer.invoke("catalog:list-tests"),
+  getTest: (testId) => ipcRenderer.invoke("catalog:get-test", testId),
+  updateTest: (payload) => ipcRenderer.invoke("catalog:update-test", payload),
+  regenerateTest: (payload) => ipcRenderer.invoke("catalog:regenerate-test", payload)
 });

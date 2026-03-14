@@ -1,0 +1,178 @@
+{
+  "plan": {
+    "objective": "Execute the CLI agentic loop for the Jungle project and verify the terminal output.",
+    "rationale": "The execution of the CLI agentic loop is essential for testing the functionality of the Jungle application in a terminal-only environment. This plan ensures that the application is running, the terminal is accessible, and the expected output is verified.",
+    "app_bootstrap": {
+      "required": true,
+      "reason": "The Jungle application needs to be started to execute the CLI agentic loop.",
+      "workspace": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+      "files": [],
+      "install_command": "npm install",
+      "start_command": "npm run start",
+      "startup_timeout_ms": 30000
+    },
+    "steps": [
+      {
+        "action": "goto",
+        "target": "http://127.0.0.1:8088"
+      },
+      {
+        "action": "wait",
+        "duration_ms": 10000
+      },
+      {
+        "action": "assertVisible",
+        "target": "#terminal-output"
+      },
+      {
+        "action": "screenshot",
+        "target": "terminal_output_screenshot.png"
+      },
+      {
+        "action": "fill",
+        "target": "#terminal-input",
+        "value": "node Testing/cli_agentic_loop/run_cli_loop.js"
+      },
+      {
+        "action": "wait",
+        "duration_ms": 10000
+      },
+      {
+        "action": "assertVisible",
+        "target": "#terminal-output"
+      },
+      {
+        "action": "screenshot",
+        "target": "final_terminal_output_screenshot.png"
+      }
+    ],
+    "assertions": [
+      "The terminal output is visible after executing the CLI loop.",
+      "The terminal input field is accessible for command entry."
+    ],
+    "success_criteria": [
+      "The Jungle application starts successfully without errors.",
+      "The CLI agentic loop executes and produces output in the terminal.",
+      "Screenshots of the terminal output are captured successfully."
+    ]
+  },
+  "execution": {
+    "status": "fail",
+    "summary": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#terminal-output').first() to be visible\u001b[22m\n",
+    "steps": [],
+    "video_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\langflow_agentic_runs\\run_4996_1773513453205\\18a03cda5a088813378667ce087336f7.webm",
+    "artifacts": [
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\langflow_agentic_runs\\run_4996_1773513453205\\18a03cda5a088813378667ce087336f7.webm",
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\langflow_agentic_runs\\run_4996_1773513453205\\final_1773513473599.png",
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\langflow_agentic_runs\\run_4996_1773513453205\\playwright_executor.generated.js",
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\langflow_agentic_runs\\run_4996_1773513453205\\request_parser.json"
+    ],
+    "generated_code_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\langflow_agentic_runs\\run_4996_1773513453205\\playwright_executor.generated.js",
+    "parser_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\langflow_agentic_runs\\run_4996_1773513453205\\request_parser.json",
+    "stdout": "{\"status\":\"fail\",\"summary\":\"locator.waitFor: Timeout 10000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator('#terminal-output').first() to be visible\\u001b[22m\\n\",\"steps\":[],\"video_path\":\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\db\\\\langflow_agentic_runs\\\\run_4996_1773513453205\\\\18a03cda5a088813378667ce087336f7.webm\",\"artifacts\":[\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\db\\\\langflow_agentic_runs\\\\run_4996_1773513453205\\\\18a03cda5a088813378667ce087336f7.webm\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\db\\\\langflow_agentic_runs\\\\run_4996_1773513453205\\\\final_1773513473599.png\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\db\\\\langflow_agentic_runs\\\\run_4996_1773513453205\\\\playwright_executor.generated.js\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\db\\\\langflow_agentic_runs\\\\run_4996_1773513453205\\\\request_parser.json\"]}",
+    "stderr": "",
+    "app_runtime": {
+      "status": "already_running",
+      "target_url": "http://127.0.0.1:8088",
+      "ready": true,
+      "started_by_orchestrator": false,
+      "workspace": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+      "start_command": "",
+      "install_command": "",
+      "log_path": null,
+      "pid": null,
+      "error_message": ""
+    }
+  },
+  "critique": {
+    "verdict": "fail",
+    "overall_severity": 9.0,
+    "summary": "The simulation is fundamentally flawed, exhibiting a complete breakdown of physical principles. The core physics model fails to conserve energy, resulting in chaotic and unpredictable energy fluctuations with every bounce. Collision resolution is incorrect, ignoring tangential forces from the rotating container and leading to unstable, glitchy behavior, including critical 'tunneling' bugs where the ball passes through corners. The resulting motion is visually jarring, unreadable, and does not represent a plausible physical system.",
+    "defects": [
+      {
+        "id": "non_conservation_of_energy",
+        "severity_0_10": 9,
+        "description": "The kinetic energy of the ball fluctuates wildly and arbitrarily with each collision, violating the principles of energy transfer. The system appears to randomly add or remove massive amounts of energy on impact, making the ball's behavior chaotic and unpredictable.",
+        "evidence": "At 0:00, the energy is ~114,514. After a single bounce at 0:01, it plummets to ~11,790. After the next bounce at 0:02, it leaps to ~64,397. This pattern of massive, non-physical energy change continues throughout.",
+        "recommendation": "Rewrite the collision resolution logic to correctly model energy transfer. The change in the ball's velocity must be a direct function of the relative velocity between the ball and the wall along the collision normal. Adapt the 2D vector equivalent of the elastic collision formula `v_final = 2 * v_wall - v_initial` to ensure energy transfer is physically accurate."
+      },
+      {
+        "id": "corner_tunneling_and_unstable_resolution",
+        "severity_0_10": 9,
+        "description": "The discrete, frame-based collision detection fails when the ball impacts a corner. The ball visibly penetrates the corner geometry, existing inside two walls simultaneously before being ejected at an unpredictable, non-physical angle. This is a critical failure of the collision system.",
+        "evidence": "This is clearly visible at 0:18, where the ball sinks into the bottom-right corner for multiple frames before being erratically pushed out.",
+        "recommendation": "Implement Continuous Collision Detection (CCD). Instead of checking for overlaps at discrete time steps, sweep the ball's shape from its start-of-frame position to its end-of-frame position to calculate the exact time and point of impact. This will prevent the ball from passing through thin or sharp geometry between frames."
+      },
+      {
+        "id": "missing_tangential_velocity_transfer",
+        "severity_0_10": 8,
+        "description": "The collision response model incorrectly treats the rotating walls as static surfaces. It fails to transfer any of the wall's tangential velocity to the ball upon impact, which would happen due to friction. This makes the interaction look unnatural and disconnected from the container's motion.",
+        "evidence": "At 0:08, the ball hits the right-hand wall, which is moving downwards and to the left. The ball should be deflected slightly downwards by the wall's motion, but instead, it reflects cleanly as if the wall were stationary.",
+        "recommendation": "Enhance the collision response model to account for friction and tangential forces. After resolving the collision along the normal, modify the ball's velocity component parallel to the wall. This can be done by introducing a coefficient of friction (\u03bc) and adding a fraction of the wall's tangential velocity to the ball's final velocity."
+      },
+      {
+        "id": "inconsistent_collision_impulse",
+        "severity_0_10": 7,
+        "description": "The magnitude of the ball's velocity change after a collision is disconnected from the visual speed and angle of the impacting wall. This lack of cause-and-effect makes the animation unreadable and confusing, as the user cannot build a mental model of the system's rules.",
+        "evidence": "Throughout the video, slow-moving walls sometimes impart massive velocity changes, while fast-moving walls sometimes impart very little, breaking any intuitive understanding of the physics.",
+        "recommendation": "This is a systemic issue that will be resolved by correctly implementing the fixes for energy conservation and tangential velocity transfer. A physically accurate model where impulse is directly related to relative velocities will naturally create a readable and predictable system."
+      }
+    ],
+    "strengths": [
+      "The UI clearly displays key physics metrics (Speed, Rotation, Energy) in real-time, which was essential for diagnosing the underlying flaws in the simulation."
+    ],
+    "recommendations": [
+      "Overhaul the entire physics engine, starting with the collision resolution algorithm. Ensure it correctly models energy transfer based on the relative velocities of the colliding objects.",
+      "Implement Continuous Collision Detection (CCD) to eliminate object tunneling, particularly at corners, which is a critical stability issue.",
+      "Incorporate tangential forces (friction) into the collision response to make interactions with the rotating surfaces appear physically plausible."
+    ],
+    "source": "gemini_chain_video",
+    "critic_chain": {
+      "video": {
+        "video_input_used": true,
+        "video_reason": "inline_video_attached",
+        "video_bytes": 2517369
+      },
+      "detailed_text": "Excellent. As a strict animation and physics QA critic, I have analyzed the provided video. The simulation exhibits several fundamental flaws that violate the principles of physics and create a visually jarring and unpredictable user experience.\n\nHere is my comprehensive, technical breakdown.\n\n***\n\n### 1) Non-Conservation of Energy / Extreme Energy Volatility\n\n**What happens**\nThe kinetic energy of the ball, displayed at the top, fluctuates wildly and unpredictably with each collision. At 0:00, the energy is ~114,514. After a single bounce at 0:01, it plummets to ~11,790. After the next bounce at 0:02, it leaps to ~64,397. This pattern of massive, arbitrary energy gain and loss continues throughout the simulation.\n\n**Why it looks wrong**\nIn a closed system with perfectly elastic collisions, the total kinetic energy should be conserved. In this case, the rotating square is an external energy source, so energy is not expected to be constant. However, the energy transfer should be predictable and directly related to the nature of the collision. A ball hitting a wall moving *towards* it should gain energy. A ball hitting a wall moving *away* from it should lose energy. The current implementation appears to add or remove energy almost randomly, violating any semblance of physical law. This makes the ball's behavior chaotic and unreadable.\n\n**Fix**\nThe collision resolution logic must be rewritten to correctly model energy transfer. When a collision occurs, calculate the velocity of the wall at the exact point of impact. The change in the ball's velocity (and thus, its kinetic energy) should be a direct function of the relative velocity between the ball and the wall along the collision normal. The formula for a 1D elastic collision with a moving wall is `v_final = 2 * v_wall - v_initial`. This needs to be adapted for 2D vector space, ensuring the energy transfer is physically accurate.\n\n### 2) Missing Tangential Velocity Transfer\n\n**What happens**\nUpon collision, the ball reflects off the wall as if the wall were static. The angle of incidence appears to equal the angle of reflection relative to the wall's normal, but the wall's own tangential motion is completely ignored.\n\n**Why it looks wrong**\nA rotating surface has a tangential velocity component at every point along its edge. When an object collides with it, friction should cause some of this tangential velocity to be transferred to the object, \"dragging\" it slightly in the direction the wall is moving. For example, at 0:08, the ball hits the right-hand wall, which is moving downwards and to the left. The ball should be deflected not just away from the wall, but also slightly *downwards* due to this tangential \"push.\" Instead, it reflects cleanly, which looks unnatural and disconnected from the container's motion.\n\n**Fix**\nThe collision response model must account for both the normal and tangential components of the wall's velocity. After calculating the new velocity along the normal (as described in Fix #1), you must also modify the ball's velocity component parallel to the wall. Introduce a coefficient of friction (\u03bc). The change in tangential velocity should be proportional to \u03bc and the impulse of the collision. A simpler model could be to add a fraction of the wall's tangential velocity directly to the ball's final tangential velocity.\n\n### 3) Corner Tunneling and Unstable Collision Resolution\n\n**What happens**\nWhen the ball's trajectory takes it directly into a corner, the collision detection fails. The ball visibly penetrates the corner geometry, appearing inside both walls simultaneously for one or more frames before being ejected at an unpredictable angle. This is clearly visible at 0:18.\n\n**Why it looks wrong**\nThis is a classic \"tunneling\" artifact common in discrete, frame-based physics simulations. The simulation calculates the ball's position at time `t` and then at `t + \u0394t`. If `\u0394t` is too large or the ball's velocity is too high, the ball can move from being on one side of a vertex to the other in a single step, causing the collision check to either miss the corner entirely or register a confusing state of being \"inside\" two objects. The subsequent \"ejection\" is the physics engine's crude attempt to resolve an impossible state, resulting in a glitchy, non-physical motion.\n\n**Fix**\nImplement Continuous Collision Detection (CCD). Instead of checking for overlaps at discrete time steps, sweep the ball's shape from its start-of-frame position to its end-of-frame position. This allows you to calculate the *exact* time and point of impact, even for fast-moving objects. A simpler, less robust alternative is to use raycasting from the ball's center to its next position to check for intersections. For corner-specific logic, if an impact is detected very close to a vertex, it should be resolved as a rapid sequence of two wall collisions or by using a specialized corner-normal vector for the reflection calculation.\n\n### 4) Inconsistent Collision Impulse and Motion Readability\n\n**What happens**\nThe magnitude of the change in the ball's velocity post-collision seems disconnected from the visual speed of the wall. Sometimes a slow-moving wall imparts a massive amount of energy, and other times a fast-moving wall imparts very little. This makes the animation fundamentally unreadable.\n\n**Why it looks wrong**\nThe user's brain is wired to understand cause and effect in motion. We expect a faster impact to produce a more dramatic result. Because the underlying physics model is flawed (as detailed in points 1 and 2), this relationship is broken. The motion lacks predictability and intent. The user cannot build a mental model of how the system works, which makes watching it a confusing experience rather than a satisfying one. The jarring, instantaneous changes in velocity are harsh on the eyes and break the illusion of physical motion.\n\n**Fix**\nThis is a systemic issue that will be resolved by implementing the fixes for the previous points. A correct physical model where energy transfer is proportional to the relative velocities will naturally create a system that is readable and predictable. The motion will feel more \"organic\" and less \"digital\" because it will adhere to the physical laws we intuitively understand. Ensure that all velocity changes are a direct and consistent result of the collision dynamics.",
+      "severity": {
+        "overall_severity": 9,
+        "severity_reasoning": "The simulation exhibits fundamental, systemic flaws in its core physics model. It violates basic principles like energy conservation and proper collision response, leading to chaotic, unpredictable, and visually jarring behavior. Critical bugs like object tunneling through corners are present, indicating a failure in the collision detection logic. The system is not just cosmetically flawed; it is functionally broken at a foundational level.",
+        "top_risks": [
+          "Non-Conservation of Energy / Extreme Energy Volatility",
+          "Missing Tangential Velocity Transfer on Collision",
+          "Corner Tunneling and Unstable Collision Resolution"
+        ],
+        "verdict": "fail"
+      },
+      "raw_model_outputs": {
+        "stage1_text": "Excellent. As a strict animation and physics QA critic, I have analyzed the provided video. The simulation exhibits several fundamental flaws that violate the principles of physics and create a visually jarring and unpredictable user experience.\n\nHere is my comprehensive, technical breakdown.\n\n***\n\n### 1) Non-Conservation of Energy / Extreme Energy Volatility\n\n**What happens**\nThe kinetic energy of the ball, displayed at the top, fluctuates wildly and unpredictably with each collision. At 0:00, the energy is ~114,514. After a single bounce at 0:01, it plummets to ~11,790. After the next bounce at 0:02, it leaps to ~64,397. This pattern of massive, arbitrary energy gain and loss continues throughout the simulation.\n\n**Why it looks wrong**\nIn a closed system with perfectly elastic collisions, the total kinetic energy should be conserved. In this case, the rotating square is an external energy source, so energy is not expected to be constant. However, the energy transfer should be predictable and directly related to the nature of the collision. A ball hitting a wall moving *towards* it should gain energy. A ball hitting a wall moving *away* from it should lose energy. The current implementation appears to add or remove energy almost randomly, violating any semblance of physical law. This makes the ball's behavior chaotic and unreadable.\n\n**Fix**\nThe collision resolution logic must be rewritten to correctly model energy transfer. When a collision occurs, calculate the velocity of the wall at the exact point of impact. The change in the ball's velocity (and thus, its kinetic energy) should be a direct function of the relative velocity between the ball and the wall along the collision normal. The formula for a 1D elastic collision with a moving wall is `v_final = 2 * v_wall - v_initial`. This needs to be adapted for 2D vector space, ensuring the energy transfer is physically accurate.\n\n### 2) Missing Tangential Velocity Transfer\n\n**What happens**\nUpon collision, the ball reflects off the wall as if the wall were static. The angle of incidence appears to equal the angle of reflection relative to the wall's normal, but the wall's own tangential motion is completely ignored.\n\n**Why it looks wrong**\nA rotating surface has a tangential velocity component at every point along its edge. When an object collides with it, friction should cause some of this tangential velocity to be transferred to the object, \"dragging\" it slightly in the direction the wall is moving. For example, at 0:08, the ball hits the right-hand wall, which is moving downwards and to the left. The ball should be deflected not just away from the wall, but also slightly *downwards* due to this tangential \"push.\" Instead, it reflects cleanly, which looks unnatural and disconnected from the container's motion.\n\n**Fix**\nThe collision response model must account for both the normal and tangential components of the wall's velocity. After calculating the new velocity along the normal (as described in Fix #1), you must also modify the ball's velocity component parallel to the wall. Introduce a coefficient of friction (\u03bc). The change in tangential velocity should be proportional to \u03bc and the impulse of the collision. A simpler model could be to add a fraction of the wall's tangential velocity directly to the ball's final tangential velocity.\n\n### 3) Corner Tunneling and Unstable Collision Resolution\n\n**What happens**\nWhen the ball's trajectory takes it directly into a corner, the collision detection fails. The ball visibly penetrates the corner geometry, appearing inside both walls simultaneously for one or more frames before being ejected at an unpredictable angle. This is clearly visible at 0:18.\n\n**Why it looks wrong**\nThis is a classic \"tunneling\" artifact common in discrete, frame-based physics simulations. The simulation calculates the ball's position at time `t` and then at `t + \u0394t`. If `\u0394t` is too large or the ball's velocity is too high, the ball can move from being on one side of a vertex to the other in a single step, causing the collision check to either miss the corner entirely or register a confusing state of being \"inside\" two objects. The subsequent \"ejection\" is the physics engine's crude attempt to resolve an impossible state, resulting in a glitchy, non-physical motion.\n\n**Fix**\nImplement Continuous Collision Detection (CCD). Instead of checking for overlaps at discrete time steps, sweep the ball's shape from its start-of-frame position to its end-of-frame position. This allows you to calculate the *exact* time and point of impact, even for fast-moving objects. A simpler, less robust alternative is to use raycasting from the ball's center to its next position to check for intersections. For corner-specific logic, if an impact is detected very close to a vertex, it should be resolved as a rapid sequence of two wall collisions or by using a specialized corner-normal vector for the reflection calculation.\n\n### 4) Inconsistent Collision Impulse and Motion Readability\n\n**What happens**\nThe magnitude of the change in the ball's velocity post-collision seems disconnected from the visual speed of the wall. Sometimes a slow-moving wall imparts a massive amount of energy, and other times a fast-moving wall imparts very little. This makes the animation fundamentally unreadable.\n\n**Why it looks wrong**\nThe user's brain is wired to understand cause and effect in motion. We expect a faster impact to produce a more dramatic result. Because the underlying physics model is flawed (as detailed in points 1 and 2), this relationship is broken. The motion lacks predictability and intent. The user cannot build a mental model of how the system works, which makes watching it a confusing experience rather than a satisfying one. The jarring, instantaneous changes in velocity are harsh on the eyes and break the illusion of physical motion.\n\n**Fix**\nThis is a systemic issue that will be resolved by implementing the fixes for the previous points. A correct physical model where energy transfer is proportional to the relative velocities will naturally create a system that is readable and predictable. The motion will feel more \"organic\" and less \"digital\" because it will adhere to the physical laws we intuitively understand. Ensure that all velocity changes are a direct and consistent result of the collision dynamics.",
+        "stage2_text": "```json\n{\n  \"overall_severity\": 9,\n  \"severity_reasoning\": \"The simulation exhibits fundamental, systemic flaws in its core physics model. It violates basic principles like energy conservation and proper collision response, leading to chaotic, unpredictable, and visually jarring behavior. Critical bugs like object tunneling through corners are present, indicating a failure in the collision detection logic. The system is not just cosmetically flawed; it is functionally broken at a foundational level.\",\n  \"top_risks\": [\n    \"Non-Conservation of Energy / Extreme Energy Volatility\",\n    \"Missing Tangential Velocity Transfer on Collision\",\n    \"Corner Tunneling and Unstable Collision Resolution\"\n  ],\n  \"verdict\": \"fail\"\n}\n```",
+        "stage3_text": "```json\n{\n  \"verdict\": \"fail\",\n  \"overall_severity\": 9,\n  \"summary\": \"The simulation is fundamentally flawed, exhibiting a complete breakdown of physical principles. The core physics model fails to conserve energy, resulting in chaotic and unpredictable energy fluctuations with every bounce. Collision resolution is incorrect, ignoring tangential forces from the rotating container and leading to unstable, glitchy behavior, including critical 'tunneling' bugs where the ball passes through corners. The resulting motion is visually jarring, unreadable, and does not represent a plausible physical system.\",\n  \"defects\": [\n    {\n      \"id\": \"non_conservation_of_energy\",\n      \"severity_0_10\": 9,\n      \"description\": \"The kinetic energy of the ball fluctuates wildly and arbitrarily with each collision, violating the principles of energy transfer. The system appears to randomly add or remove massive amounts of energy on impact, making the ball's behavior chaotic and unpredictable.\",\n      \"evidence\": \"At 0:00, the energy is ~114,514. After a single bounce at 0:01, it plummets to ~11,790. After the next bounce at 0:02, it leaps to ~64,397. This pattern of massive, non-physical energy change continues throughout.\",\n      \"recommendation\": \"Rewrite the collision resolution logic to correctly model energy transfer. The change in the ball's velocity must be a direct function of the relative velocity between the ball and the wall along the collision normal. Adapt the 2D vector equivalent of the elastic collision formula `v_final = 2 * v_wall - v_initial` to ensure energy transfer is physically accurate.\"\n    },\n    {\n      \"id\": \"corner_tunneling_and_unstable_resolution\",\n      \"severity_0_10\": 9,\n      \"description\": \"The discrete, frame-based collision detection fails when the ball impacts a corner. The ball visibly penetrates the corner geometry, existing inside two walls simultaneously before being ejected at an unpredictable, non-physical angle. This is a critical failure of the collision system.\",\n      \"evidence\": \"This is clearly visible at 0:18, where the ball sinks into the bottom-right corner for multiple frames before being erratically pushed out.\",\n      \"recommendation\": \"Implement Continuous Collision Detection (CCD). Instead of checking for overlaps at discrete time steps, sweep the ball's shape from its start-of-frame position to its end-of-frame position to calculate the exact time and point of impact. This will prevent the ball from passing through thin or sharp geometry between frames.\"\n    },\n    {\n      \"id\": \"missing_tangential_velocity_transfer\",\n      \"severity_0_10\": 8,\n      \"description\": \"The collision response model incorrectly treats the rotating walls as static surfaces. It fails to transfer any of the wall's tangential velocity to the ball upon impact, which would happen due to friction. This makes the interaction look unnatural and disconnected from the container's motion.\",\n      \"evidence\": \"At 0:08, the ball hits the right-hand wall, which is moving downwards and to the left. The ball should be deflected slightly downwards by the wall's motion, but instead, it reflects cleanly as if the wall were stationary.\",\n      \"recommendation\": \"Enhance the collision response model to account for friction and tangential forces. After resolving the collision along the normal, modify the ball's velocity component parallel to the wall. This can be done by introducing a coefficient of friction (\u03bc) and adding a fraction of the wall's tangential velocity to the ball's final velocity.\"\n    },\n    {\n      \"id\": \"inconsistent_collision_impulse\",\n      \"severity_0_10\": 7,\n      \"description\": \"The magnitude of the ball's velocity change after a collision is disconnected from the visual speed and angle of the impacting wall. This lack of cause-and-effect makes the animation unreadable and confusing, as the user cannot build a mental model of the system's rules.\",\n      \"evidence\": \"Throughout the video, slow-moving walls sometimes impart massive velocity changes, while fast-moving walls sometimes impart very little, breaking any intuitive understanding of the physics.\",\n      \"recommendation\": \"This is a systemic issue that will be resolved by correctly implementing the fixes for energy conservation and tangential velocity transfer. A physically accurate model where impulse is directly related to relative velocities will naturally create a readable and predictable system.\"\n    }\n  ],\n  \"strengths\": [\n    \"The UI clearly displays key physics metrics (Speed, Rotation, Energy) in real-time, which was essential for diagnosing the underlying flaws in the simulation.\"\n  ],\n  \"recommendations\": [\n    \"Overhaul the entire physics engine, starting with the collision resolution algorithm. Ensure it correctly models energy transfer based on the relative velocities of the colliding objects.\",\n    \"Implement Continuous Collision Detection (CCD) to eliminate object tunneling, particularly at corners, which is a critical stability issue.\",\n    \"Incorporate tangential forces (friction) into the collision response to make interactions with the rotating surfaces appear physically plausible.\"\n  ],\n  \"score_breakdown\": {\n    \"physics_consistency\": 1,\n    \"collision_stability\": 1,\n    \"motion_readability\": 2,\n    \"temporal_smoothness\": 3\n  }\n}\n```"
+      },
+      "raw_model_diagnostics": {
+        "stage1": {
+          "ok": true,
+          "status_code": 200
+        },
+        "stage2": {
+          "ok": true,
+          "status_code": 200
+        },
+        "stage3": {
+          "ok": true,
+          "status_code": 200
+        }
+      }
+    },
+    "score_breakdown": {
+      "physics_consistency": 1,
+      "collision_stability": 1,
+      "motion_readability": 2,
+      "temporal_smoothness": 3
+    }
+  },
+  "final_verdict": "fail",
+  "escalated": true,
+  "severity_threshold": 8.0,
+  "pass_condition": "execution.status == pass AND critique.overall_severity <= 8.0"
+}

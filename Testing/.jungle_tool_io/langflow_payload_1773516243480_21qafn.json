@@ -1,0 +1,9 @@
+{
+  "feature_goal": "Test bad SHM visualizer physics and UX",
+  "environment_context": "bad-shm-visualizer local run",
+  "target_url": "http://127.0.0.1:8093",
+  "constraints": "No destructive actions",
+  "severity_threshold": 8,
+  "max_retries": 2,
+  "project_root": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+}

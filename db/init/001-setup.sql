@@ -70,6 +70,8 @@ CREATE TABLE IF NOT EXISTS app.agentic_runs (
   status TEXT NOT NULL,
   summary TEXT,
   video_path TEXT,
+  semantics JSONB,
+  critique JSONB,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -93,6 +95,65 @@ CREATE TABLE IF NOT EXISTS app.agentic_artifacts (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Langflow agentic orchestration persistence (db/langflow_agentic_runs/orchestration_*.json)
+CREATE TABLE IF NOT EXISTS app.langflow_orchestrations (
+  orchestration_id TEXT PRIMARY KEY,
+  source_file TEXT,
+  feature_goal TEXT,
+  target_url TEXT,
+  environment_context TEXT,
+  constraints TEXT,
+  project_root TEXT,
+  max_retries INTEGER,
+  severity_threshold NUMERIC(4,2),
+  plan JSONB NOT NULL DEFAULT '{}'::JSONB,
+  execution JSONB NOT NULL DEFAULT '{}'::JSONB,
+  critique JSONB NOT NULL DEFAULT '{}'::JSONB,
+  final_verdict TEXT NOT NULL DEFAULT 'fail',
+  escalated BOOLEAN NOT NULL DEFAULT FALSE,
+  pass_condition TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Testing loop orchestration persistence (Testing/Testing Loop/runs/*)
+CREATE TABLE IF NOT EXISTS app.testing_loop_runs (
+  run_id TEXT PRIMARY KEY,
+  run_root TEXT,
+  feature_goal TEXT,
+  target_url TEXT,
+  environment_context TEXT,
+  constraints TEXT,
+  project_root TEXT,
+  max_iterations INTEGER,
+  timeout_ms INTEGER,
+  status TEXT NOT NULL DEFAULT 'max_iterations_reached',
+  final_iteration INTEGER NOT NULL DEFAULT 0,
+  final_verdict TEXT NOT NULL DEFAULT 'fail',
+  execution_status TEXT NOT NULL DEFAULT 'fail',
+  escalated BOOLEAN NOT NULL DEFAULT FALSE,
+  severity NUMERIC(4,2),
+  fix_packet JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS app.testing_loop_iterations (
+  id BIGSERIAL PRIMARY KEY,
+  run_id TEXT NOT NULL REFERENCES app.testing_loop_runs(run_id) ON DELETE CASCADE,
+  iteration_number INTEGER NOT NULL,
+  bridge_request JSONB,
+  bridge_response JSONB,
+  fix_packet JSONB,
+  feedback_input JSONB,
+  codex_fix_result JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (run_id, iteration_number)
+);
+
+-- Backward/forward-safe compatibility for existing DBs.
+ALTER TABLE app.agentic_runs ADD COLUMN IF NOT EXISTS semantics JSONB;
+ALTER TABLE app.agentic_runs ADD COLUMN IF NOT EXISTS critique JSONB;
+
 CREATE INDEX IF NOT EXISTS idx_runtime_runs_created_at ON app.runtime_runs (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_runtime_steps_run_id ON app.runtime_run_steps (run_id);
 CREATE INDEX IF NOT EXISTS idx_runtime_artifacts_run_id ON app.runtime_artifacts (run_id);
@@ -100,5 +161,10 @@ CREATE INDEX IF NOT EXISTS idx_agentic_forests_created_at ON app.agentic_forests
 CREATE INDEX IF NOT EXISTS idx_agentic_trees_forest_id ON app.agentic_trees (forest_id);
 CREATE INDEX IF NOT EXISTS idx_agentic_runs_forest_id ON app.agentic_runs (forest_id);
 CREATE INDEX IF NOT EXISTS idx_agentic_runs_tree_id ON app.agentic_runs (tree_id);
+CREATE INDEX IF NOT EXISTS idx_agentic_runs_created_at ON app.agentic_runs (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_agentic_steps_run_id ON app.agentic_run_steps (run_id);
 CREATE INDEX IF NOT EXISTS idx_agentic_artifacts_run_id ON app.agentic_artifacts (run_id);
+CREATE INDEX IF NOT EXISTS idx_langflow_orchestrations_created_at ON app.langflow_orchestrations (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_langflow_orchestrations_target_url ON app.langflow_orchestrations (target_url);
+CREATE INDEX IF NOT EXISTS idx_testing_loop_runs_created_at ON app.testing_loop_runs (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_testing_loop_iterations_run_id ON app.testing_loop_iterations (run_id);
