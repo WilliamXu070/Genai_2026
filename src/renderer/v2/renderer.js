@@ -58,6 +58,7 @@ const APPROVABLE_STATUSES = new Set(["to_be_approved"]);
 const CANCELLABLE_STATUSES = new Set(["drafting", "to_be_approved", "approved", "in_progress"]);
 const FAILURE_STATUSES = new Set(["failed_execution", "cancelled"]);
 const EVENT_REFRESH_DEBOUNCE_MS = 250;
+const MAX_LOOP_DISPLAY = 5;
 
 let activeProjectId = null;
 let activeRunId = null;
@@ -438,15 +439,15 @@ function getRunDisplayLabel(run) {
 
 function queueMeta(run) {
   if (run.status === "to_be_approved") {
-    return `Requested ${formatDate(run.approvalRequestedAt)} | Loops ${run.loopCount || 0}/3`;
+    return `Requested ${formatDate(run.approvalRequestedAt)} | Loops ${run.loopCount || 0}/${MAX_LOOP_DISPLAY}`;
   }
   if (run.status === "completed") {
-    return `Execution completed | Verdict ${formatSemanticVerdict(run)} | Loops ${run.loopCount || 0}/3`;
+    return `Execution completed | Verdict ${formatSemanticVerdict(run)} | Loops ${run.loopCount || 0}/${MAX_LOOP_DISPLAY}`;
   }
   if (run.status === "failed_execution") {
-    return `Execution failed | Loops ${run.loopCount || 0}/3 | ${formatDate(run.updatedAt)}`;
+    return `Execution failed | Loops ${run.loopCount || 0}/${MAX_LOOP_DISPLAY} | ${formatDate(run.updatedAt)}`;
   }
-  return `Updated ${formatDate(run.updatedAt)} | Loops ${run.loopCount || 0}/3`;
+  return `Updated ${formatDate(run.updatedAt)} | Loops ${run.loopCount || 0}/${MAX_LOOP_DISPLAY}`;
 }
 
 function renderRunButton(run, options = {}) {
@@ -535,7 +536,7 @@ function renderTimelineRunItem(run, index, projectId) {
 
   const meta = document.createElement("div");
   meta.className = "entity-meta";
-  meta.textContent = `ID ${abbreviateRunId(run.id)} | Loops ${run.loopCount || 0}/3 | ${formatDuration(run.executionTimeMs)} | ${formatDate(run.updatedAt)}`;
+  meta.textContent = `ID ${abbreviateRunId(run.id)} | Loops ${run.loopCount || 0}/${MAX_LOOP_DISPLAY} | ${formatDuration(run.executionTimeMs)} | ${formatDate(run.updatedAt)}`;
 
   button.appendChild(year);
   button.appendChild(topRow);
@@ -958,7 +959,7 @@ function renderRunDetail(run) {
     detailExecutionTime.textContent = formatDuration(run.executionTimeMs);
   }
   if (detailLoopCount) {
-    detailLoopCount.textContent = `${run.loopCount || 0} / 3`;
+    detailLoopCount.textContent = `${run.loopCount || 0} / ${MAX_LOOP_DISPLAY}`;
   }
   if (previewTitleInput) {
     previewTitleInput.value = run.previewTitle || "";

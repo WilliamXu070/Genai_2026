@@ -2,6 +2,1505 @@
   "schemaVersion": "0.1.0",
   "forests": [
     {
+      "forestId": "forest_1773554186363",
+      "projectName": "Grow - Single File Ball Animation",
+      "url": "http://127.0.0.1:5173",
+      "objective": "Feature: Interactive bounce behavior\nObjective: Confirm click or tap interaction changes the ball trajectory while the rectangle keeps rotating\nScope: index.html only\nPrimary assertion: After a canvas click, the ball direction visibly changes and continues bouncing inside the rotating frame\nNon-goals: Do not assert plant stages, multi-page routing, or backend behavior\nMax loops: 3",
+      "createdAt": "2026-03-15T05:56:26.363Z",
+      "updatedAt": "2026-03-15T05:58:15.865Z",
+      "trees": [
+        {
+          "treeId": "tree_1773554288755",
+          "version": 4,
+          "status": "validated",
+          "createdAt": "2026-03-15T05:58:08.756Z",
+          "updatedAt": "2026-03-15T05:58:15.865Z",
+          "procedure": {
+            "summary": "Verify that clicking the canvas changes the ball's trajectory within the rotating rectangle.",
+            "confirmMessage": "Successfully verified that clicking the canvas changes the ball's trajectory.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene",
+                "notes": "Capture initial state of the scene."
+              },
+              {
+                "action": "click",
+                "target": "#scene",
+                "notes": "Click the canvas to change the ball's trajectory."
+              },
+              {
+                "action": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "notes": "Wait for 1 second to allow the ball to move."
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene",
+                "notes": "Capture the scene after the first click."
+              },
+              {
+                "action": "click",
+                "target": "#scene",
+                "notes": "Click the canvas again to change the ball's trajectory."
+              },
+              {
+                "action": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "notes": "Wait for 1 second to allow the ball to move."
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene",
+                "notes": "Capture the scene after the second click."
+              }
+            ],
+            "notes": "This test verifies that clicking the canvas changes the ball's trajectory within the rotating rectangle. It captures screenshots to visually confirm the change in trajectory after each click."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:5173/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "click",
+                "originalAction": "click",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "click",
+                "originalAction": "click",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "assert": null
+              },
+              {
+                "index": 7,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "web_frontend",
+              "playwrightMode": "web",
+              "startupRequired": true,
+              "startupCommand": "npm run dev",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "url",
+                "target": "http://127.0.0.1:5173"
+              },
+              "launchTarget": {
+                "kind": "url",
+                "value": "http://127.0.0.1:5173"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "none",
+                "command": null,
+                "reasoning": "No runtime seeding required for browser-served target."
+              },
+              "reasoning": "Detected browser-served frontend via requested URL http://127.0.0.1:5173 and available scripts.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Feature: Interactive bounce behavior\nObjective: Confirm click or tap interaction changes the ball trajectory while the rectangle keeps rotating\nScope: index.html only\nPrimary assertion: After a canvas click, the ball direction visibly changes and continues bouncing inside the rotating frame\nNon-goals: Do not assert plant stages, multi-page routing, or backend behavior\nMax loops: 3\nRequested target type: web_frontend\nRequested URL: http://127.0.0.1:5173\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: web_frontend",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": "agentic_run_1773554295858",
+          "confirmedAt": "2026-03-15T05:58:15.865Z"
+        },
+        {
+          "treeId": "tree_1773554257629",
+          "version": 3,
+          "status": "validated",
+          "createdAt": "2026-03-15T05:57:37.629Z",
+          "updatedAt": "2026-03-15T05:57:44.736Z",
+          "procedure": {
+            "summary": "Verify that clicking the canvas changes the ball's trajectory within the rotating rectangle.",
+            "confirmMessage": "Successfully verified that clicking the canvas changes the ball's trajectory.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene",
+                "notes": "Capture initial state of the scene."
+              },
+              {
+                "action": "click",
+                "target": "#scene",
+                "notes": "Click the canvas to change the ball's trajectory."
+              },
+              {
+                "action": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "notes": "Wait for 1 second to observe the ball's movement."
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene",
+                "notes": "Capture the scene after the first click."
+              },
+              {
+                "action": "click",
+                "target": "#scene",
+                "notes": "Click the canvas again to change the ball's trajectory."
+              },
+              {
+                "action": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "notes": "Wait for 1 second to observe the ball's movement."
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene",
+                "notes": "Capture the scene after the second click."
+              }
+            ],
+            "notes": "This test verifies that clicking the canvas changes the ball's trajectory within the rotating rectangle. It captures screenshots to visually confirm the change in trajectory after each click."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:5173/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "click",
+                "originalAction": "click",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "click",
+                "originalAction": "click",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "assert": null
+              },
+              {
+                "index": 7,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "web_frontend",
+              "playwrightMode": "web",
+              "startupRequired": true,
+              "startupCommand": "npm run dev",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "url",
+                "target": "http://127.0.0.1:5173"
+              },
+              "launchTarget": {
+                "kind": "url",
+                "value": "http://127.0.0.1:5173"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "none",
+                "command": null,
+                "reasoning": "No runtime seeding required for browser-served target."
+              },
+              "reasoning": "Detected browser-served frontend via requested URL http://127.0.0.1:5173 and available scripts.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Feature: Interactive bounce behavior\nObjective: Confirm click or tap interaction changes the ball trajectory while the rectangle keeps rotating\nScope: index.html only\nPrimary assertion: After a canvas click, the ball direction visibly changes and continues bouncing inside the rotating frame\nNon-goals: Do not assert plant stages, multi-page routing, or backend behavior\nMax loops: 3\nRequested target type: web_frontend\nRequested URL: http://127.0.0.1:5173\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: web_frontend",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": "agentic_run_1773554264728",
+          "confirmedAt": "2026-03-15T05:57:44.736Z"
+        },
+        {
+          "treeId": "tree_1773554210733",
+          "version": 2,
+          "status": "validated",
+          "createdAt": "2026-03-15T05:56:50.733Z",
+          "updatedAt": "2026-03-15T05:56:57.759Z",
+          "procedure": {
+            "summary": "Verify that clicking the canvas changes the ball's trajectory within the rotating rectangle.",
+            "confirmMessage": "Successfully verified that clicking the canvas changes the ball's trajectory.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene",
+                "assert": "Ball is visible within the rotating rectangle."
+              },
+              {
+                "action": "click",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "#scene",
+                "value": "1000"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene",
+                "assert": "Ball is visible within the rotating rectangle."
+              },
+              {
+                "action": "click",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "#scene",
+                "value": "1000"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene",
+                "assert": "Ball is visible within the rotating rectangle."
+              }
+            ],
+            "notes": "This test verifies that clicking the canvas changes the ball's trajectory. It takes multiple screenshots after clicks to visually confirm the change in trajectory. The wait action allows the ball to move after each click."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:5173/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": "Ball is visible within the rotating rectangle.",
+                "assert": "Ball is visible within the rotating rectangle."
+              },
+              {
+                "index": 2,
+                "action": "click",
+                "originalAction": "click",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": "Ball is visible within the rotating rectangle.",
+                "assert": "Ball is visible within the rotating rectangle."
+              },
+              {
+                "index": 5,
+                "action": "click",
+                "originalAction": "click",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "assert": null
+              },
+              {
+                "index": 7,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": "Ball is visible within the rotating rectangle.",
+                "assert": "Ball is visible within the rotating rectangle."
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "web_frontend",
+              "playwrightMode": "web",
+              "startupRequired": true,
+              "startupCommand": "npm run dev",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "url",
+                "target": "http://127.0.0.1:5173"
+              },
+              "launchTarget": {
+                "kind": "url",
+                "value": "http://127.0.0.1:5173"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "none",
+                "command": null,
+                "reasoning": "No runtime seeding required for browser-served target."
+              },
+              "reasoning": "Detected browser-served frontend via requested URL http://127.0.0.1:5173 and available scripts.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Feature: Interactive bounce behavior\nObjective: Confirm click or tap interaction changes the ball trajectory while the rectangle keeps rotating\nScope: index.html only\nPrimary assertion: After a canvas click, the ball direction visibly changes and continues bouncing inside the rotating frame\nNon-goals: Do not assert plant stages, multi-page routing, or backend behavior\nMax loops: 3\nRequested target type: web_frontend\nRequested URL: http://127.0.0.1:5173\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: web_frontend",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": "agentic_run_1773554217751",
+          "confirmedAt": "2026-03-15T05:56:57.759Z"
+        },
+        {
+          "treeId": "tree_1773554186377",
+          "version": 1,
+          "status": "draft",
+          "createdAt": "2026-03-15T05:56:26.377Z",
+          "updatedAt": "2026-03-15T05:56:26.377Z",
+          "procedure": {
+            "notes": "The screenshots are used to visually confirm the change in ball trajectory. The wait actions allow the ball to move and the change to be visible.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "screenshot",
+                "assert": "Initial state of the scene",
+                "target": "#scene"
+              },
+              {
+                "action": "click",
+                "target": "#scene"
+              },
+              {
+                "value": "1000",
+                "action": "wait",
+                "target": "#scene"
+              },
+              {
+                "action": "screenshot",
+                "assert": "Ball trajectory changed after click",
+                "target": "#scene"
+              },
+              {
+                "action": "click",
+                "target": "#scene"
+              },
+              {
+                "value": "1000",
+                "action": "wait",
+                "target": "#scene"
+              },
+              {
+                "action": "screenshot",
+                "assert": "Ball trajectory changed after click",
+                "target": "#scene"
+              }
+            ],
+            "summary": "Verify that clicking the canvas changes the ball's trajectory within the rotating rectangle.",
+            "confirmMessage": "The ball's trajectory visibly changed after clicking the canvas."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "value": null,
+                "action": "goto",
+                "assert": null,
+                "target": "http://127.0.0.1:5173/",
+                "originalAction": "goto"
+              },
+              {
+                "index": 1,
+                "value": "Initial state of the scene",
+                "action": "screenshot",
+                "assert": "Initial state of the scene",
+                "target": "#scene",
+                "originalAction": "screenshot"
+              },
+              {
+                "index": 2,
+                "value": null,
+                "action": "click",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "click"
+              },
+              {
+                "index": 3,
+                "value": "1000",
+                "action": "wait",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "wait"
+              },
+              {
+                "index": 4,
+                "value": "Ball trajectory changed after click",
+                "action": "screenshot",
+                "assert": "Ball trajectory changed after click",
+                "target": "#scene",
+                "originalAction": "screenshot"
+              },
+              {
+                "index": 5,
+                "value": null,
+                "action": "click",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "click"
+              },
+              {
+                "index": 6,
+                "value": "1000",
+                "action": "wait",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "wait"
+              },
+              {
+                "index": 7,
+                "value": "Ball trajectory changed after click",
+                "action": "screenshot",
+                "assert": "Ball trajectory changed after click",
+                "target": "#scene",
+                "originalAction": "screenshot"
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": null
+        }
+      ],
+      "summary": {
+        "totalRuns": 3,
+        "passRuns": 3,
+        "failRuns": 0,
+        "passRate": 100,
+        "avgReadiness": 100,
+        "latestRunId": "agentic_run_1773554295858",
+        "latestStatus": "pass",
+        "recurringIssues": [],
+        "updatedAt": "2026-03-15T05:58:15.858Z"
+      }
+    },
+    {
+      "forestId": "forest_1773553936026",
+      "projectName": "Grow - Single File Ball Animation",
+      "url": "http://127.0.0.1:5173",
+      "objective": "Feature: Bouncing ball inside rotating rectangle\nObjective: Ensure the ball continuously bounces within a visibly rotating rectangle with smooth motion\nScope: index.html only\nPrimary assertion: The UI clearly shows a ball colliding with all rectangle sides while the rectangle rotates\nNon-goals: Do not assert plant growth stages or multi-page flows\nMax loops: 3",
+      "createdAt": "2026-03-15T05:52:16.026Z",
+      "updatedAt": "2026-03-15T05:54:55.603Z",
+      "trees": [
+        {
+          "treeId": "tree_1773554071135",
+          "version": 4,
+          "status": "validated",
+          "createdAt": "2026-03-15T05:54:31.135Z",
+          "updatedAt": "2026-03-15T05:54:55.603Z",
+          "procedure": {
+            "summary": "Verify the bouncing ball animation within a rotating rectangle.",
+            "confirmMessage": "Bouncing ball animation verified.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "2000"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "2000"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene"
+              }
+            ],
+            "notes": "Verifies the bouncing ball animation within a rotating rectangle by taking multiple screenshots over time.  The visual inspection of the screenshots should confirm the ball is bouncing and the rectangle is rotating."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:5173/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "2000",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "2000",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "web_frontend",
+              "playwrightMode": "web",
+              "startupRequired": true,
+              "startupCommand": "npm run dev",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "url",
+                "target": "http://127.0.0.1:5173"
+              },
+              "launchTarget": {
+                "kind": "url",
+                "value": "http://127.0.0.1:5173"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "none",
+                "command": null,
+                "reasoning": "No runtime seeding required for browser-served target."
+              },
+              "reasoning": "Detected browser-served frontend via requested URL http://127.0.0.1:5173 and available scripts.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Feature: Bouncing ball inside rotating rectangle\nObjective: Ensure the ball continuously bounces within a visibly rotating rectangle with smooth motion\nScope: index.html only\nPrimary assertion: The UI clearly shows a ball colliding with all rectangle sides while the rectangle rotates\nNon-goals: Do not assert plant growth stages or multi-page flows\nMax loops: 3\nRequested target type: web_frontend\nRequested URL: http://127.0.0.1:5173\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: web_frontend",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": "agentic_run_1773554095594",
+          "confirmedAt": "2026-03-15T05:54:55.603Z"
+        },
+        {
+          "treeId": "tree_1773554027838",
+          "version": 3,
+          "status": "validated",
+          "createdAt": "2026-03-15T05:53:47.838Z",
+          "updatedAt": "2026-03-15T05:53:56.345Z",
+          "procedure": {
+            "summary": "Verify the bouncing ball animation within a rotating rectangle.",
+            "confirmMessage": "Bouncing ball animation verified.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": null,
+                "value": "2000"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": null,
+                "value": "2000"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene"
+              }
+            ],
+            "notes": "Verifies the bouncing ball animation within a rotating rectangle by taking multiple screenshots with a delay to visually confirm the motion."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:5173/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": null,
+                "value": "2000",
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": null,
+                "value": "2000",
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "web_frontend",
+              "playwrightMode": "web",
+              "startupRequired": true,
+              "startupCommand": "npm run dev",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "url",
+                "target": "http://127.0.0.1:5173"
+              },
+              "launchTarget": {
+                "kind": "url",
+                "value": "http://127.0.0.1:5173"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "none",
+                "command": null,
+                "reasoning": "No runtime seeding required for browser-served target."
+              },
+              "reasoning": "Detected browser-served frontend via requested URL http://127.0.0.1:5173 and available scripts.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Feature: Bouncing ball inside rotating rectangle\nObjective: Ensure the ball continuously bounces within a visibly rotating rectangle with smooth motion\nScope: index.html only\nPrimary assertion: The UI clearly shows a ball colliding with all rectangle sides while the rectangle rotates\nNon-goals: Do not assert plant growth stages or multi-page flows\nMax loops: 3\nRequested target type: web_frontend\nRequested URL: http://127.0.0.1:5173\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: web_frontend",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": "agentic_run_1773554036338",
+          "confirmedAt": "2026-03-15T05:53:56.345Z"
+        },
+        {
+          "treeId": "tree_1773553970187",
+          "version": 2,
+          "status": "validated",
+          "createdAt": "2026-03-15T05:52:50.187Z",
+          "updatedAt": "2026-03-15T05:53:14.658Z",
+          "procedure": {
+            "summary": "Verify the bouncing ball animation within a rotating rectangle.",
+            "confirmMessage": "Bouncing ball animation verified.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "2000"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "2000"
+              },
+              {
+                "action": "screenshot",
+                "target": "#scene"
+              }
+            ],
+            "notes": "Verifies that the bouncing ball animation is running smoothly within the rotating rectangle. Takes multiple screenshots with waits to visually confirm the animation."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:5173/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "2000",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "2000",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "web_frontend",
+              "playwrightMode": "web",
+              "startupRequired": true,
+              "startupCommand": "npm run dev",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "url",
+                "target": "http://127.0.0.1:5173"
+              },
+              "launchTarget": {
+                "kind": "url",
+                "value": "http://127.0.0.1:5173"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "none",
+                "command": null,
+                "reasoning": "No runtime seeding required for browser-served target."
+              },
+              "reasoning": "Detected browser-served frontend via requested URL http://127.0.0.1:5173 and available scripts.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Feature: Bouncing ball inside rotating rectangle\nObjective: Ensure the ball continuously bounces within a visibly rotating rectangle with smooth motion\nScope: index.html only\nPrimary assertion: The UI clearly shows a ball colliding with all rectangle sides while the rectangle rotates\nNon-goals: Do not assert plant growth stages or multi-page flows\nMax loops: 3\nRequested target type: web_frontend\nRequested URL: http://127.0.0.1:5173\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: web_frontend",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": "agentic_run_1773553994651",
+          "confirmedAt": "2026-03-15T05:53:14.658Z"
+        },
+        {
+          "treeId": "tree_1773553936038",
+          "version": 1,
+          "status": "draft",
+          "createdAt": "2026-03-15T05:52:16.038Z",
+          "updatedAt": "2026-03-15T05:52:16.038Z",
+          "procedure": {
+            "notes": "This test verifies the basic functionality of the bouncing ball animation within a rotating rectangle. It checks that the animation is visible and that the ball is moving within the rectangle. The screenshots capture the state of the animation at different points in time.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "screenshot",
+                "assert": "Initial state of the animation",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "2000"
+              },
+              {
+                "action": "screenshot",
+                "assert": "Animation has progressed",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "2000"
+              },
+              {
+                "action": "screenshot",
+                "assert": "Animation has progressed further",
+                "target": "#scene"
+              }
+            ],
+            "summary": "Verify the bouncing ball animation within a rotating rectangle.",
+            "confirmMessage": "The ball is bouncing smoothly within a rotating rectangle."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "value": null,
+                "action": "goto",
+                "assert": null,
+                "target": "http://127.0.0.1:5173/",
+                "originalAction": "goto"
+              },
+              {
+                "index": 1,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "assertVisible"
+              },
+              {
+                "index": 2,
+                "value": "Initial state of the animation",
+                "action": "screenshot",
+                "assert": "Initial state of the animation",
+                "target": "#scene",
+                "originalAction": "screenshot"
+              },
+              {
+                "index": 3,
+                "value": null,
+                "action": "wait",
+                "assert": null,
+                "target": "2000",
+                "originalAction": "wait"
+              },
+              {
+                "index": 4,
+                "value": "Animation has progressed",
+                "action": "screenshot",
+                "assert": "Animation has progressed",
+                "target": "#scene",
+                "originalAction": "screenshot"
+              },
+              {
+                "index": 5,
+                "value": null,
+                "action": "wait",
+                "assert": null,
+                "target": "2000",
+                "originalAction": "wait"
+              },
+              {
+                "index": 6,
+                "value": "Animation has progressed further",
+                "action": "screenshot",
+                "assert": "Animation has progressed further",
+                "target": "#scene",
+                "originalAction": "screenshot"
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": null
+        }
+      ],
+      "summary": {
+        "totalRuns": 3,
+        "passRuns": 3,
+        "failRuns": 0,
+        "passRate": 100,
+        "avgReadiness": 100,
+        "latestRunId": "agentic_run_1773554095594",
+        "latestStatus": "pass",
+        "recurringIssues": [],
+        "updatedAt": "2026-03-15T05:54:55.594Z"
+      }
+    },
+    {
+      "forestId": "forest_1773552636449",
+      "projectName": "Grow - Single File Plant Animation",
+      "url": "http://127.0.0.1:5173",
+      "objective": "Feature: Rotating rectangle ball physics\nObjective: Validate that a ball bounces realistically against all four sides while the rectangle rotates continuously\nScope: index.html only\nPrimary assertion: The ball remains visually contained and reflects with believable motion from moving walls throughout the run\nNon-goals: Do not evaluate botanical growth stages or unrelated UI features\nMax loops: 3",
+      "createdAt": "2026-03-15T05:30:36.449Z",
+      "updatedAt": "2026-03-15T05:30:36.462Z",
+      "trees": [
+        {
+          "treeId": "tree_1773552636462",
+          "version": 1,
+          "status": "draft",
+          "createdAt": "2026-03-15T05:30:36.462Z",
+          "updatedAt": "2026-03-15T05:30:36.462Z",
+          "procedure": {
+            "notes": "",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Bouncing Ball in a Rotating Rectangle"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#resetBall"
+              },
+              {
+                "action": "click",
+                "target": "#resetBall"
+              },
+              {
+                "value": 1500,
+                "action": "wait",
+                "target": "post_click_stabilize"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "summary": "Validate Bouncing Ball in a Rotating Rectangle flow and core interactions for objective: Feature: Rotating rectangle ball physics\nObjective: Validate that a ball bounces realistically against all four sides while the rectangle rotates continuously\nScope: index.html only\nPrimary assertion: The ball remains visually contained and reflects with believable motion from moving walls throughout the run\nNon-goals: Do not evaluate botanical growth stages or unrelated UI features\nMax loops: 3",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions)."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "value": null,
+                "action": "goto",
+                "assert": null,
+                "target": "http://127.0.0.1:5173/",
+                "originalAction": "goto"
+              },
+              {
+                "index": 1,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "text=Bouncing Ball in a Rotating Rectangle",
+                "originalAction": "assertVisible"
+              },
+              {
+                "index": 2,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#resetBall",
+                "originalAction": "assertVisible"
+              },
+              {
+                "index": 3,
+                "value": null,
+                "action": "click",
+                "assert": null,
+                "target": "#resetBall",
+                "originalAction": "click"
+              },
+              {
+                "index": 4,
+                "value": 1500,
+                "action": "wait",
+                "assert": null,
+                "target": "post_click_stabilize",
+                "originalAction": "wait"
+              },
+              {
+                "index": 5,
+                "value": null,
+                "action": "screenshot",
+                "assert": null,
+                "target": "fullPage",
+                "originalAction": "screenshot"
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": null
+        }
+      ]
+    },
+    {
       "forestId": "forest_1773550465190",
       "projectName": "Grow - Single File Plant Animation",
       "url": "http://127.0.0.1:5173",
@@ -7010,6 +8509,1137 @@
     }
   ],
   "runs": [
+    {
+      "runId": "agentic_run_1773554295858",
+      "forestId": "forest_1773554186363",
+      "treeId": "tree_1773554288755",
+      "createdAt": "2026-03-15T05:58:15.858Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:5173/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "click",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "wait",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "click",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 6,
+          "action": "wait",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 7,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\aaa185fbd63811022269b9e5778c30b8.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\final_1773554295615.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\step_1773554289838.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\step_1773554292425.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\step_1773554294994.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\aaa185fbd63811022269b9e5778c30b8.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=8"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=10"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=777332 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=8",
+          "artifacts_present: artifacts=10",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=777332 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554288755_1773554288950\\aaa185fbd63811022269b9e5778c30b8.webm",
+          "sizeBytes": 777332,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Verify that clicking the canvas changes the ball's trajectory within the rotating rectangle.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T05:58:15.856Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773554264728",
+      "forestId": "forest_1773554186363",
+      "treeId": "tree_1773554257629",
+      "createdAt": "2026-03-15T05:57:44.728Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:5173/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "click",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "wait",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "click",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 6,
+          "action": "wait",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 7,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\critique_report.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\d234c7af6ca0e07643cbb2b0c9a706c2.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\final_1773554264469.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\step_1773554258684.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\step_1773554261262.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\step_1773554263835.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\d234c7af6ca0e07643cbb2b0c9a706c2.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=8"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=10"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=793710 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=8",
+          "artifacts_present: artifacts=10",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=793710 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554257629_1773554257801\\d234c7af6ca0e07643cbb2b0c9a706c2.webm",
+          "sizeBytes": 793710,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Verify that clicking the canvas changes the ball's trajectory within the rotating rectangle.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T05:57:44.726Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773554217751",
+      "forestId": "forest_1773554186363",
+      "treeId": "tree_1773554210733",
+      "createdAt": "2026-03-15T05:56:57.751Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:5173/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "click",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "wait",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "click",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 6,
+          "action": "wait",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 7,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\2b7a2c0336e5906b42c12d3ed05047f4.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\final_1773554217534.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\step_1773554211773.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\step_1773554214354.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\step_1773554216914.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\2b7a2c0336e5906b42c12d3ed05047f4.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=8"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=10"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=782846 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=8",
+          "artifacts_present: artifacts=10",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=782846 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773554186363_tree_1773554210733_1773554210890\\2b7a2c0336e5906b42c12d3ed05047f4.webm",
+          "sizeBytes": 782846,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Verify that clicking the canvas changes the ball's trajectory within the rotating rectangle.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T05:56:57.749Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773554095594",
+      "forestId": "forest_1773553936026",
+      "treeId": "tree_1773554071135",
+      "createdAt": "2026-03-15T05:54:55.594Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:5173/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "wait",
+          "target": "2000",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "wait",
+          "target": "2000",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 6,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\6b0988524a73fa18effe58466b207f82.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\final_1773554095376.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\step_1773554072707.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\step_1773554083728.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\step_1773554094759.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\6b0988524a73fa18effe58466b207f82.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=7"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=10"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=2904611 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=7",
+          "artifacts_present: artifacts=10",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=2904611 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554071135_1773554071304\\6b0988524a73fa18effe58466b207f82.webm",
+          "sizeBytes": 2904611,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Verify the bouncing ball animation within a rotating rectangle.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T05:54:55.592Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773554036338",
+      "forestId": "forest_1773553936026",
+      "treeId": "tree_1773554027838",
+      "createdAt": "2026-03-15T05:53:56.338Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:5173/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "wait",
+          "target": null,
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "wait",
+          "target": null,
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 6,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\520d76657a81775bfc315e1397e56e9b.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\final_1773554036110.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\step_1773554029424.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\step_1773554032446.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\step_1773554035484.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\520d76657a81775bfc315e1397e56e9b.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=7"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=10"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=938970 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=7",
+          "artifacts_present: artifacts=10",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=938970 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773554027838_1773554028009\\520d76657a81775bfc315e1397e56e9b.webm",
+          "sizeBytes": 938970,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Verify the bouncing ball animation within a rotating rectangle.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T05:53:56.336Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773553994651",
+      "forestId": "forest_1773553936026",
+      "treeId": "tree_1773553970187",
+      "createdAt": "2026-03-15T05:53:14.651Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:5173/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "wait",
+          "target": "2000",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "wait",
+          "target": "2000",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 6,
+          "action": "screenshot",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\a13dfbaa2eaa9f6f45b7dc3cb3769d76.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\final_1773553994430.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\step_1773553971736.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\step_1773553982767.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\step_1773553993798.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\a13dfbaa2eaa9f6f45b7dc3cb3769d76.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=7"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=10"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=2912292 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=7",
+          "artifacts_present: artifacts=10",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=2912292 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773553936026_tree_1773553970187_1773553970332\\a13dfbaa2eaa9f6f45b7dc3cb3769d76.webm",
+          "sizeBytes": 2912292,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Verify the bouncing ball animation within a rotating rectangle.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T05:53:14.649Z",
+        "source": "deterministic"
+      }
+    },
     {
       "runId": "agentic_run_1773550499009",
       "forestId": "forest_1773550465190",

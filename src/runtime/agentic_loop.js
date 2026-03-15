@@ -20,7 +20,7 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const MAX_AGENTIC_LOOPS = 3;
+const MAX_AGENTIC_LOOPS = 5;
 
 function parseDotEnv(projectRoot) {
   const out = {};
@@ -269,7 +269,7 @@ function deriveFailureInterpretation({ run, objective, procedure, testingInstruc
   }
 
   if (status === "max_loops_reached") {
-    bullets.push("Loop limit reached: the same feature path remained unresolved after the maximum 3 iterations.");
+    bullets.push("Loop limit reached: the same feature path remained unresolved after the maximum 5 iterations.");
   }
 
   return {
@@ -2041,7 +2041,7 @@ class AgenticLoopManager {
           videoReference: resolveRunVideoPath(last?.run),
           threePointSummary: buildSemanticSummary(
             semanticInterpretation,
-            last?.run?.summary || "Execution completed after the maximum three iterations."
+            last?.run?.summary || "Execution completed after the maximum five iterations."
           ),
           lastErrorText: null,
           semanticVerdict: semanticInterpretation.verdict,
@@ -2297,7 +2297,7 @@ class AgenticLoopManager {
       videoReference: resolveRunVideoPath(last?.run),
       threePointSummary: buildSemanticSummary(
         semanticInterpretation,
-        last?.run?.summary || "Execution completed after the maximum three iterations."
+        last?.run?.summary || "Execution completed after the maximum five iterations."
       ),
       lastErrorText: null,
       semanticVerdict: semanticInterpretation.verdict,

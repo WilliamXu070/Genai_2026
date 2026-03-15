@@ -1,0 +1,61 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "goto",
+      "originalAction": "goto",
+      "target": "http://127.0.0.1:5173/",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#scene",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "#scene",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "wait",
+      "originalAction": "wait",
+      "target": "2000",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 4,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "#scene",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 5,
+      "action": "wait",
+      "originalAction": "wait",
+      "target": "2000",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 6,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "#scene",
+      "value": null,
+      "assert": null
+    }
+  ]
+}

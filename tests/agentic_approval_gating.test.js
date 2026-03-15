@@ -449,10 +449,10 @@ async function runMaxLoopCapTest() {
 
   const detail = await waitForRunStatus(manager, prepared.run.id, "completed");
   assert.equal(detail.status, "completed", "Expected execution to complete with semantic findings after the max loop cap");
-  assert.equal(detail.loopCount, 3, "Expected exactly three persisted loops");
-  assert.equal(detail.loopIterations.length, 3, "Expected three loop iteration records");
+  assert.equal(detail.loopCount, 5, "Expected exactly five persisted loops");
+  assert.equal(detail.loopIterations.length, 5, "Expected five loop iteration records");
   assert.equal(detail.semanticVerdict, "mixed", "Expected a semantic verdict instead of max-loop failure status");
-  assert.equal(confirmCalls, 3, "Expected exactly three execution attempts");
+  assert.equal(confirmCalls, 5, "Expected exactly five execution attempts");
 }
 
 async function runVariantFromHistoricalRunTest() {
@@ -716,7 +716,7 @@ async function runFeatureFailureInterpretationTest() {
 
   const detail = await waitForRunStatus(manager, prepared.run.id, "completed");
   assert.equal(detail.status, "completed");
-  assert.equal(confirmCalls, 3, "Expected loop execution to stop at the hard cap");
+  assert.equal(confirmCalls, 5, "Expected loop execution to stop at the hard cap");
   assert.ok(detail.semanticInterpretation, "Expected semantic interpretation to be persisted");
   assert.ok(
     Array.isArray(detail.semanticInterpretation.failedItems) &&

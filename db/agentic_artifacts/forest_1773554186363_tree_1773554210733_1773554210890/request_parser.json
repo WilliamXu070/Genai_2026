@@ -1,0 +1,69 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "goto",
+      "originalAction": "goto",
+      "target": "http://127.0.0.1:5173/",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "#scene",
+      "value": "Ball is visible within the rotating rectangle.",
+      "assert": "Ball is visible within the rotating rectangle."
+    },
+    {
+      "index": 2,
+      "action": "click",
+      "originalAction": "click",
+      "target": "#scene",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "wait",
+      "originalAction": "wait",
+      "target": "#scene",
+      "value": "1000",
+      "assert": null
+    },
+    {
+      "index": 4,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "#scene",
+      "value": "Ball is visible within the rotating rectangle.",
+      "assert": "Ball is visible within the rotating rectangle."
+    },
+    {
+      "index": 5,
+      "action": "click",
+      "originalAction": "click",
+      "target": "#scene",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 6,
+      "action": "wait",
+      "originalAction": "wait",
+      "target": "#scene",
+      "value": "1000",
+      "assert": null
+    },
+    {
+      "index": 7,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "#scene",
+      "value": "Ball is visible within the rotating rectangle.",
+      "assert": "Ball is visible within the rotating rectangle."
+    }
+  ]
+}
