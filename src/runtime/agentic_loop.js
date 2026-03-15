@@ -4,6 +4,7 @@ const { spawn } = require("node:child_process");
 const { chromium } = require("playwright");
 const { analyzeRunSemantics } = require("./semantics");
 const { RunCriticAgent } = require("./critic_agent");
+const { AgenticMySqlPersistenceService, ensureSummaryArray } = require("./agentic_mysql_persistence");
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -16,6 +17,8 @@ function nowIso() {
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+const MAX_AGENTIC_LOOPS = 3;
 
 function parseDotEnv(projectRoot) {
   const envPath = path.join(projectRoot, ".env");
@@ -31,6 +34,195 @@ function parseDotEnv(projectRoot) {
     out[t.slice(0, idx).trim()] = t.slice(idx + 1).trim().replace(/^['\"]|['\"]$/g, "");
   }
   return out;
+}
+
+function buildThreePointSummary(run) {
+  const points = [];
+  if (run?.summary) {
+    points.push(String(run.summary));
+  }
+
+  const topIssues = Array.isArray(run?.critique?.issues)
+    ? run.critique.issues
+    : Array.isArray(run?.critique?.defects)
+      ? run.critique.defects
+      : [];
+  topIssues.slice(0, 2).forEach((issue) => {
+    if (issue?.description) {
+      points.push(String(issue.description));
+    }
+  });
+
+  if (points.length < 3 && run?.semantics?.verdict) {
+    points.push(`Semantic verdict: ${run.semantics.verdict}`);
+  }
+
+  return ensureSummaryArray(points);
+}
+
+function buildLoopArtifacts(run) {
+  const rawArtifacts = Array.isArray(run?.artifacts) ? run.artifacts : [];
+  const asTypePath = rawArtifacts.map((artifact) => ({
+    type: artifact?.type || "artifact",
+    path: artifact?.path || ""
+  }));
+
+  const screenshotRefs = asTypePath.filter((a) => a.path.endsWith(".png")).map((a) => a.path);
+  const videoChunkRefs = asTypePath.filter((a) => a.path.endsWith(".webm")).map((a) => a.path);
+  const criticOutput = run?.critique || null;
+
+  const structuredMetrics = {
+    semantics: run?.semantics || null,
+    critiqueSeverity: Number(run?.critique?.overall_severity || run?.critique?.readinessScore || 0)
+  };
+
+  return {
+    screenshot_refs: screenshotRefs,
+    console_errors: [],
+    video_chunk_refs: videoChunkRefs,
+    critic_output: criticOutput,
+    structured_metrics: structuredMetrics,
+    artifact_refs: asTypePath
+  };
+}
+
+const APPROVAL_POLL_INTERVAL_MS = 3000;
+
+function buildApprovalSummary(procedure, targetUrl) {
+  const steps = Array.isArray(procedure?.steps) ? procedure.steps : [];
+  return ensureSummaryArray([
+    "Draft ready and awaiting approval.",
+    steps.length > 0 ? `Planned ${steps.length} step(s) for ${targetUrl || "the requested target"}.` : "Planner did not produce executable steps.",
+    "Execution will begin only after approval."
+  ]);
+}
+
+function buildFailureSummary(message) {
+  return ensureSummaryArray([
+    `Run failed: ${message || "unknown error"}`,
+    "Execution did not complete successfully.",
+    "Review the stored error message and loop artifacts for details."
+  ]);
+}
+
+function buildCancelledSummary(reason) {
+  return ensureSummaryArray([
+    "Run cancelled before completion.",
+    reason || "Execution stopped by user request.",
+    "No further loops were executed."
+  ]);
+}
+
+function formatProcedureSteps(procedure) {
+  const steps = Array.isArray(procedure?.steps) ? procedure.steps : [];
+  if (steps.length === 0) {
+    return "No planned steps recorded.";
+  }
+
+  return steps
+    .map((step, index) => {
+      const value = step?.value !== undefined && step?.value !== null ? ` ${String(step.value)}` : "";
+      return `${index + 1}. ${step?.action || "step"} ${step?.target || ""}${value}`.trim();
+    })
+    .join("\n");
+}
+
+function buildTestingInstructions(objective, input, procedure) {
+  const sections = [
+    [`Objective: ${objective}`],
+    [`Target URL: ${input?.url || "-"}`],
+    input?.notes ? [`Notes: ${input.notes}`] : [],
+    input?.additions ? [`Additions: ${input.additions}`] : [],
+    procedure?.summary ? [`Draft Summary: ${procedure.summary}`] : [],
+    ["Planned Steps:", formatProcedureSteps(procedure)]
+  ];
+
+  return sections
+    .filter((section) => section.length > 0)
+    .map((section) => section.join("\n"))
+    .join("\n\n");
+}
+
+function buildApprovedExecutionNotes(draftPayload, testingInstructions) {
+  const sections = [];
+  if (draftPayload?.notes) {
+    sections.push(String(draftPayload.notes));
+  }
+  if (testingInstructions) {
+    sections.push(["Approved testing instructions:", String(testingInstructions)].join("\n"));
+  }
+  return sections.filter(Boolean).join("\n\n");
+}
+
+function readTestingInstructionField(testingInstructions, label) {
+  const match = String(testingInstructions || "").match(new RegExp(`^${label}:\\s*(.+)$`, "mi"));
+  return match?.[1]?.trim() || "";
+}
+
+function buildPersistentRunSeed(run, overrides = {}) {
+  const payload = run?.draftPayload && typeof run.draftPayload === "object" ? run.draftPayload : {};
+  const testingInstructions = typeof overrides.testingInstructions === "string"
+    ? overrides.testingInstructions
+    : run?.testingInstructions || "";
+
+  const objective =
+    overrides.objective ||
+    payload.objective ||
+    readTestingInstructionField(testingInstructions, "Objective") ||
+    "Validate critical user flow";
+  const url =
+    overrides.url ||
+    payload.url ||
+    readTestingInstructionField(testingInstructions, "Target URL") ||
+    "http://127.0.0.1:3000";
+  const projectName = overrides.projectName || payload.projectName || run?.projectName || "Jungle";
+  const notes = [
+    payload.notes || "",
+    overrides.notes || ""
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  return {
+    actionDelayMs: payload.actionDelayMs ?? null,
+    additions: payload.additions || "",
+    codexTimeoutMs: payload.codexTimeoutMs || null,
+    maxAttempts: payload.maxAttempts || MAX_AGENTIC_LOOPS,
+    notes,
+    objective,
+    projectName,
+    skipCodex: Boolean(payload.skipCodex),
+    testingInstructions,
+    url
+  };
+}
+
+function buildVariantRunSummary(sourceRunId) {
+  return ensureSummaryArray([
+    `Variant created from run ${sourceRunId}.`,
+    "Edit the copied testing instructions before approval.",
+    "Execution will start only after this new run is approved."
+  ]);
+}
+
+function buildDraftPayload({ input, objective, draft, maxAttempts, attempt = 1 }) {
+  const procedure = draft?.tree?.procedure || null;
+  return {
+    attempt,
+    maxAttempts,
+    objective,
+    projectName: input?.projectName || "Jungle",
+    url: input?.url || "",
+    notes: input?.notes || "",
+    additions: input?.additions || "",
+    skipCodex: Boolean(input?.skipCodex),
+    codexTimeoutMs: input?.codexTimeoutMs || null,
+    actionDelayMs: input?.actionDelayMs ?? null,
+    forestId: draft?.forestId || null,
+    treeId: draft?.tree?.treeId || null,
+    procedure,
+    requestParser: draft?.tree?.requestParser || (procedure ? buildRequestParser(procedure) : null)
+  };
 }
 
 class AgenticStore {
@@ -453,10 +645,28 @@ function buildRequestParser(procedure) {
   };
 }
 
-function stepToCode(step, actionDelayMs = 3000) {
+function getStepDelayMs(step, actionDelayMs = 500) {
+  const baseDelay = Math.max(0, Number(actionDelayMs) || 500);
+  const action = String(step?.action || "");
+  if (action === "goto") return Math.max(baseDelay, 700);
+  if (action === "wait") return Math.max(200, Math.min(baseDelay, 400));
+  if (action === "scrollPage") return Math.max(baseDelay, 900);
+  if (action === "click" || action === "fill") return Math.max(baseDelay, 500);
+  if (action === "assertVisible" || action === "assertText" || action === "assertChanged") {
+    return Math.max(350, Math.min(baseDelay, 650));
+  }
+  if (action === "captureText") return Math.max(350, Math.min(baseDelay, 600));
+  return Math.max(250, Math.min(baseDelay, 500));
+}
+
+function stepToCode(step, actionDelayMs = 500) {
   const target = JSON.stringify(step.target || "body");
   const value = JSON.stringify(step.value || "");
-  const delay = Number(actionDelayMs) || 0;
+  const delay = getStepDelayMs(step, actionDelayMs);
+  const waitTarget = String(step.target || "").toLowerCase();
+  const waitMs = step.action === "wait" && /(anim|motion|transition|scroll)/.test(waitTarget)
+    ? Math.max(Number(step.value) || 10000, 1800)
+    : Number(step.value) || 10000;
 
   switch (step.action) {
     case "goto":
@@ -476,20 +686,20 @@ function stepToCode(step, actionDelayMs = 3000) {
     case "screenshot":
       return `await page.screenshot({ path: path.join(artifactsDir, 'step_${Date.now()}.png'), fullPage: true });\n  await page.waitForTimeout(${delay});`;
     case "scrollPage":
-      return `await page.evaluate(async () => { const maxY = document.documentElement.scrollHeight - window.innerHeight; let y = 0; const stride = Math.max(120, Math.floor(window.innerHeight * 0.75)); while (y < maxY) { y = Math.min(maxY, y + stride); window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 250)); } });\n  await page.waitForTimeout(${delay});`;
+      return `await page.evaluate(async () => { const maxY = document.documentElement.scrollHeight - window.innerHeight; let y = 0; const stride = Math.max(64, Math.floor(window.innerHeight * 0.35)); while (y < maxY) { y = Math.min(maxY, y + stride); window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 450)); } });\n  await page.waitForTimeout(${delay});`;
     case "wait":
-      return `await page.waitForTimeout(${Number(step.value) || 10000});\n  await page.waitForTimeout(${delay});`;
+      return `await page.waitForTimeout(${waitMs});\n  await page.waitForTimeout(${delay});`;
     default:
       return `// TODO unsupported action: ${step.action}`;
   }
 }
 
-function generatePlaywrightProgram(parser, actionDelayMs = 3000) {
+function generatePlaywrightProgram(parser, actionDelayMs = 500) {
   const lines = parser.normalizedSteps.map((s) => stepToCode(s, actionDelayMs)).join("\n  ");
   return `const path = require('node:path');\nconst fs = require('node:fs');\nconst { chromium, expect } = require('playwright');\n\nasync function run({ baseUrl, artifactsDir }) {\n  const browser = await chromium.launch({ headless: true });\n  const context = await browser.newContext({ recordVideo: { dir: artifactsDir, size: { width: 1280, height: 720 } } });\n  const page = await context.newPage();\n  const stateStore = {};\n  try {\n  ${lines}\n  } finally {\n    await context.close();\n    await browser.close();\n  }\n}\n\nmodule.exports = { run };\n`;
 }
 
-async function executeProcedure(url, parser, artifactsDir, actionDelayMs = 3000) {
+async function executeProcedure(url, parser, artifactsDir, actionDelayMs = 500) {
   ensureDir(artifactsDir);
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
@@ -506,31 +716,32 @@ async function executeProcedure(url, parser, artifactsDir, actionDelayMs = 3000)
     for (const step of parser.normalizedSteps) {
       const s = { index: step.index, action: step.action, target: step.target, status: "pass", note: "ok" };
       try {
+        const stepDelayMs = getStepDelayMs(step, actionDelayMs);
         if (step.action === "goto") {
           const dest = step.target?.startsWith("http") ? step.target : new URL(step.target || "/", url).toString();
           await page.goto(dest, { waitUntil: "domcontentloaded", timeout: 30000 });
-          await sleep(actionDelayMs);
+          await sleep(stepDelayMs);
         } else if (step.action === "click") {
           await page.locator(step.target).first().click({ timeout: 10000 });
-          await sleep(actionDelayMs);
+          await sleep(stepDelayMs);
         } else if (step.action === "fill") {
           await page.locator(step.target).first().fill(step.value || "", { timeout: 10000 });
-          await sleep(actionDelayMs);
+          await sleep(stepDelayMs);
         } else if (step.action === "assertVisible") {
           await page.locator(step.target).first().waitFor({ state: "visible", timeout: 10000 });
-          await sleep(actionDelayMs);
+          await sleep(stepDelayMs);
         } else if (step.action === "assertText") {
           const txt = await page.locator(step.target).first().innerText({ timeout: 10000 });
           if (!txt.includes(step.value || "")) {
             throw new Error(`Text assertion failed: expected includes '${step.value}' got '${txt}'`);
           }
-          await sleep(actionDelayMs);
+          await sleep(stepDelayMs);
         } else if (step.action === "captureText") {
           stateStore[step.value || `step_${step.index}`] = await page
             .locator(step.target)
             .first()
             .innerText({ timeout: 10000 });
-          await sleep(actionDelayMs);
+          await sleep(stepDelayMs);
         } else if (step.action === "assertChanged") {
           const key = step.value || `step_${step.index - 1}`;
           const prev = stateStore[key] || "";
@@ -547,25 +758,30 @@ async function executeProcedure(url, parser, artifactsDir, actionDelayMs = 3000)
             { selector: step.target, before: prev },
             { timeout: 5000 }
           );
-          await sleep(actionDelayMs);
+          await sleep(stepDelayMs);
         } else if (step.action === "screenshot") {
           await page.screenshot({ path: path.join(artifactsDir, `step_${Date.now()}.png`), fullPage: true });
-          await sleep(actionDelayMs);
+          await sleep(stepDelayMs);
         } else if (step.action === "scrollPage") {
           await page.evaluate(async () => {
             const maxY = document.documentElement.scrollHeight - window.innerHeight;
             let y = 0;
-            const stride = Math.max(120, Math.floor(window.innerHeight * 0.75));
+            const stride = Math.max(64, Math.floor(window.innerHeight * 0.35));
             while (y < maxY) {
               y = Math.min(maxY, y + stride);
               window.scrollTo(0, y);
-              await new Promise((resolve) => setTimeout(resolve, 250));
+              await new Promise((resolve) => setTimeout(resolve, 450));
             }
           });
-          await sleep(actionDelayMs);
+          await sleep(stepDelayMs);
         } else if (step.action === "wait") {
-          await page.waitForTimeout(Number(step.value) || 10000);
-          await sleep(actionDelayMs);
+          const waitTarget = String(step.target || "").toLowerCase();
+          const requestedWaitMs = Number(step.value) || 10000;
+          const adaptiveWaitMs = /(anim|motion|transition|scroll)/.test(waitTarget)
+            ? Math.max(requestedWaitMs, 1800)
+            : requestedWaitMs;
+          await page.waitForTimeout(adaptiveWaitMs);
+          await sleep(stepDelayMs);
         } else {
           throw new Error(`Unsupported action '${step.action || step.originalAction || "unknown"}'`);
         }
@@ -605,6 +821,16 @@ class AgenticLoopManager {
     this.projectRoot = projectRoot;
     this.store = new AgenticStore(projectRoot);
     this.criticAgent = new RunCriticAgent(projectRoot);
+    process.env.JUNGLE_PROJECT_ROOT = projectRoot;
+    this.persistence = new AgenticMySqlPersistenceService();
+    this.activePersistentRunIds = new Set();
+    this.approvalPollIntervalMs = Number(process.env.JUNGLE_APPROVAL_POLL_INTERVAL_MS || APPROVAL_POLL_INTERVAL_MS);
+    this.approvalScanPromise = null;
+    this.approvalWatcherTimer = null;
+
+    if (this.persistence.isEnabled()) {
+      this.startApprovalWatcher();
+    }
   }
 
   listForests() {
@@ -617,6 +843,57 @@ class AgenticLoopManager {
 
   listRuns(forestId) {
     return this.store.listRuns(forestId);
+  }
+
+  async listProjects() {
+    return this.persistence.listProjects();
+  }
+
+  async listAwaitingApprovalRuns(projectId = null) {
+    return this.persistence.listAwaitingApprovalRuns(projectId);
+  }
+
+  async listInProgressRuns(projectId = null) {
+    return this.persistence.listInProgressRuns(projectId);
+  }
+
+  async listProjectTestRuns(projectId) {
+    return this.persistence.listTestRunsByProject(projectId);
+  }
+
+  async getProjectTestRun(runId) {
+    return this.persistence.getTestRunDetail(runId);
+  }
+
+  startApprovalWatcher() {
+    if (this.approvalWatcherTimer || !this.persistence.isEnabled()) {
+      return;
+    }
+
+    this.approvalWatcherTimer = setInterval(() => {
+      this.processApprovedRuns().catch(() => {
+        // ignore background worker errors; they are persisted on the run itself
+      });
+    }, this.approvalPollIntervalMs);
+
+    if (typeof this.approvalWatcherTimer.unref === "function") {
+      this.approvalWatcherTimer.unref();
+    }
+
+    setTimeout(() => {
+      this.processApprovedRuns().catch(() => {
+        // ignore startup scan failures; next poll will retry
+      });
+    }, 0);
+  }
+
+  kickApprovalWatcher() {
+    if (!this.persistence.isEnabled()) {
+      return;
+    }
+    this.processApprovedRuns().catch(() => {
+      // ignore manual kick failures; status remains durable in MySQL
+    });
   }
 
   async createDraft(input) {
@@ -653,12 +930,250 @@ class AgenticLoopManager {
     return semanticsOk && hasInteraction && hasAssertion;
   }
 
-  async orchestrateTask(input, emitEvent) {
-    const objective =
-      (typeof input.task === "string" && input.task.trim()) ||
-      (typeof input.objective === "string" && input.objective.trim()) ||
-      "Validate critical user flow";
-    const maxAttempts = Number(input.maxAttempts || 3);
+  async approveRun(input) {
+    const approvedRun = await this.persistence.approveRun({
+      runId: input?.runId,
+      approvedBy: input?.approvedBy || "ui",
+      testingInstructions:
+        typeof input?.testingInstructions === "string" ? input.testingInstructions : undefined
+    });
+    if (approvedRun) {
+      this.kickApprovalWatcher();
+    }
+    return approvedRun;
+  }
+
+  async updateRunTestingInstructions(input) {
+    return this.persistence.updateRunTestingInstructions({
+      runId: input?.runId,
+      testingInstructions: typeof input?.testingInstructions === "string" ? input.testingInstructions : "",
+      editedBy: input?.editedBy || "ui"
+    });
+  }
+
+  async createVariantRun(input) {
+    if (!this.persistence.isEnabled()) {
+      throw new Error("Variant runs require MySQL-backed persistence to be enabled");
+    }
+
+    const sourceRun = await this.persistence.getTestRunDetail(input?.sourceRunId);
+    if (!sourceRun) {
+      throw new Error(`Source run not found: ${input?.sourceRunId || "-"}`);
+    }
+
+    const seed = buildPersistentRunSeed(sourceRun, {
+      notes: [
+        `Variant derived from run ${sourceRun.id}.`,
+        "Use the stored testing instructions as the baseline for this new approval-gated run."
+      ].join("\n")
+    });
+    const project = await this.persistence.getOrCreateProjectByName(seed.projectName);
+    const draftingRun = await this.persistence.createDraftingRun({
+      projectId: project?.id,
+      testingInstructions: `Creating variant packet from ${sourceRun.id}`,
+      threePointSummary: ensureSummaryArray([
+        "Variant preparation started.",
+        `Source run: ${sourceRun.id}.`,
+        "Execution has not started."
+      ]),
+      draftPayload: null
+    });
+
+    const variantDraftPayload = {
+      actionDelayMs: seed.actionDelayMs,
+      additions: seed.additions,
+      codexTimeoutMs: seed.codexTimeoutMs,
+      forestId: null,
+      maxAttempts: seed.maxAttempts,
+      notes: seed.notes,
+      objective: seed.objective,
+      procedure: null,
+      projectName: seed.projectName,
+      requestParser: null,
+      skipCodex: seed.skipCodex,
+      sourceRunId: sourceRun.id,
+      treeId: null,
+      url: seed.url,
+      variantSeedInstructions: seed.testingInstructions
+    };
+
+    return this.persistence.markRunAwaitingApproval({
+      testRunId: draftingRun.id,
+      testingInstructions: typeof input?.testingInstructions === "string" ? input.testingInstructions : seed.testingInstructions,
+      threePointSummary: buildVariantRunSummary(sourceRun.id),
+      draftPayload: variantDraftPayload
+    });
+  }
+
+  async cancelRun(input) {
+    return this.persistence.cancelRun({
+      runId: input?.runId,
+      reason: input?.reason || "Run cancelled from the UI."
+    });
+  }
+
+  async processApprovedRuns() {
+    if (!this.persistence.isEnabled()) {
+      return [];
+    }
+    if (this.approvalScanPromise) {
+      return this.approvalScanPromise;
+    }
+
+    this.approvalScanPromise = (async () => {
+      const approvedRuns = await this.persistence.listRunsByStatuses(["approved"], { limit: 25 });
+      approvedRuns.forEach((run) => {
+        if (!run?.id) {
+          return;
+        }
+        this.resumeApprovedRun(run.id).catch(() => {
+          // ignore background worker failures; the failure is persisted on the run itself
+        });
+      });
+      return approvedRuns;
+    })().finally(() => {
+      this.approvalScanPromise = null;
+    });
+
+    return this.approvalScanPromise;
+  }
+
+  restoreDraftFromPayload(draftPayload, run) {
+    const payload = draftPayload || {};
+    const existingForest = payload.forestId ? this.store.getForest(payload.forestId) : null;
+    const existingTree = existingForest?.trees.find((tree) => tree.treeId === payload.treeId) || null;
+    if (existingTree) {
+      return {
+        forestId: existingForest.forestId,
+        tree: existingTree,
+        rehydrated: false
+      };
+    }
+    if (!payload.procedure) {
+      return null;
+    }
+
+    const forest =
+      existingForest ||
+      this.store.createForest({
+        projectName: payload.projectName || run?.projectName || "Jungle",
+        url: payload.url || "http://127.0.0.1:3000",
+        objective: payload.objective || "Validate critical user flow"
+      });
+    const { tree } = this.store.addTree(forest.forestId, {
+      procedure: payload.procedure,
+      requestParser: payload.requestParser || buildRequestParser(payload.procedure),
+      executionProfile: { recordVideo: true, mode: "playwright" }
+    });
+
+    return {
+      forestId: forest.forestId,
+      tree,
+      rehydrated: true
+    };
+  }
+
+  async hydratePersistentDraft(run) {
+    const restored = this.restoreDraftFromPayload(run?.draftPayload || {}, run);
+    if (!restored) {
+      const seed = buildPersistentRunSeed(run, {
+        notes: buildApprovedExecutionNotes(run?.draftPayload || {}, run?.testingInstructions || "")
+      });
+      const draft = await this.createDraft({
+        additions: seed.additions,
+        notes: seed.notes,
+        objective: seed.objective,
+        projectName: seed.projectName,
+        url: seed.url
+      });
+      const nextPayload = {
+        ...(run?.draftPayload || {}),
+        actionDelayMs: seed.actionDelayMs,
+        additions: seed.additions,
+        codexTimeoutMs: seed.codexTimeoutMs,
+        forestId: draft.forestId,
+        maxAttempts: seed.maxAttempts,
+        notes: seed.notes,
+        objective: seed.objective,
+        procedure: draft.tree.procedure,
+        projectName: seed.projectName,
+        requestParser: draft.tree.requestParser,
+        skipCodex: seed.skipCodex,
+        treeId: draft.tree.treeId,
+        url: seed.url
+      };
+      const updatedRun = await this.persistence.updateRunDraftPayload({
+        testRunId: run.id,
+        testingInstructions: run?.testingInstructions || "",
+        threePointSummary: run?.threePointSummary || ensureSummaryArray([]),
+        draftPayload: nextPayload
+      });
+      return {
+        draft,
+        generatedFromInstructions: true,
+        run: updatedRun || run
+      };
+    }
+
+    if (!restored.rehydrated && restored.forestId === run?.draftPayload?.forestId && restored.tree?.treeId === run?.draftPayload?.treeId) {
+      return {
+        draft: {
+          forestId: restored.forestId,
+          tree: restored.tree
+        },
+        generatedFromInstructions: false,
+        run
+      };
+    }
+
+    const nextPayload = {
+      ...(run?.draftPayload || {}),
+      forestId: restored.forestId,
+      treeId: restored.tree.treeId,
+      procedure: restored.tree.procedure,
+      requestParser: restored.tree.requestParser
+    };
+    const updatedRun = await this.persistence.updateRunDraftPayload({
+      testRunId: run.id,
+      testingInstructions: buildTestingInstructions(
+        nextPayload.objective || "Validate critical user flow",
+        nextPayload,
+        restored.tree.procedure
+      ),
+      threePointSummary: run.threePointSummary,
+      draftPayload: nextPayload
+    });
+
+    return {
+      draft: {
+        forestId: restored.forestId,
+        tree: restored.tree
+      },
+      generatedFromInstructions: false,
+      run: updatedRun || run
+    };
+  }
+
+  async finalizeCancelledPersistentRun(runId, startedAtMs, last, reason) {
+    const latestRun = await this.persistence.getRunRecord(runId);
+    if (!latestRun) {
+      return null;
+    }
+
+    return this.persistence.finalizeRun({
+      testRunId: runId,
+      executionTimeMs: Date.now() - startedAtMs,
+      loopCount: await this.persistence.getLoopCount(runId),
+      status: "cancelled",
+      testingInstructions: latestRun.testingInstructions || "",
+      videoReference: last?.run?.videoPath || null,
+      threePointSummary: buildCancelledSummary(reason || latestRun.lastErrorText || last?.run?.summary),
+      lastErrorText: reason || latestRun.lastErrorText || "Run cancelled by user."
+    });
+  }
+
+  async executeImmediateOrchestration(input, emitEvent, objective, maxAttempts) {
+    const workingInput = { ...input };
     let last = null;
 
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
@@ -666,12 +1181,19 @@ class AgenticLoopManager {
       emitEvent?.({ type: "agentic_status", value: "Converting task into test procedure..." });
 
       const draft = await this.createDraft({
-        additions: input.additions,
-        forestId: input.forestId,
-        notes: [input.notes || "", attempt > 1 ? "Retry: use canonical actions only (goto, click, fill, assertVisible, assertText, captureText, assertChanged, screenshot)." : ""].filter(Boolean).join("\n"),
+        additions: workingInput.additions,
+        forestId: workingInput.forestId,
+        notes: [
+          workingInput.notes || "",
+          attempt > 1
+            ? "Retry: use canonical actions only (goto, click, fill, assertVisible, assertText, captureText, assertChanged, screenshot)."
+            : ""
+        ]
+          .filter(Boolean)
+          .join("\n"),
         objective,
-        projectName: input.projectName || "Jungle",
-        url: input.url
+        projectName: workingInput.projectName || "Jungle",
+        url: workingInput.url
       });
 
       emitEvent?.({
@@ -681,13 +1203,13 @@ class AgenticLoopManager {
 
       const runResult = await this.confirmAndRun(
         {
-          additions: input.additions || "",
-          codexTimeoutMs: input.codexTimeoutMs,
+          additions: workingInput.additions || "",
+          codexTimeoutMs: workingInput.codexTimeoutMs,
           forestId: draft.forestId,
           forceFallback: attempt > 1,
-          skipCodex: input.skipCodex,
+          skipCodex: workingInput.skipCodex,
           treeId: draft.tree.treeId,
-          url: input.url
+          url: workingInput.url
         },
         emitEvent
       );
@@ -709,10 +1231,365 @@ class AgenticLoopManager {
         type: "agentic_status",
         value: `Quality gate failed on attempt ${attempt}. Retrying with hardened fallback procedure...`
       });
-      input.forestId = draft.forestId;
+      workingInput.forestId = draft.forestId;
     }
 
     return last;
+  }
+
+  async prepareApprovalRun(input, emitEvent, objective, maxAttempts) {
+    const project = await this.persistence.getOrCreateProjectByName(input.projectName || "Jungle");
+    const draftingRun = await this.persistence.createDraftingRun({
+      projectId: project?.id,
+      testingInstructions: `Drafting approval packet for: ${objective}`,
+      threePointSummary: ensureSummaryArray([
+        "Draft generation started.",
+        "The orchestration is preparing a testing plan.",
+        "Execution has not started."
+      ]),
+      draftPayload: null
+    });
+
+    emitEvent?.({ type: "agentic_status", value: "Preparing draft for approval..." });
+
+    try {
+      const draft = await this.createDraft({
+        additions: input.additions,
+        forestId: input.forestId,
+        notes: input.notes || "",
+        objective,
+        projectName: input.projectName || "Jungle",
+        url: input.url
+      });
+      const draftPayload = buildDraftPayload({
+        input,
+        objective,
+        draft,
+        maxAttempts,
+        attempt: 1
+      });
+      const testingInstructions = buildTestingInstructions(objective, input, draft.tree.procedure);
+      const approvalRun = await this.persistence.markRunAwaitingApproval({
+        testRunId: draftingRun.id,
+        testingInstructions,
+        threePointSummary: buildApprovalSummary(draft.tree.procedure, input.url),
+        draftPayload
+      });
+
+      emitEvent?.({
+        type: "agentic_status",
+        value: `Draft prepared. Run ${approvalRun.id} is waiting for approval before execution.`
+      });
+
+      return {
+        awaitingApproval: true,
+        forestId: draft.forestId,
+        treeId: draft.tree.treeId,
+        procedure: draft.tree.procedure,
+        run: approvalRun
+      };
+    } catch (error) {
+      await this.persistence.markRunFailedDuringDraft({
+        testRunId: draftingRun.id,
+        lastErrorText: error.message,
+        threePointSummary: buildFailureSummary(error.message)
+      });
+      throw error;
+    }
+  }
+
+  async executePersistentOrchestration(input, emitEvent, objective, maxAttempts, persistentRun, initialDraft) {
+    const startedAtMs = Date.now();
+    const workingInput = { ...input, forestId: initialDraft?.forestId || input.forestId };
+    let last = null;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      const currentStatus = await this.persistence.getRunStatus(persistentRun.id);
+      if (currentStatus === "cancelled") {
+        const cancelledRun = await this.finalizeCancelledPersistentRun(
+          persistentRun.id,
+          startedAtMs,
+          last,
+          "Run cancelled before the next loop started."
+        );
+        return {
+          ...last,
+          persistentRun: cancelledRun
+        };
+      }
+
+      const persistedLoopCount = await this.persistence.getLoopCount(persistentRun.id);
+      if (attempt > MAX_AGENTIC_LOOPS || persistedLoopCount >= MAX_AGENTIC_LOOPS) {
+        const latestRun = await this.persistence.getRunRecord(persistentRun.id);
+        const finalizedRun = await this.persistence.finalizeRun({
+          testRunId: persistentRun.id,
+          executionTimeMs: Date.now() - startedAtMs,
+          loopCount: Math.min(MAX_AGENTIC_LOOPS, persistedLoopCount),
+          status: "max_loops_reached",
+          testingInstructions: latestRun?.testingInstructions || "",
+          videoReference: last?.run?.videoPath || null,
+          threePointSummary: last?.run
+            ? buildThreePointSummary(last.run)
+            : buildFailureSummary("Maximum loop count reached before a passing run."),
+          lastErrorText: last?.run?.summary || "Maximum agentic loops reached"
+        });
+        return {
+          ...last,
+          persistentRun: finalizedRun
+        };
+      }
+
+      emitEvent?.({ type: "agentic_status", value: `Starting approved orchestration loop ${attempt}/${maxAttempts}...` });
+      emitEvent?.({ type: "agentic_status", value: "Converting approved draft into executable steps..." });
+
+      let draft = initialDraft && attempt === 1 ? initialDraft : null;
+      try {
+        if (!draft) {
+          draft = await this.createDraft({
+            additions: workingInput.additions,
+            forestId: workingInput.forestId,
+            notes: [
+              workingInput.notes || "",
+              "Retry: use canonical actions only (goto, click, fill, assertVisible, assertText, captureText, assertChanged, screenshot)."
+            ]
+              .filter(Boolean)
+              .join("\n"),
+            objective,
+            projectName: workingInput.projectName || "Jungle",
+            url: workingInput.url
+          });
+        }
+
+        if (attempt > 1) {
+          const refreshedDraftPayload = buildDraftPayload({
+            input: workingInput,
+            objective,
+            draft,
+            maxAttempts,
+            attempt
+          });
+          await this.persistence.updateRunDraftPayload({
+            testRunId: persistentRun.id,
+            testingInstructions: buildTestingInstructions(objective, workingInput, draft.tree.procedure),
+            threePointSummary: buildApprovalSummary(draft.tree.procedure, workingInput.url),
+            draftPayload: refreshedDraftPayload
+          });
+        }
+
+        emitEvent?.({
+          type: "agentic_status",
+          value: `Generated ${draft.tree.requestParser.normalizedSteps.length} step(s). Executing with Playwright...`
+        });
+
+        const runResult = await this.confirmAndRun(
+          {
+            additions: workingInput.additions || "",
+            codexTimeoutMs: workingInput.codexTimeoutMs,
+            forestId: draft.forestId,
+            forceFallback: attempt > 1,
+            skipCodex: workingInput.skipCodex,
+            treeId: draft.tree.treeId,
+            url: workingInput.url,
+            actionDelayMs: workingInput.actionDelayMs
+          },
+          emitEvent
+        );
+
+        last = {
+          forestId: draft.forestId,
+          objective,
+          procedure: draft.tree.procedure,
+          run: runResult.run,
+          tree: draft.tree,
+          treeId: draft.tree.treeId
+        };
+
+        const runPassedQualityGate = this.runMeetsQualityGate(runResult.run);
+        const loopState = await this.persistence.persistLoopAndRunState({
+          testRunId: persistentRun.id,
+          loopNumber: attempt,
+          loopStatus: runPassedQualityGate ? "passed" : "failed",
+          stepSummary: runResult.run.summary || `Loop ${attempt} completed`,
+          artifacts: buildLoopArtifacts(runResult.run),
+          runStatus: "in_progress",
+          lastErrorText: runPassedQualityGate ? null : runResult.run.summary || "Quality gate failed"
+        });
+
+        if (loopState?.status === "cancelled" || (await this.persistence.getRunStatus(persistentRun.id)) === "cancelled") {
+          const cancelledRun = await this.finalizeCancelledPersistentRun(
+            persistentRun.id,
+            startedAtMs,
+            last,
+            "Run cancelled after loop persistence."
+          );
+          return {
+            ...last,
+            persistentRun: cancelledRun
+          };
+        }
+
+        if (runPassedQualityGate) {
+          const latestRun = await this.persistence.getRunRecord(persistentRun.id);
+          const finalizedRun = await this.persistence.finalizeRun({
+            testRunId: persistentRun.id,
+            executionTimeMs: Date.now() - startedAtMs,
+            loopCount: attempt,
+            status: "passed",
+            testingInstructions: latestRun?.testingInstructions || "",
+            videoReference: runResult.run.videoPath || null,
+            threePointSummary: buildThreePointSummary(runResult.run),
+            lastErrorText: null
+          });
+          return {
+            ...last,
+            persistentRun: finalizedRun
+          };
+        }
+
+        emitEvent?.({
+          type: "agentic_status",
+          value: `Quality gate failed on attempt ${attempt}. Retrying with a new hardened draft...`
+        });
+        workingInput.forestId = draft.forestId;
+      } catch (error) {
+        const statusAfterError = await this.persistence.getRunStatus(persistentRun.id);
+        if (statusAfterError === "cancelled") {
+          const cancelledRun = await this.finalizeCancelledPersistentRun(
+            persistentRun.id,
+            startedAtMs,
+            last,
+            error.message || "Run cancelled during execution."
+          );
+          return {
+            ...last,
+            persistentRun: cancelledRun
+          };
+        }
+
+        await this.persistence.persistLoopAndRunState({
+          testRunId: persistentRun.id,
+          loopNumber: attempt,
+          loopStatus: "failed",
+          stepSummary: `Loop ${attempt} failed before completion: ${error.message}`,
+          artifacts: {
+            screenshot_refs: [],
+            console_errors: [error.message],
+            video_chunk_refs: [],
+            critic_output: null,
+            structured_metrics: {},
+            artifact_refs: []
+          },
+          runStatus: "in_progress",
+          lastErrorText: error.message
+        });
+
+        const latestRun = await this.persistence.getRunRecord(persistentRun.id);
+        const finalizedRun = await this.persistence.finalizeRun({
+          testRunId: persistentRun.id,
+          executionTimeMs: Date.now() - startedAtMs,
+          loopCount: attempt,
+          status: "failed",
+          testingInstructions: latestRun?.testingInstructions || "",
+          videoReference: last?.run?.videoPath || null,
+          threePointSummary: buildFailureSummary(error.message),
+          lastErrorText: error.message
+        });
+
+        return {
+          ...last,
+          persistentRun: finalizedRun,
+          error
+        };
+      }
+    }
+
+    const latestRun = await this.persistence.getRunRecord(persistentRun.id);
+    const finalizedRun = await this.persistence.finalizeRun({
+      testRunId: persistentRun.id,
+      executionTimeMs: Date.now() - startedAtMs,
+      loopCount: await this.persistence.getLoopCount(persistentRun.id),
+      status: "max_loops_reached",
+      testingInstructions: latestRun?.testingInstructions || "",
+      videoReference: last?.run?.videoPath || null,
+      threePointSummary: last?.run ? buildThreePointSummary(last.run) : buildFailureSummary("Maximum loop count reached."),
+      lastErrorText: last?.run?.summary || "Maximum agentic loops reached"
+    });
+
+    return {
+      ...last,
+      persistentRun: finalizedRun
+    };
+  }
+
+  async resumeApprovedRun(runId, emitEvent) {
+    if (!this.persistence.isEnabled() || !runId) {
+      return null;
+    }
+    if (this.activePersistentRunIds.has(runId)) {
+      return null;
+    }
+
+    this.activePersistentRunIds.add(runId);
+    try {
+      const claimedRun = await this.persistence.claimApprovedRunForExecution(runId);
+      if (!claimedRun) {
+        return null;
+      }
+
+      const hydrated = await this.hydratePersistentDraft(claimedRun);
+      const draftPayload = hydrated.run?.draftPayload || {};
+      const approvedTestingInstructions = hydrated.run?.testingInstructions || "";
+      const hasApprovalInstructionEdits = Boolean(draftPayload?.approvalInstructionEditedAt);
+      const shouldRegenerateOnExecution = hasApprovalInstructionEdits && !hydrated.generatedFromInstructions;
+      const maxAttemptsRaw = Number(draftPayload.maxAttempts || MAX_AGENTIC_LOOPS);
+      const maxAttempts = Math.min(
+        MAX_AGENTIC_LOOPS,
+        Number.isFinite(maxAttemptsRaw) && maxAttemptsRaw > 0 ? maxAttemptsRaw : MAX_AGENTIC_LOOPS
+      );
+
+      emitEvent?.({
+        type: "agentic_status",
+        value: `Approval detected for run ${runId}. Resuming execution...`
+      });
+
+      return await this.executePersistentOrchestration(
+        {
+          additions: draftPayload.additions || "",
+          actionDelayMs: draftPayload.actionDelayMs,
+          codexTimeoutMs: draftPayload.codexTimeoutMs,
+          forestId: hydrated.draft.forestId,
+          notes: buildApprovedExecutionNotes(draftPayload, approvedTestingInstructions),
+          projectName: draftPayload.projectName || hydrated.run.projectName || "Jungle",
+          skipCodex: draftPayload.skipCodex,
+          url: draftPayload.url || "http://127.0.0.1:3000"
+        },
+        emitEvent,
+        draftPayload.objective || "Validate critical user flow",
+        maxAttempts,
+        hydrated.run,
+        shouldRegenerateOnExecution ? null : hydrated.draft
+      );
+    } finally {
+      this.activePersistentRunIds.delete(runId);
+    }
+  }
+
+  async orchestrateTask(input, emitEvent) {
+    const objective =
+      (typeof input.task === "string" && input.task.trim()) ||
+      (typeof input.objective === "string" && input.objective.trim()) ||
+      "Validate critical user flow";
+    const requestedMaxAttempts = Number(input.maxAttempts || MAX_AGENTIC_LOOPS);
+    const maxAttempts = Math.min(
+      MAX_AGENTIC_LOOPS,
+      Number.isFinite(requestedMaxAttempts) && requestedMaxAttempts > 0 ? requestedMaxAttempts : MAX_AGENTIC_LOOPS
+    );
+
+    if (!this.persistence.isEnabled()) {
+      return this.executeImmediateOrchestration(input, emitEvent, objective, maxAttempts);
+    }
+
+    return this.prepareApprovalRun(input, emitEvent, objective, maxAttempts);
   }
 
   async confirmAndRun(input, emitEvent) {
@@ -758,7 +1635,7 @@ class AgenticLoopManager {
     );
     ensureDir(artifactsDir);
 
-    const actionDelayMs = Number(input.actionDelayMs ?? 3000);
+    const actionDelayMs = Number(input.actionDelayMs ?? 500);
     const playwrightProgram = generatePlaywrightProgram(normalizedParser, actionDelayMs);
     const parserPath = path.join(artifactsDir, "request_parser.json");
     const programPath = path.join(artifactsDir, "playwright_executor.generated.js");

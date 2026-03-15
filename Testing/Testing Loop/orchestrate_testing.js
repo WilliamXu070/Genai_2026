@@ -171,6 +171,44 @@ function shouldStop(orchestration) {
   return orchestration?.final_verdict === "pass" && orchestration?.execution?.status === "pass" && !orchestration?.escalated;
 }
 
+function normalizeSignalText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 180);
+}
+
+function buildSignalFingerprint(orchestration, fixPacket) {
+  const critique = orchestration?.critique || {};
+  const execution = orchestration?.execution || {};
+  const topDefects = Array.isArray(fixPacket?.topDefects)
+    ? fixPacket.topDefects
+    : Array.isArray(critique?.defects)
+      ? critique.defects
+      : [];
+
+  const defectKeys = topDefects
+    .slice(0, 3)
+    .map((defect) => defect?.id || normalizeSignalText(defect?.description || defect?.title || "unknown"))
+    .filter(Boolean)
+    .join("|");
+
+  return JSON.stringify({
+    executionStatus: execution?.status || fixPacket?.executionStatus || "fail",
+    verdict: orchestration?.final_verdict || fixPacket?.verdict || "fail",
+    escalated: Boolean(orchestration?.escalated || fixPacket?.escalated),
+    defectKeys,
+    critiqueSummary: normalizeSignalText(critique?.summary || fixPacket?.summary || ""),
+    executionSummary: normalizeSignalText(execution?.summary || "")
+  });
+}
+
+function hasRepeatedSignal(previousFingerprint, nextFingerprint) {
+  return Boolean(previousFingerprint) && Boolean(nextFingerprint) && previousFingerprint === nextFingerprint;
+}
+
 function defaultCodexFixCmd() {
   return 'codex exec "Read {{feedback_file}} and apply code fixes in {{workspace}} so tests pass."';
 }
@@ -192,6 +230,8 @@ async function main() {
   let lastFixPacket = null;
   let final = null;
   const fixCmdTemplate = (args.codexFixCmd || "").trim();
+  let lastSignalFingerprint = "";
+  let haltReason = "";
 
   for (let iteration = 1; iteration <= args.maxIterations; iteration += 1) {
     const iterDir = path.join(runRoot, `iteration_${iteration}`);
@@ -212,16 +252,28 @@ async function main() {
     const fixPacket = toFixPacket(orchestration, iteration);
     fs.writeFileSync(path.join(iterDir, "fix_packet.json"), JSON.stringify(fixPacket, null, 2), "utf8");
     lastFixPacket = fixPacket;
+    const signalFingerprint = buildSignalFingerprint(orchestration, fixPacket);
+    fs.writeFileSync(path.join(iterDir, "signal_fingerprint.json"), JSON.stringify({
+      fingerprint: signalFingerprint
+    }, null, 2), "utf8");
 
     final = {
       iteration,
       orchestration,
-      fixPacket
+      fixPacket,
+      signalFingerprint
     };
 
     if (shouldStop(orchestration)) {
       break;
     }
+
+    if (hasRepeatedSignal(lastSignalFingerprint, signalFingerprint)) {
+      haltReason = "repeated_signal_after_fix";
+      break;
+    }
+
+    lastSignalFingerprint = signalFingerprint;
 
     const feedbackPath = path.join(iterDir, "feedback_input.json");
     fs.writeFileSync(feedbackPath, JSON.stringify(lastFixPacket, null, 2), "utf8");
@@ -247,14 +299,20 @@ async function main() {
   }
 
   const summary = {
-    status: shouldStop(final?.orchestration) ? "pass" : "max_iterations_reached",
+    status: shouldStop(final?.orchestration)
+      ? "pass"
+      : haltReason
+        ? "stopped_repeated_signal"
+        : "max_iterations_reached",
     runRoot,
     finalIteration: final?.iteration || 0,
     finalVerdict: final?.orchestration?.final_verdict || "fail",
     executionStatus: final?.orchestration?.execution?.status || "fail",
     escalated: Boolean(final?.orchestration?.escalated),
     severity: Number(final?.orchestration?.critique?.overall_severity || 0),
-    fixPacket: final?.fixPacket || null
+    fixPacket: final?.fixPacket || null,
+    haltReason: haltReason || null,
+    signalFingerprint: final?.signalFingerprint || null
   };
   fs.writeFileSync(path.join(runRoot, "summary.json"), JSON.stringify(summary, null, 2), "utf8");
   process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
@@ -266,3 +324,12 @@ if (require.main === module) {
     process.exit(1);
   });
 }
+
+module.exports = {
+  buildSignalFingerprint,
+  hasRepeatedSignal,
+  normalizePayload,
+  parseArgs,
+  readPayload,
+  shouldStop
+};

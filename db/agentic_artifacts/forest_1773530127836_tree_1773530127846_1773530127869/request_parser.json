@@ -1,0 +1,61 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "goto",
+      "originalAction": "goto",
+      "target": "http://127.0.0.1:3095",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Atlas Airfolio",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Launch Runway",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Cabin Systems",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 4,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Landing Brief",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 5,
+      "action": "scrollPage",
+      "originalAction": "scrollPage",
+      "target": "down",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 6,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Open the hangar",
+      "value": null,
+      "assert": null
+    }
+  ]
+}

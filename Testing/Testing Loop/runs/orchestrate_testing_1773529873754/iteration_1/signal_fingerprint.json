@@ -1,0 +1,3 @@
+{
+  "fingerprint": "{\"executionStatus\":\"pass\",\"verdict\":\"pass\",\"escalated\":false,\"defectKeys\":\"inertial_and_rotational_discontinuity|path_tracer_jitter|disconnected_content_triggers\",\"critiqueSummary\":\"the website s core scroll driven animation suffers from several fundamental physics and motion design flaws the airplane s movement lacks inertia starting and stopping instantly wh\",\"executionSummary\":\"procedure executed successfully\"}"
+}

@@ -1,0 +1,39 @@
+{
+  "completedAt": "2026-03-15T00:33:09.159Z",
+  "ok": true,
+  "requestId": "codex_manual_1",
+  "result": {
+    "runId": "run_1773534788796",
+    "projectName": "Testing",
+    "scenarioName": "ui_open",
+    "status": "pass",
+    "command": "npm start",
+    "url": "http://127.0.0.1:3000",
+    "perturbationProfile": "none",
+    "createdAt": "2026-03-15T00:33:08.796Z",
+    "updatedAt": "2026-03-15T00:33:09.159Z",
+    "startedAt": "2026-03-15T00:33:08.805Z",
+    "endedAt": "2026-03-15T00:33:09.159Z",
+    "resultSummary": "Run completed. App ready and scenario steps executed.",
+    "failedStep": null,
+    "artifacts": [
+      {
+        "type": "command_log",
+        "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773534788796\\1773534789158_command_log.txt"
+      },
+      {
+        "type": "result_summary",
+        "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773534788796\\1773534789158_summary.txt"
+      }
+    ],
+    "steps": [
+      {
+        "index": 0,
+        "action": "assert",
+        "target": "ok",
+        "status": "pass",
+        "note": "Executed by MVP runner"
+      }
+    ]
+  }
+}

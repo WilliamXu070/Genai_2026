@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any, Dict
+from typing import Any, Dict, List
 from urllib import request
 
 from .agentic_contracts import EnvironmentSnapshot, ExecutionPlan
@@ -17,6 +17,66 @@ def _extract_json(text: str) -> Dict[str, Any]:
     if end >= 0:
       text = trimmed[:end]
   return json.loads(text.strip())
+
+
+def _is_placeholder_target(target: Any) -> bool:
+  t = str(target or "").strip().lower()
+  if not t:
+    return True
+  placeholder_tokens = ["selector-for-", "todo", "tbd", "replace-me", "example selector", "example_selector"]
+  return any(token in t for token in placeholder_tokens)
+
+
+def _is_invalid_step_target(step: Dict[str, Any]) -> bool:
+  action = str(step.get("action", "")).strip().lower()
+  target = step.get("target")
+  if action == "wait":
+    value = step.get("value")
+    try:
+      return int(value) <= 0
+    except Exception:
+      return True
+  if action == "screenshot":
+    if target is None or str(target).strip() == "":
+      return False
+  return _is_placeholder_target(target)
+
+
+def _step_matches(step: Dict[str, Any], action: str, target: str) -> bool:
+  return str(step.get("action", "")).strip().lower() == action.lower() and str(step.get("target", "")).strip() == target
+
+
+def _ensure_coverage_steps(steps: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+  normalized_steps = list(steps or [])
+  has_scroll = any(str(step.get("action", "")).strip().lower() == "scrollpage" for step in normalized_steps)
+  has_screenshot = any(str(step.get("action", "")).strip().lower() == "screenshot" for step in normalized_steps)
+
+  if not has_scroll:
+    normalized_steps.append({"action": "scrollPage", "target": "down"})
+  if not has_screenshot:
+    normalized_steps.append({"action": "screenshot", "target": "fullPage"})
+  return normalized_steps
+
+
+def _inject_required_interactions(steps: List[Dict[str, Any]], required: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+  normalized_steps = list(steps or [])
+  insert_index = 0
+  for idx, step in enumerate(normalized_steps):
+    if str(step.get("action", "")).strip().lower() == "goto":
+      insert_index = idx + 1
+      break
+
+  for interaction in required:
+    action = str(interaction.get("action", "")).strip()
+    target = str(interaction.get("target", "")).strip()
+    if not action or not target:
+      continue
+    if any(_step_matches(step, action, target) for step in normalized_steps):
+      continue
+
+    normalized_steps.insert(insert_index, {"action": action, "target": target})
+    insert_index += 1
+  return normalized_steps
 
 
 class OpenAIExecutionAgent:
@@ -71,6 +131,15 @@ class OpenAIExecutionAgent:
       return None
 
   def plan(self, snapshot: EnvironmentSnapshot) -> ExecutionPlan:
+    required_interactions = snapshot.get("required_interactions")
+    if not isinstance(required_interactions, list):
+      required_interactions = []
+    def finalize(plan: ExecutionPlan) -> ExecutionPlan:
+      steps = plan.get("steps")
+      if isinstance(steps, list):
+        plan["steps"] = _ensure_coverage_steps(_inject_required_interactions(steps, required_interactions))
+      return plan
+
     prompt = (
       "Build an execution-ready Playwright plan using the repository context and environment snapshot.\n\n"
       f"SNAPSHOT:\n{json.dumps(snapshot, indent=2)}\n\n"
@@ -78,17 +147,25 @@ class OpenAIExecutionAgent:
       "- include app_bootstrap instructions when app creation/startup might be needed\n"
       "- include at least one visibility assertion\n"
       "- include observation wait for animation-heavy pages (>=10000ms)\n"
+      "- default to broad coverage when user scope is not narrow: click all discovered controls, then scroll the full page\n"
       "- include final screenshot\n"
-      "- avoid click/fill if controls are absent\n"
+      "- use only selectors grounded in snapshot key_files/button_controls (no placeholder selectors)\n"
+      "- if snapshot.required_interactions is non-empty, include those steps before assertions\n"
+      "- when a simulation requires user activation (e.g., Start/Toggle button), click it before wait/assert steps\n"
+      "- avoid click/fill only when controls are truly absent from provided context\n"
+      "- for wait steps, set milliseconds in step.value (not step.target)\n"
     )
 
     candidate = self._call_openai(prompt)
     if not candidate:
-      return fallback_execution_plan(snapshot)
+      return finalize(fallback_execution_plan(snapshot))
 
     steps = candidate.get("steps")
     if not isinstance(steps, list) or len(steps) == 0:
-      return fallback_execution_plan(snapshot)
+      return finalize(fallback_execution_plan(snapshot))
+    if any(_is_invalid_step_target(step) for step in steps):
+      return finalize(fallback_execution_plan(snapshot))
+    steps = _inject_required_interactions(steps, required_interactions)
 
     app_bootstrap = candidate.get("app_bootstrap")
     if not isinstance(app_bootstrap, dict):
@@ -102,11 +179,13 @@ class OpenAIExecutionAgent:
         "startup_timeout_ms": 60000
       }
 
-    return {
+    return finalize(
+      {
       "objective": candidate.get("objective") or snapshot.get("feature_goal", "Validate feature"),
       "rationale": candidate.get("rationale", ""),
       "app_bootstrap": app_bootstrap,
       "steps": steps,
       "assertions": candidate.get("assertions", []),
       "success_criteria": candidate.get("success_criteria", [])
-    }
+      }
+    )

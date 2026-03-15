@@ -1,0 +1,3 @@
+{
+  "fingerprint": "{\"executionStatus\":\"pass\",\"verdict\":\"pass\",\"escalated\":false,\"defectKeys\":\"scroll_animation_jank|unphysical_scroll_inertia|missing_tangential_rotation\",\"critiqueSummary\":\"the website fails to deliver its intended calm motion experience due to critical execution flaws the core scroll linked animation suffers from severe performance jank causing the a\",\"executionSummary\":\"procedure executed successfully\"}"
+}

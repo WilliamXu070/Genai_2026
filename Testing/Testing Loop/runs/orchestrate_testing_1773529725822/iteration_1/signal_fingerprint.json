@@ -1,0 +1,3 @@
+{
+  "fingerprint": "{\"executionStatus\":\"pass\",\"verdict\":\"pass\",\"escalated\":false,\"defectKeys\":\"inertia_less_transformation|non_tangential_path_following|abrupt_state_transition\",\"critiqueSummary\":\"the core flight path concept is strong but the execution is undermined by critical flaws in motion design the animation is directly tied to scroll input resulting in an inertia les\",\"executionSummary\":\"procedure executed successfully\"}"
+}

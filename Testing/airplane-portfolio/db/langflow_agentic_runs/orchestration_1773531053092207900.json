@@ -1,0 +1,193 @@
+{
+  "plan": {
+    "objective": "Validate airplane portfolio end-to-end",
+    "rationale": "Fallback deterministic plan based on environment snapshot.",
+    "app_bootstrap": {
+      "required": false,
+      "reason": "Fallback plan assumes app is already available at target URL.",
+      "workspace": ".",
+      "files": [],
+      "install_command": "",
+      "start_command": "",
+      "startup_timeout_ms": 60000
+    },
+    "steps": [
+      {
+        "action": "goto",
+        "target": "http://127.0.0.1:3095"
+      },
+      {
+        "action": "click",
+        "target": "text=Launch"
+      },
+      {
+        "action": "click",
+        "target": "text=Flight Path"
+      },
+      {
+        "action": "click",
+        "target": "text=Black Box"
+      },
+      {
+        "action": "click",
+        "target": "text=Hangar"
+      },
+      {
+        "action": "click",
+        "target": ".primary-link"
+      },
+      {
+        "action": "click",
+        "target": ".secondary-link"
+      },
+      {
+        "action": "assertVisible",
+        "target": "body"
+      },
+      {
+        "action": "wait",
+        "target": "time",
+        "value": 10000
+      },
+      {
+        "action": "scrollPage",
+        "target": "down"
+      },
+      {
+        "action": "screenshot",
+        "target": "fullPage"
+      }
+    ],
+    "assertions": [
+      "Page renders",
+      "No fatal runtime errors during observation window"
+    ],
+    "success_criteria": [
+      "Execution completes",
+      "Video artifact exists"
+    ]
+  },
+  "execution": {
+    "status": "pass",
+    "summary": "Procedure executed successfully.",
+    "steps": [],
+    "video_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13928_1773530950809\\b0dff9f5bc8514ef9d89bd1ca84ec14f.webm",
+    "artifacts": [
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13928_1773530950809\\b0dff9f5bc8514ef9d89bd1ca84ec14f.webm",
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13928_1773530950809\\final_1773530972905.png",
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13928_1773530950809\\playwright_executor.generated.js",
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13928_1773530950809\\request_parser.json",
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13928_1773530950809\\step_1773530972056.png"
+    ],
+    "generated_code_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13928_1773530950809\\playwright_executor.generated.js",
+    "parser_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13928_1773530950809\\request_parser.json",
+    "stdout": "{\"status\":\"pass\",\"summary\":\"Procedure executed successfully.\",\"steps\":[],\"video_path\":\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13928_1773530950809\\\\b0dff9f5bc8514ef9d89bd1ca84ec14f.webm\",\"artifacts\":[\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13928_1773530950809\\\\b0dff9f5bc8514ef9d89bd1ca84ec14f.webm\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13928_1773530950809\\\\final_1773530972905.png\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13928_1773530950809\\\\playwright_executor.generated.js\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13928_1773530950809\\\\request_parser.json\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13928_1773530950809\\\\step_1773530972056.png\"]}",
+    "stderr": "",
+    "app_runtime": {
+      "status": "already_running",
+      "target_url": "http://127.0.0.1:3095",
+      "ready": true,
+      "started_by_orchestrator": false,
+      "workspace": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio",
+      "start_command": "",
+      "install_command": "",
+      "log_path": null,
+      "pid": null,
+      "error_message": ""
+    }
+  },
+  "critique": {
+    "verdict": "fail",
+    "overall_severity": 8.0,
+    "summary": "The animation demonstrates a foundational concept of scroll-linked path following but fails on the core principles of believable physics. The motion is a direct, linear mapping of the scroll input, resulting in a weightless, robotic, and jerky experience that lacks inertia, momentum, and smooth rotational transitions. This directly contradicts the stated goal of 'calm motion' and breaks the physical metaphor of a flying aircraft.",
+    "defects": [
+      {
+        "id": "zero_inertia_motion_model",
+        "severity_0_10": 9,
+        "description": "The airplane's position along the path is directly and linearly mapped to the scroll position. This results in instantaneous starts and stops, with no acceleration or deceleration. This lack of momentum makes the motion feel jerky, unforgiving to noisy scroll inputs, and breaks the physical metaphor of an object with mass.",
+        "evidence": "At 0:01, when the user stops scrolling, the airplane stops instantly with no coasting or easing out. The motion throughout the video shows this direct 1:1 mapping.",
+        "recommendation": "Decouple the airplane's progress from the raw scroll input. Use the scroll position to update a `targetProgress` variable (0.0 to 1.0). In the animation loop (`requestAnimationFrame`), animate the `currentProgress` towards the `targetProgress` using a physics-based model like a spring-damper system. This will introduce natural acceleration, deceleration, and a sense of weight. Example: `force = (targetProgress - currentProgress) * stiffness; velocity = (velocity + force) * damping; currentProgress += velocity;`."
+      },
+      {
+        "id": "instantaneous_angular_acceleration",
+        "severity_0_10": 8,
+        "description": "The airplane's rotation instantly snaps to align perfectly with the tangent of the path at its current position. This violates the principle of rotational inertia, as an object with mass cannot change its angular velocity in zero time. The effect is unnatural, making the object feel weightless and digitally 'stapled' to the path rather than flying along it.",
+        "evidence": "During the S-curve section (0:16-0:17), the airplane's nose snaps from pointing up to pointing down with no visible transitional rotation or banking.",
+        "recommendation": "Decouple the object's rotation from the path's immediate tangent. The path's tangent should define a *target* rotation. In the animation loop, smoothly interpolate the airplane's current rotation towards this target rotation over time using a function like `lerp` or a damped spring. Example: `targetAngle = getAngleFromPathTangent(currentPosition); airplane.rotation = lerp(airplane.rotation, targetAngle, 0.1);`."
+      },
+      {
+        "id": "disjointed_waypoint_transition",
+        "severity_0_10": 6,
+        "description": "The informational cards on the right transition based on the airplane crossing discrete, invisible thresholds. The transitions are simple cross-fades that are not continuously synchronized with the airplane's motion, creating a disjointed experience. This breaks motion readability, as the primary visual focus (the plane) is disconnected from the content updates.",
+        "evidence": "At 0:17, the 'Cabin Systems' card is visible. As the plane moves slightly forward, it is instantly replaced by the 'Atlas Stack' card at 0:18 via a brief, disconnected fade.",
+        "recommendation": "Make the state of the content cards a direct, continuous function of the airplane's progress *between* waypoints. As the plane travels from Waypoint A to B, the animation progress (e.g., opacity, transform) of Card A should go from 1 to 0, while Card B goes from 0 to 1, directly mapped to the plane's percentage of travel along that specific path segment."
+      },
+      {
+        "id": "path_traversal_glitching",
+        "severity_0_10": 4,
+        "description": "At points of high curvature, the airplane's movement can appear slightly faceted or angular, as if it is jumping between discrete points on the path rather than following a smooth curve. This is a subtle form of tunneling that makes the motion feel less organic.",
+        "evidence": "At 0:17, in the tightest part of the S-curve, the motion trail behind the plane highlights slight angular jumps instead of a perfectly smooth arc, especially noticeable when scrubbing back and forth.",
+        "recommendation": "Increase the granularity of the path position calculations. If using a physics model with velocity, implement sub-stepping within the animation loop. For a given frame's time delta, calculate and render several intermediate positions along the curve to ensure the object tracks it smoothly, especially at high scroll speeds."
+      }
+    ],
+    "strengths": [
+      "The core concept of a scroll-linked flight path to navigate a portfolio is creative and engaging.",
+      "The visual design, including the UI elements, color palette, and overall aesthetic, is clean and well-executed.",
+      "The implementation successfully maps scroll progress to a position along a complex SVG path, demonstrating a foundational understanding of the technique."
+    ],
+    "recommendations": [
+      "Overhaul the motion model to be physics-based. Instead of directly mapping scroll to position, use scroll to apply a 'force' or set a 'target' position, and let a spring-damper simulation drive the airplane's actual position and rotation. This is the highest-impact change that will address the core issues of inertia and weight.",
+      "Synchronize all secondary animations (like the content cards) to be continuous functions of the primary motion controller (the airplane's progress), ensuring a cohesive and readable experience.",
+      "Refine path-following logic to ensure high-fidelity tracking around tight curves, possibly by using time-delta-based integration and sub-stepping to prevent visual artifacts at high speeds."
+    ],
+    "source": "gemini_chain_video",
+    "critic_chain": {
+      "video": {
+        "video_input_used": true,
+        "video_reason": "inline_video_attached",
+        "video_bytes": 1914244
+      },
+      "detailed_text": "Excellent. I have reviewed the provided video capture of your website. As a strict animation and physics critic, I must be direct: the implementation demonstrates a foundational understanding of scroll-linked animation but fails to deliver on the core principles of believable, physical motion. The result is an experience that feels more like scrubbing a timeline than guiding an object with mass and momentum through a fluid medium.\n\nHere is my comprehensive, technical breakdown of the issues.\n\n### 1) Instantaneous Angular Acceleration\n\n**What happens**\nAs the airplane icon moves along the curved path, its orientation (rotation) instantly and perfectly aligns with the tangent of the path at its exact position. When the path's curvature changes, such as in the S-curve section (0:16-0:17), the airplane's nose snaps from pointing up to pointing down with no transitional rotation.\n\n**Why it looks wrong**\nThis violates the principle of rotational inertia. An object with mass cannot change its angular velocity from V1 to V2 in zero time; it requires a period of acceleration. This instantaneous snapping makes the object feel weightless, digital, and robotic. It completely lacks the \"calm motion\" your headline promises. This is a classic case of **missing tangential transfer**, where the linear velocity along the path does not realistically translate into the corresponding angular momentum. The airplane doesn't feel like it's *flying* the path; it feels like it's being *stapled* to it, frame by frame.\n\n**Fix**\nDecouple the object's rotation from the path's immediate tangent. The path's tangent should define a *target* rotation, not the *current* rotation. In your animation loop, use a smoothing function to move the current rotation towards the target rotation over time. A simple linear interpolation (`lerp`) or a damped spring model would work well.\n\n*   **Pseudocode Example:**\n    `targetAngle = getAngleFromPathTangent(currentPosition)`\n    `airplane.rotation = lerp(airplane.rotation, targetAngle, 0.1)`\n\nThis will cause the airplane to lag slightly behind the curve, creating a natural banking and turning effect that communicates weight and momentum.\n\n### 2) Zero-Inertia Motion Model\n\n**What happens**\nThe airplane's position along the path is directly and linearly mapped to the browser's scroll position. When the user stops scrolling, the airplane stops instantly (0:01). When they begin scrolling, it begins moving instantly. There is no acceleration or deceleration.\n\n**Why it looks wrong**\nThis creates extreme **energy volatility**. The system has zero momentum. The motion is jerky and unforgiving of noisy scroll inputs (e.g., from a notched mouse wheel). This breaks the physical metaphor of an airplane, which must overcome inertia to start moving and has momentum that causes it to coast to a stop. The user feels like they are dragging a slider handle, not piloting a craft.\n\n**Fix**\nIntroduce a layer of abstraction between the scroll input and the airplane's position. The scroll position should update a `targetProgress` variable (from 0.0 to 1.0). The airplane's `currentProgress` should then animate towards this target value using an easing function or a physics-based spring.\n\n*   **Pseudocode Example (Spring Model):**\n    `// On scroll event:`\n    `targetProgress = window.scrollY / (document.body.scrollHeight - window.innerHeight)`\n\n    `// In animation loop (requestAnimationFrame):`\n    `force = (targetProgress - currentProgress) * stiffness`\n    `velocity = (velocity + force) * damping`\n    `currentProgress += velocity`\n    `updateAirplanePosition(currentProgress)`\n\nThis will give the animation a satisfying sense of weight. It will smoothly accelerate and decelerate, gliding to a gentle stop even if the user's scrolling is abrupt.\n\n### 3) Disjointed Waypoint State Transition\n\n**What happens**\nAs the airplane moves along its path, the informational cards on the right-hand side appear to transition based on the plane crossing invisible, discrete thresholds. For example, at 0:17, the \"Cabin Systems\" card is fully visible, and as the plane moves forward, it is instantly replaced by the \"Atlas Stack\" card at 0:18. The transition is a simple, brief cross-fade.\n\n**Why it looks wrong**\nThis fails on **motion readability**. The animation of the content cards is not synchronized with the primary animation of the airplane in a continuous way. The user's eye is tracking the plane, but the main content change happens elsewhere on the screen with a disconnected, binary state change. It feels like a PowerPoint slide transition triggered by a scroll event, not an integrated part of a single, cohesive motion system.\n\n**Fix**\nThe state of the content cards should be a direct, continuous function of the airplane's progress *between* waypoints. As the plane travels from Waypoint 1 to Waypoint 2, the opacity and transform of Card 1 should animate from 100% to 0, while Card 2 animates from 0 to 100%. The progress of this transition animation should be directly mapped to the plane's percentage of travel along that specific path segment. This creates a clear, causal link that is much easier for the user to follow and feels far more sophisticated.\n\n### 4) Path Traversal Corner Glitching\n\n**What happens**\nWhile not extreme in this example, the logic that places the airplane on the path can be susceptible to issues at points of high curvature. At 0:17, as the plane navigates the tightest part of the S-curve, its motion path appears slightly faceted. The motion trail behind the plane highlights this, showing slight angular jumps rather than a perfectly smooth arc.\n\n**Why it looks wrong**\nThis is a subtle form of **frame-rate clipping or tunneling**. If the position is calculated at discrete intervals (per frame), and the user scrolls quickly, the plane can appear to \"jump\" from one point on the curve to the next, cutting across the corner instead of following it. The motion feels less organic and more like it's moving along a low-polygon-count path.\n\n**Fix**\nEnsure your path length and position calculations are highly granular. Instead of just calculating the position for the current scroll percentage, use a time-delta (`\u0394t`) in your animation loop to calculate intermediate steps, especially when using a physics model as suggested in Fix #2. If the velocity is high, calculate and render several sub-steps within a single frame to ensure the object smoothly tracks the curve. This technique, known as sub-stepping or integration, is standard practice in physics simulations to prevent tunneling and improve accuracy.",
+      "severity": {
+        "overall_severity": 8,
+        "severity_reasoning": "The critique identifies multiple fundamental failures in implementing believable physical motion. The animation is directly and linearly mapped to scroll, which violates core principles of inertia, momentum, and acceleration. This results in an experience that is described as 'robotic,' 'weightless,' and 'jerky,' directly contradicting the intended goal of fluid, physical motion.",
+        "top_risks": [
+          "Lack of Rotational Inertia: The airplane's rotation snaps instantly to the path's tangent instead of turning smoothly, which makes it feel unnatural and weightless.",
+          "Zero-Inertia Motion Model: The direct mapping of scroll position to airplane position creates an abrupt, unforgiving motion with no acceleration or deceleration, breaking the physical metaphor.",
+          "Disconnected State Transitions: Content cards appear and disappear with abrupt, unsynchronized transitions that are not continuously linked to the airplane's progress along the path.",
+          "Path Traversal Glitching: The object's movement along curved paths can appear faceted or cut corners, especially during fast scrolling, indicating issues with calculation granularity."
+        ],
+        "verdict": "fail"
+      },
+      "raw_model_outputs": {
+        "stage1_text": "Excellent. I have reviewed the provided video capture of your website. As a strict animation and physics critic, I must be direct: the implementation demonstrates a foundational understanding of scroll-linked animation but fails to deliver on the core principles of believable, physical motion. The result is an experience that feels more like scrubbing a timeline than guiding an object with mass and momentum through a fluid medium.\n\nHere is my comprehensive, technical breakdown of the issues.\n\n### 1) Instantaneous Angular Acceleration\n\n**What happens**\nAs the airplane icon moves along the curved path, its orientation (rotation) instantly and perfectly aligns with the tangent of the path at its exact position. When the path's curvature changes, such as in the S-curve section (0:16-0:17), the airplane's nose snaps from pointing up to pointing down with no transitional rotation.\n\n**Why it looks wrong**\nThis violates the principle of rotational inertia. An object with mass cannot change its angular velocity from V1 to V2 in zero time; it requires a period of acceleration. This instantaneous snapping makes the object feel weightless, digital, and robotic. It completely lacks the \"calm motion\" your headline promises. This is a classic case of **missing tangential transfer**, where the linear velocity along the path does not realistically translate into the corresponding angular momentum. The airplane doesn't feel like it's *flying* the path; it feels like it's being *stapled* to it, frame by frame.\n\n**Fix**\nDecouple the object's rotation from the path's immediate tangent. The path's tangent should define a *target* rotation, not the *current* rotation. In your animation loop, use a smoothing function to move the current rotation towards the target rotation over time. A simple linear interpolation (`lerp`) or a damped spring model would work well.\n\n*   **Pseudocode Example:**\n    `targetAngle = getAngleFromPathTangent(currentPosition)`\n    `airplane.rotation = lerp(airplane.rotation, targetAngle, 0.1)`\n\nThis will cause the airplane to lag slightly behind the curve, creating a natural banking and turning effect that communicates weight and momentum.\n\n### 2) Zero-Inertia Motion Model\n\n**What happens**\nThe airplane's position along the path is directly and linearly mapped to the browser's scroll position. When the user stops scrolling, the airplane stops instantly (0:01). When they begin scrolling, it begins moving instantly. There is no acceleration or deceleration.\n\n**Why it looks wrong**\nThis creates extreme **energy volatility**. The system has zero momentum. The motion is jerky and unforgiving of noisy scroll inputs (e.g., from a notched mouse wheel). This breaks the physical metaphor of an airplane, which must overcome inertia to start moving and has momentum that causes it to coast to a stop. The user feels like they are dragging a slider handle, not piloting a craft.\n\n**Fix**\nIntroduce a layer of abstraction between the scroll input and the airplane's position. The scroll position should update a `targetProgress` variable (from 0.0 to 1.0). The airplane's `currentProgress` should then animate towards this target value using an easing function or a physics-based spring.\n\n*   **Pseudocode Example (Spring Model):**\n    `// On scroll event:`\n    `targetProgress = window.scrollY / (document.body.scrollHeight - window.innerHeight)`\n\n    `// In animation loop (requestAnimationFrame):`\n    `force = (targetProgress - currentProgress) * stiffness`\n    `velocity = (velocity + force) * damping`\n    `currentProgress += velocity`\n    `updateAirplanePosition(currentProgress)`\n\nThis will give the animation a satisfying sense of weight. It will smoothly accelerate and decelerate, gliding to a gentle stop even if the user's scrolling is abrupt.\n\n### 3) Disjointed Waypoint State Transition\n\n**What happens**\nAs the airplane moves along its path, the informational cards on the right-hand side appear to transition based on the plane crossing invisible, discrete thresholds. For example, at 0:17, the \"Cabin Systems\" card is fully visible, and as the plane moves forward, it is instantly replaced by the \"Atlas Stack\" card at 0:18. The transition is a simple, brief cross-fade.\n\n**Why it looks wrong**\nThis fails on **motion readability**. The animation of the content cards is not synchronized with the primary animation of the airplane in a continuous way. The user's eye is tracking the plane, but the main content change happens elsewhere on the screen with a disconnected, binary state change. It feels like a PowerPoint slide transition triggered by a scroll event, not an integrated part of a single, cohesive motion system.\n\n**Fix**\nThe state of the content cards should be a direct, continuous function of the airplane's progress *between* waypoints. As the plane travels from Waypoint 1 to Waypoint 2, the opacity and transform of Card 1 should animate from 100% to 0, while Card 2 animates from 0 to 100%. The progress of this transition animation should be directly mapped to the plane's percentage of travel along that specific path segment. This creates a clear, causal link that is much easier for the user to follow and feels far more sophisticated.\n\n### 4) Path Traversal Corner Glitching\n\n**What happens**\nWhile not extreme in this example, the logic that places the airplane on the path can be susceptible to issues at points of high curvature. At 0:17, as the plane navigates the tightest part of the S-curve, its motion path appears slightly faceted. The motion trail behind the plane highlights this, showing slight angular jumps rather than a perfectly smooth arc.\n\n**Why it looks wrong**\nThis is a subtle form of **frame-rate clipping or tunneling**. If the position is calculated at discrete intervals (per frame), and the user scrolls quickly, the plane can appear to \"jump\" from one point on the curve to the next, cutting across the corner instead of following it. The motion feels less organic and more like it's moving along a low-polygon-count path.\n\n**Fix**\nEnsure your path length and position calculations are highly granular. Instead of just calculating the position for the current scroll percentage, use a time-delta (`\u0394t`) in your animation loop to calculate intermediate steps, especially when using a physics model as suggested in Fix #2. If the velocity is high, calculate and render several sub-steps within a single frame to ensure the object smoothly tracks the curve. This technique, known as sub-stepping or integration, is standard practice in physics simulations to prevent tunneling and improve accuracy.",
+        "stage2_text": "```json\n{\n  \"overall_severity\": 8,\n  \"severity_reasoning\": \"The critique identifies multiple fundamental failures in implementing believable physical motion. The animation is directly and linearly mapped to scroll, which violates core principles of inertia, momentum, and acceleration. This results in an experience that is described as 'robotic,' 'weightless,' and 'jerky,' directly contradicting the intended goal of fluid, physical motion.\",\n  \"top_risks\": [\n    \"Lack of Rotational Inertia: The airplane's rotation snaps instantly to the path's tangent instead of turning smoothly, which makes it feel unnatural and weightless.\",\n    \"Zero-Inertia Motion Model: The direct mapping of scroll position to airplane position creates an abrupt, unforgiving motion with no acceleration or deceleration, breaking the physical metaphor.\",\n    \"Disconnected State Transitions: Content cards appear and disappear with abrupt, unsynchronized transitions that are not continuously linked to the airplane's progress along the path.\",\n    \"Path Traversal Glitching: The object's movement along curved paths can appear faceted or cut corners, especially during fast scrolling, indicating issues with calculation granularity.\"\n  ],\n  \"verdict\": \"fail\"\n}\n```",
+        "stage3_text": "```json\n{\n  \"verdict\": \"fail\",\n  \"overall_severity\": 8,\n  \"summary\": \"The animation demonstrates a foundational concept of scroll-linked path following but fails on the core principles of believable physics. The motion is a direct, linear mapping of the scroll input, resulting in a weightless, robotic, and jerky experience that lacks inertia, momentum, and smooth rotational transitions. This directly contradicts the stated goal of 'calm motion' and breaks the physical metaphor of a flying aircraft.\",\n  \"defects\": [\n    {\n      \"id\": \"zero_inertia_motion_model\",\n      \"severity_0_10\": 9,\n      \"description\": \"The airplane's position along the path is directly and linearly mapped to the scroll position. This results in instantaneous starts and stops, with no acceleration or deceleration. This lack of momentum makes the motion feel jerky, unforgiving to noisy scroll inputs, and breaks the physical metaphor of an object with mass.\",\n      \"evidence\": \"At 0:01, when the user stops scrolling, the airplane stops instantly with no coasting or easing out. The motion throughout the video shows this direct 1:1 mapping.\",\n      \"recommendation\": \"Decouple the airplane's progress from the raw scroll input. Use the scroll position to update a `targetProgress` variable (0.0 to 1.0). In the animation loop (`requestAnimationFrame`), animate the `currentProgress` towards the `targetProgress` using a physics-based model like a spring-damper system. This will introduce natural acceleration, deceleration, and a sense of weight. Example: `force = (targetProgress - currentProgress) * stiffness; velocity = (velocity + force) * damping; currentProgress += velocity;`.\"\n    },\n    {\n      \"id\": \"instantaneous_angular_acceleration\",\n      \"severity_0_10\": 8,\n      \"description\": \"The airplane's rotation instantly snaps to align perfectly with the tangent of the path at its current position. This violates the principle of rotational inertia, as an object with mass cannot change its angular velocity in zero time. The effect is unnatural, making the object feel weightless and digitally 'stapled' to the path rather than flying along it.\",\n      \"evidence\": \"During the S-curve section (0:16-0:17), the airplane's nose snaps from pointing up to pointing down with no visible transitional rotation or banking.\",\n      \"recommendation\": \"Decouple the object's rotation from the path's immediate tangent. The path's tangent should define a *target* rotation. In the animation loop, smoothly interpolate the airplane's current rotation towards this target rotation over time using a function like `lerp` or a damped spring. Example: `targetAngle = getAngleFromPathTangent(currentPosition); airplane.rotation = lerp(airplane.rotation, targetAngle, 0.1);`.\"\n    },\n    {\n      \"id\": \"disjointed_waypoint_transition\",\n      \"severity_0_10\": 6,\n      \"description\": \"The informational cards on the right transition based on the airplane crossing discrete, invisible thresholds. The transitions are simple cross-fades that are not continuously synchronized with the airplane's motion, creating a disjointed experience. This breaks motion readability, as the primary visual focus (the plane) is disconnected from the content updates.\",\n      \"evidence\": \"At 0:17, the 'Cabin Systems' card is visible. As the plane moves slightly forward, it is instantly replaced by the 'Atlas Stack' card at 0:18 via a brief, disconnected fade.\",\n      \"recommendation\": \"Make the state of the content cards a direct, continuous function of the airplane's progress *between* waypoints. As the plane travels from Waypoint A to B, the animation progress (e.g., opacity, transform) of Card A should go from 1 to 0, while Card B goes from 0 to 1, directly mapped to the plane's percentage of travel along that specific path segment.\"\n    },\n    {\n      \"id\": \"path_traversal_glitching\",\n      \"severity_0_10\": 4,\n      \"description\": \"At points of high curvature, the airplane's movement can appear slightly faceted or angular, as if it is jumping between discrete points on the path rather than following a smooth curve. This is a subtle form of tunneling that makes the motion feel less organic.\",\n      \"evidence\": \"At 0:17, in the tightest part of the S-curve, the motion trail behind the plane highlights slight angular jumps instead of a perfectly smooth arc, especially noticeable when scrubbing back and forth.\",\n      \"recommendation\": \"Increase the granularity of the path position calculations. If using a physics model with velocity, implement sub-stepping within the animation loop. For a given frame's time delta, calculate and render several intermediate positions along the curve to ensure the object tracks it smoothly, especially at high scroll speeds.\"\n    }\n  ],\n  \"strengths\": [\n    \"The core concept of a scroll-linked flight path to navigate a portfolio is creative and engaging.\",\n    \"The visual design, including the UI elements, color palette, and overall aesthetic, is clean and well-executed.\",\n    \"The implementation successfully maps scroll progress to a position along a complex SVG path, demonstrating a foundational understanding of the technique.\"\n  ],\n  \"recommendations\": [\n    \"Overhaul the motion model to be physics-based. Instead of directly mapping scroll to position, use scroll to apply a 'force' or set a 'target' position, and let a spring-damper simulation drive the airplane's actual position and rotation. This is the highest-impact change that will address the core issues of inertia and weight.\",\n    \"Synchronize all secondary animations (like the content cards) to be continuous functions of the primary motion controller (the airplane's progress), ensuring a cohesive and readable experience.\",\n    \"Refine path-following logic to ensure high-fidelity tracking around tight curves, possibly by using time-delta-based integration and sub-stepping to prevent visual artifacts at high speeds.\"\n  ],\n  \"score_breakdown\": {\n    \"physics_consistency\": 1,\n    \"collision_stability\": 4,\n    \"motion_readability\": 3,\n    \"temporal_smoothness\": 2\n  }\n}\n```"
+      },
+      "raw_model_diagnostics": {
+        "stage1": {
+          "ok": true,
+          "status_code": 200
+        },
+        "stage2": {
+          "ok": true,
+          "status_code": 200
+        },
+        "stage3": {
+          "ok": true,
+          "status_code": 200
+        }
+      }
+    },
+    "score_breakdown": {
+      "physics_consistency": 1,
+      "collision_stability": 4,
+      "motion_readability": 3,
+      "temporal_smoothness": 2
+    }
+  },
+  "final_verdict": "pass",
+  "escalated": false,
+  "severity_threshold": 8.0,
+  "pass_condition": "execution.status == pass AND critique.overall_severity <= 8.0"
+}

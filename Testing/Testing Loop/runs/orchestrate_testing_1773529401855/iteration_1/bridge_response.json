@@ -1,0 +1,173 @@
+{
+  "completedAt": "2026-03-14T23:03:21.893Z",
+  "ok": true,
+  "requestId": "orchestrate_testing_1773529401856_1",
+  "result": {
+    "plan": {
+      "objective": "Validate the airplane portfolio scroll experience and overall polish.",
+      "rationale": "Fallback deterministic plan based on environment snapshot.",
+      "app_bootstrap": {
+        "required": false,
+        "reason": "Fallback plan assumes app is already available at target URL.",
+        "workspace": ".",
+        "files": [],
+        "install_command": "",
+        "start_command": "",
+        "startup_timeout_ms": 60000
+      },
+      "steps": [
+        {
+          "action": "goto",
+          "target": "http://127.0.0.1:3095"
+        },
+        {
+          "action": "assertVisible",
+          "target": "body"
+        },
+        {
+          "action": "wait",
+          "target": "time",
+          "value": 10000
+        },
+        {
+          "action": "scrollPage",
+          "target": "down"
+        },
+        {
+          "action": "screenshot",
+          "target": "fullPage"
+        }
+      ],
+      "assertions": [
+        "Page renders",
+        "No fatal runtime errors during observation window"
+      ],
+      "success_criteria": [
+        "Execution completes",
+        "Video artifact exists"
+      ]
+    },
+    "execution": {
+      "status": "pass",
+      "summary": "Procedure executed successfully.",
+      "steps": [],
+      "video_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_6336_1773529413073\\e34d184b5305d8bd016baaa2f77bdc73.webm",
+      "artifacts": [
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_6336_1773529413073\\e34d184b5305d8bd016baaa2f77bdc73.webm",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_6336_1773529413073\\final_1773529425135.png",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_6336_1773529413073\\playwright_executor.generated.js",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_6336_1773529413073\\request_parser.json",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_6336_1773529413073\\step_1773529424785.png"
+      ],
+      "generated_code_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_6336_1773529413073\\playwright_executor.generated.js",
+      "parser_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_6336_1773529413073\\request_parser.json",
+      "stdout": "{\"status\":\"pass\",\"summary\":\"Procedure executed successfully.\",\"steps\":[],\"video_path\":\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_6336_1773529413073\\\\e34d184b5305d8bd016baaa2f77bdc73.webm\",\"artifacts\":[\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_6336_1773529413073\\\\e34d184b5305d8bd016baaa2f77bdc73.webm\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_6336_1773529413073\\\\final_1773529425135.png\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_6336_1773529413073\\\\playwright_executor.generated.js\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_6336_1773529413073\\\\request_parser.json\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_6336_1773529413073\\\\step_1773529424785.png\"]}",
+      "stderr": "",
+      "app_runtime": {
+        "status": "already_running",
+        "target_url": "http://127.0.0.1:3095",
+        "ready": true,
+        "started_by_orchestrator": false,
+        "workspace": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio",
+        "start_command": "",
+        "install_command": "",
+        "log_path": null,
+        "pid": null,
+        "error_message": ""
+      }
+    },
+    "critique": {
+      "verdict": "fail",
+      "overall_severity": 8,
+      "summary": "The website fails to deliver its intended 'calm motion' experience due to critical execution flaws. The core scroll-linked animation suffers from severe performance jank, causing the airplane icon to stutter and teleport rather than move smoothly. This is compounded by unnatural motion physics, where the airplane fails to orient itself along its path and scrolling lacks any inertial easing. Abrupt transitions between sections further create a disjointed and low-quality user experience that fundamentally undermines the project's aesthetic goals.",
+      "defects": [
+        {
+          "id": "scroll_animation_jank",
+          "severity_0_10": 9,
+          "description": "The primary scroll-linked animation is not smooth. The airplane icon and its glow effect visibly jump between discrete points instead of moving fluidly along the path. This is a classic case of 'jank' where expensive calculations are likely performed directly within a scroll event listener, blocking the browser's main thread and causing missed render frames.",
+          "evidence": "The stuttering and teleporting motion is clearly visible starting at timestamp 00:09 as the user scrolls down into the flight path section.",
+          "recommendation": "Decouple animation logic from the scroll event. Use the `onscroll` event only to update a target progress variable. Then, use a `requestAnimationFrame` loop to smoothly interpolate the airplane's current position towards the target position using a `lerp` function. Ensure all animated properties use hardware-accelerated CSS transforms (`translate3d`, `rotate`) instead of `top`/`left` to avoid expensive layout recalculations."
+        },
+        {
+          "id": "unphysical_scroll_inertia",
+          "severity_0_10": 8,
+          "description": "The page scrolling stops instantly when user input ceases. There is no inertial coasting or easing out after a flick gesture, which violates user expectations for natural momentum. This makes the interaction feel 'sticky,' robotic, and unsatisfying, as if the energy imparted by the user is immediately destroyed.",
+          "evidence": "Throughout the scroll interactions in the video (e.g., 00:09-00:11), the page comes to an abrupt halt with zero momentum.",
+          "recommendation": "Restore natural scroll physics. If using a custom scroll-jacking library, enable and configure its momentum and damping properties with a suitable ease-out curve (e.g., `cubic-bezier(0.25, 0.46, 0.45, 0.94)`). If this is a side-effect of the performance jank, fixing that issue should allow the browser's native, physics-based scrolling to function correctly. Avoid overriding native scroll behavior unless absolutely necessary."
+        },
+        {
+          "id": "missing_tangential_rotation",
+          "severity_0_10": 7,
+          "description": "The airplane icon moves along the curved flight path but maintains a static, fixed orientation. It does not rotate to align with the direction of travel, making it appear to slide unnaturally rather than fly. This creates a cognitive dissonance that undermines the 'flight' metaphor.",
+          "evidence": "Visible throughout the flight path animation from 00:09 onwards. The circular icon never changes its rotation as it follows the S-curve.",
+          "recommendation": "Calculate and apply the path's angle to the airplane icon. When calculating the icon's (x, y) position at a given progress, sample a second point infinitesimally further along the path. Use these two points to calculate the angle via `Math.atan2(y2 - y1, x2 - x1)`. Convert the resulting angle from radians to degrees and apply it to the icon's CSS `transform: rotate()` property within the animation loop."
+        },
+        {
+          "id": "abrupt_sectional_transition",
+          "severity_0_10": 6,
+          "description": "The transition between the hero section and the flight path section is a hard cut. There is no blending, fading, or choreographed motion to connect the two states, which harms motion readability and makes the experience feel disjointed, like a page load rather than a continuous scroll.",
+          "evidence": "The hard cut occurs at timestamp 00:09, where the hero text scrolls out and the flight path section scrolls in with no transitional effect.",
+          "recommendation": "Implement a smooth, choreographed transition. Use an `IntersectionObserver` to trigger animations as the sections enter and leave the viewport. As the hero section scrolls out, apply a fade-out and subtle scale-down transform. Simultaneously, as the flight path section scrolls in, apply a fade-in and scale-up transform to create a soft cross-fade that guides the user's eye and reinforces a cohesive journey."
+        }
+      ],
+      "strengths": [
+        "The core concept of using a 'flight path' as a metaphor for navigating a portfolio is strong and creative.",
+        "The overall visual design and aesthetic are clean and well-defined."
+      ],
+      "recommendations": [
+        "Prioritize fixing the scroll-linked animation jank by implementing a `requestAnimationFrame` loop for smooth, decoupled rendering.",
+        "Implement tangential rotation for the airplane icon to make its movement along the path physically believable.",
+        "Re-evaluate any custom scroll-jacking logic to restore natural inertial scrolling, or fix the performance bottlenecks that are suppressing it.",
+        "Design and implement smooth cross-fade transitions between page sections to improve motion readability and create a more polished, cohesive experience."
+      ],
+      "source": "gemini_chain_video",
+      "critic_chain": {
+        "video": {
+          "video_input_used": true,
+          "video_reason": "inline_video_attached",
+          "video_bytes": 867411
+        },
+        "detailed_text": "As a strict animation and physics QA critic, I have analyzed the provided video of your website. The core concept is strong, but the execution of the motion design has several critical flaws that detract from the \"calm motion\" you're aiming for.\n\nHere is a comprehensive, technical breakdown of the issues.\n\n### 1) Scroll-Linked Animation Jank & Teleporting\n**What happens**\nAt `00:09`, as the user scrolls, the airplane icon and its associated glow effect do not move smoothly along the flight path. Instead, they visibly jump between discrete points. The entire page scroll appears to stutter or lag as this new, complex section enters the viewport.\n\n**Why it looks wrong**\nThis is a classic case of **frame-rate clipping**, commonly known as \"jank.\" The animation's logic is likely bound directly to the `onscroll` JavaScript event. This event can fire at a high frequency, but it is not synchronized with the browser's rendering pipeline. When complex calculations—such as determining a point along a curved SVG path—are performed inside the scroll event handler, they can block the browser's main thread. This causes the browser to miss rendering frames. As a result, the airplane's position is only updated on the frames that *do* get rendered, creating the illusion of teleportation rather than smooth motion. This fundamentally breaks the user's sense of direct manipulation and makes the interaction feel unresponsive and low-quality.\n\n**Fix**\nDecouple the animation updates from the scroll event listener.\n1.  Use the `onscroll` event for one purpose only: to update a state variable representing the target scroll progress (e.g., a value from 0 to 1).\n2.  Use a `requestAnimationFrame` loop to read this target progress value.\n3.  Inside the loop, smoothly interpolate the airplane's *current* rendered position towards its *target* position using a `lerp` (linear interpolation) function or a similar easing calculation. This ensures the position is updated smoothly on every single frame the browser renders, regardless of how choppily the scroll events arrive.\n4.  Ensure all animated properties are hardware-accelerated. Use CSS `transform: translate3d(x, y, z)` and `rotate(deg)` instead of manipulating `top`/`left` properties, which trigger expensive layout recalculations.\n\n### 2) Missing Tangential Transfer of Motion\n**What happens**\nThe airplane icon, represented by a circle, moves along the curved flight path but maintains a static, fixed orientation throughout its journey. It does not rotate to align with the direction of the path.\n\n**Why it looks wrong**\nThis violates a fundamental principle of believable motion. An object moving along a curved trajectory should orient itself tangentially to its path. The lack of rotation makes the object appear to be sliding unnaturally, as if it's a bead on a wire, rather than a self-propelled craft navigating a route. This creates a cognitive dissonance between the object's form (an airplane) and its motion, undermining the \"flight\" metaphor. This is a failure to transfer the directional vector of the path into the rotational property of the object.\n\n**Fix**\nCalculate and apply the path's angle to the airplane icon.\n1.  When you calculate the airplane's `(x, y)` position on the path for a given progress `p`, you also need to determine the path's angle at that point.\n2.  A robust way to do this is to sample a second, infinitesimally close point on the path (e.g., at progress `p + 0.001`).\n3.  Use the coordinates of these two points (`(x1, y1)` and `(x2, y2)`) to calculate the angle with `Math.atan2(y2 - y1, x2 - x1)`.\n4.  Convert this angle from radians to degrees and apply it to the icon's CSS `transform: rotate(angle_in_degrees)`. This will make the airplane realistically bank and turn as it follows the contours of the flight path.\n\n### 3) Abrupt Inter-Sectional Transition\n**What happens**\nThe transition from the hero section to the flight path section is a hard cut. As the user scrolls, the hero text simply moves up and out of the frame while the flight path section moves in from the bottom, with no blending or overlap between the two states.\n\n**Why it looks wrong**\nThis lack of a transitional effect harms **motion readability**. The user's context is abruptly shifted without any visual cues to bridge the gap. Good motion design uses transitions to explain the spatial or hierarchical relationship between UI elements. A hard cut feels like a different page is loading, not that the user is progressing down a single, continuous \"route.\" It's an un-designed, default behavior that conflicts with the site's otherwise curated aesthetic.\n\n**Fix**\nImplement a choreographed transition that links the two sections.\n1.  Use an `IntersectionObserver` to track the visibility of the hero and flight path sections.\n2.  As the hero section begins to scroll out of view, apply a subtle fade-out and scale-down transform (e.g., `opacity: 0; transform: scale(0.98);`).\n3.  Simultaneously, as the flight path section scrolls into view, apply a fade-in and scale-up transform (e.g., from `opacity: 0; transform: scale(0.98);` to `opacity: 1; transform: scale(1);`).\n4.  This creates a soft cross-fade effect that smooths the transition, guides the user's eye, and reinforces the feeling of a single, cohesive journey.\n\n### 4) Unphysical Energy Conservation\n**What happens**\nThe scroll motion in the video stops instantly. The user performs a flick gesture, but there is no resulting inertial coasting or easing out. The page's momentum is zeroed out the moment the input ceases.\n\n**Why it looks wrong**\nThis demonstrates poor **energy volatility** management. Users are conditioned by both the physical world and modern operating systems to expect inertia. When you push something, it continues to move for a bit before friction brings it to a stop. The instant halt feels robotic, \"sticky,\" and unnatural. It's as if the energy the user imparted into the system with their flick was immediately destroyed, which is a jarring and unsatisfying physical model. This is often a side-effect of custom scroll-jacking libraries that override the browser's native, physics-based scrolling.\n\n**Fix**\nRestore natural scroll physics.\n1.  If you are using a scroll-jacking library (like `smooth-scrollbar` or a custom implementation), ensure its configuration includes momentum and damping. Tune the easing curve to a gentle `ease-out` function (e.g., `cubic-bezier(0.25, 0.46, 0.45, 0.94)`) to allow the scroll to coast to a natural stop.\n2.  If this is not caused by a library but is a side-effect of the performance issues from Problem #1, fixing the jank will likely solve this, as the browser's native scroll physics will no longer be obstructed.\n3.  In general, avoid overriding native scroll behavior unless it is absolutely essential for a specific, contained effect. The browser's built-in scrolling is highly optimized and feels familiar to users.",
+        "severity": {
+          "overall_severity": 8,
+          "severity_reasoning": "The high severity is due to multiple critical flaws that fundamentally undermine the intended 'calm motion' aesthetic. The core user interaction suffers from severe performance jank, making the scroll-linked animations stutter and feel unresponsive. The motion physics are unnatural, with a lack of inertial scrolling and incorrect object orientation, which creates a jarring, low-quality experience that breaks the core 'flight' metaphor.",
+          "top_risks": [
+            "Severe performance jank in scroll-linked animations causes elements to stutter and 'teleport' instead of moving smoothly.",
+            "Unnatural motion physics, including a lack of inertial scrolling and failure of objects to rotate along their path, which feels robotic and breaks the design metaphor.",
+            "Abrupt, hard-cut transitions between sections that harm motion readability and create a disjointed user experience."
+          ],
+          "verdict": "fail"
+        },
+        "raw_model_outputs": {
+          "stage1_text": "As a strict animation and physics QA critic, I have analyzed the provided video of your website. The core concept is strong, but the execution of the motion design has several critical flaws that detract from the \"calm motion\" you're aiming for.\n\nHere is a comprehensive, technical breakdown of the issues.\n\n### 1) Scroll-Linked Animation Jank & Teleporting\n**What happens**\nAt `00:09`, as the user scrolls, the airplane icon and its associated glow effect do not move smoothly along the flight path. Instead, they visibly jump between discrete points. The entire page scroll appears to stutter or lag as this new, complex section enters the viewport.\n\n**Why it looks wrong**\nThis is a classic case of **frame-rate clipping**, commonly known as \"jank.\" The animation's logic is likely bound directly to the `onscroll` JavaScript event. This event can fire at a high frequency, but it is not synchronized with the browser's rendering pipeline. When complex calculations—such as determining a point along a curved SVG path—are performed inside the scroll event handler, they can block the browser's main thread. This causes the browser to miss rendering frames. As a result, the airplane's position is only updated on the frames that *do* get rendered, creating the illusion of teleportation rather than smooth motion. This fundamentally breaks the user's sense of direct manipulation and makes the interaction feel unresponsive and low-quality.\n\n**Fix**\nDecouple the animation updates from the scroll event listener.\n1.  Use the `onscroll` event for one purpose only: to update a state variable representing the target scroll progress (e.g., a value from 0 to 1).\n2.  Use a `requestAnimationFrame` loop to read this target progress value.\n3.  Inside the loop, smoothly interpolate the airplane's *current* rendered position towards its *target* position using a `lerp` (linear interpolation) function or a similar easing calculation. This ensures the position is updated smoothly on every single frame the browser renders, regardless of how choppily the scroll events arrive.\n4.  Ensure all animated properties are hardware-accelerated. Use CSS `transform: translate3d(x, y, z)` and `rotate(deg)` instead of manipulating `top`/`left` properties, which trigger expensive layout recalculations.\n\n### 2) Missing Tangential Transfer of Motion\n**What happens**\nThe airplane icon, represented by a circle, moves along the curved flight path but maintains a static, fixed orientation throughout its journey. It does not rotate to align with the direction of the path.\n\n**Why it looks wrong**\nThis violates a fundamental principle of believable motion. An object moving along a curved trajectory should orient itself tangentially to its path. The lack of rotation makes the object appear to be sliding unnaturally, as if it's a bead on a wire, rather than a self-propelled craft navigating a route. This creates a cognitive dissonance between the object's form (an airplane) and its motion, undermining the \"flight\" metaphor. This is a failure to transfer the directional vector of the path into the rotational property of the object.\n\n**Fix**\nCalculate and apply the path's angle to the airplane icon.\n1.  When you calculate the airplane's `(x, y)` position on the path for a given progress `p`, you also need to determine the path's angle at that point.\n2.  A robust way to do this is to sample a second, infinitesimally close point on the path (e.g., at progress `p + 0.001`).\n3.  Use the coordinates of these two points (`(x1, y1)` and `(x2, y2)`) to calculate the angle with `Math.atan2(y2 - y1, x2 - x1)`.\n4.  Convert this angle from radians to degrees and apply it to the icon's CSS `transform: rotate(angle_in_degrees)`. This will make the airplane realistically bank and turn as it follows the contours of the flight path.\n\n### 3) Abrupt Inter-Sectional Transition\n**What happens**\nThe transition from the hero section to the flight path section is a hard cut. As the user scrolls, the hero text simply moves up and out of the frame while the flight path section moves in from the bottom, with no blending or overlap between the two states.\n\n**Why it looks wrong**\nThis lack of a transitional effect harms **motion readability**. The user's context is abruptly shifted without any visual cues to bridge the gap. Good motion design uses transitions to explain the spatial or hierarchical relationship between UI elements. A hard cut feels like a different page is loading, not that the user is progressing down a single, continuous \"route.\" It's an un-designed, default behavior that conflicts with the site's otherwise curated aesthetic.\n\n**Fix**\nImplement a choreographed transition that links the two sections.\n1.  Use an `IntersectionObserver` to track the visibility of the hero and flight path sections.\n2.  As the hero section begins to scroll out of view, apply a subtle fade-out and scale-down transform (e.g., `opacity: 0; transform: scale(0.98);`).\n3.  Simultaneously, as the flight path section scrolls into view, apply a fade-in and scale-up transform (e.g., from `opacity: 0; transform: scale(0.98);` to `opacity: 1; transform: scale(1);`).\n4.  This creates a soft cross-fade effect that smooths the transition, guides the user's eye, and reinforces the feeling of a single, cohesive journey.\n\n### 4) Unphysical Energy Conservation\n**What happens**\nThe scroll motion in the video stops instantly. The user performs a flick gesture, but there is no resulting inertial coasting or easing out. The page's momentum is zeroed out the moment the input ceases.\n\n**Why it looks wrong**\nThis demonstrates poor **energy volatility** management. Users are conditioned by both the physical world and modern operating systems to expect inertia. When you push something, it continues to move for a bit before friction brings it to a stop. The instant halt feels robotic, \"sticky,\" and unnatural. It's as if the energy the user imparted into the system with their flick was immediately destroyed, which is a jarring and unsatisfying physical model. This is often a side-effect of custom scroll-jacking libraries that override the browser's native, physics-based scrolling.\n\n**Fix**\nRestore natural scroll physics.\n1.  If you are using a scroll-jacking library (like `smooth-scrollbar` or a custom implementation), ensure its configuration includes momentum and damping. Tune the easing curve to a gentle `ease-out` function (e.g., `cubic-bezier(0.25, 0.46, 0.45, 0.94)`) to allow the scroll to coast to a natural stop.\n2.  If this is not caused by a library but is a side-effect of the performance issues from Problem #1, fixing the jank will likely solve this, as the browser's native scroll physics will no longer be obstructed.\n3.  In general, avoid overriding native scroll behavior unless it is absolutely essential for a specific, contained effect. The browser's built-in scrolling is highly optimized and feels familiar to users.",
+          "stage2_text": "```json\n{\n  \"overall_severity\": 8,\n  \"severity_reasoning\": \"The high severity is due to multiple critical flaws that fundamentally undermine the intended 'calm motion' aesthetic. The core user interaction suffers from severe performance jank, making the scroll-linked animations stutter and feel unresponsive. The motion physics are unnatural, with a lack of inertial scrolling and incorrect object orientation, which creates a jarring, low-quality experience that breaks the core 'flight' metaphor.\",\n  \"top_risks\": [\n    \"Severe performance jank in scroll-linked animations causes elements to stutter and 'teleport' instead of moving smoothly.\",\n    \"Unnatural motion physics, including a lack of inertial scrolling and failure of objects to rotate along their path, which feels robotic and breaks the design metaphor.\",\n    \"Abrupt, hard-cut transitions between sections that harm motion readability and create a disjointed user experience.\"\n  ],\n  \"verdict\": \"fail\"\n}\n```",
+          "stage3_text": "```json\n{\n  \"verdict\": \"fail\",\n  \"overall_severity\": 8,\n  \"summary\": \"The website fails to deliver its intended 'calm motion' experience due to critical execution flaws. The core scroll-linked animation suffers from severe performance jank, causing the airplane icon to stutter and teleport rather than move smoothly. This is compounded by unnatural motion physics, where the airplane fails to orient itself along its path and scrolling lacks any inertial easing. Abrupt transitions between sections further create a disjointed and low-quality user experience that fundamentally undermines the project's aesthetic goals.\",\n  \"defects\": [\n    {\n      \"id\": \"scroll_animation_jank\",\n      \"severity_0_10\": 9,\n      \"description\": \"The primary scroll-linked animation is not smooth. The airplane icon and its glow effect visibly jump between discrete points instead of moving fluidly along the path. This is a classic case of 'jank' where expensive calculations are likely performed directly within a scroll event listener, blocking the browser's main thread and causing missed render frames.\",\n      \"evidence\": \"The stuttering and teleporting motion is clearly visible starting at timestamp 00:09 as the user scrolls down into the flight path section.\",\n      \"recommendation\": \"Decouple animation logic from the scroll event. Use the `onscroll` event only to update a target progress variable. Then, use a `requestAnimationFrame` loop to smoothly interpolate the airplane's current position towards the target position using a `lerp` function. Ensure all animated properties use hardware-accelerated CSS transforms (`translate3d`, `rotate`) instead of `top`/`left` to avoid expensive layout recalculations.\"\n    },\n    {\n      \"id\": \"unphysical_scroll_inertia\",\n      \"severity_0_10\": 8,\n      \"description\": \"The page scrolling stops instantly when user input ceases. There is no inertial coasting or easing out after a flick gesture, which violates user expectations for natural momentum. This makes the interaction feel 'sticky,' robotic, and unsatisfying, as if the energy imparted by the user is immediately destroyed.\",\n      \"evidence\": \"Throughout the scroll interactions in the video (e.g., 00:09-00:11), the page comes to an abrupt halt with zero momentum.\",\n      \"recommendation\": \"Restore natural scroll physics. If using a custom scroll-jacking library, enable and configure its momentum and damping properties with a suitable ease-out curve (e.g., `cubic-bezier(0.25, 0.46, 0.45, 0.94)`). If this is a side-effect of the performance jank, fixing that issue should allow the browser's native, physics-based scrolling to function correctly. Avoid overriding native scroll behavior unless absolutely necessary.\"\n    },\n    {\n      \"id\": \"missing_tangential_rotation\",\n      \"severity_0_10\": 7,\n      \"description\": \"The airplane icon moves along the curved flight path but maintains a static, fixed orientation. It does not rotate to align with the direction of travel, making it appear to slide unnaturally rather than fly. This creates a cognitive dissonance that undermines the 'flight' metaphor.\",\n      \"evidence\": \"Visible throughout the flight path animation from 00:09 onwards. The circular icon never changes its rotation as it follows the S-curve.\",\n      \"recommendation\": \"Calculate and apply the path's angle to the airplane icon. When calculating the icon's (x, y) position at a given progress, sample a second point infinitesimally further along the path. Use these two points to calculate the angle via `Math.atan2(y2 - y1, x2 - x1)`. Convert the resulting angle from radians to degrees and apply it to the icon's CSS `transform: rotate()` property within the animation loop.\"\n    },\n    {\n      \"id\": \"abrupt_sectional_transition\",\n      \"severity_0_10\": 6,\n      \"description\": \"The transition between the hero section and the flight path section is a hard cut. There is no blending, fading, or choreographed motion to connect the two states, which harms motion readability and makes the experience feel disjointed, like a page load rather than a continuous scroll.\",\n      \"evidence\": \"The hard cut occurs at timestamp 00:09, where the hero text scrolls out and the flight path section scrolls in with no transitional effect.\",\n      \"recommendation\": \"Implement a smooth, choreographed transition. Use an `IntersectionObserver` to trigger animations as the sections enter and leave the viewport. As the hero section scrolls out, apply a fade-out and subtle scale-down transform. Simultaneously, as the flight path section scrolls in, apply a fade-in and scale-up transform to create a soft cross-fade that guides the user's eye and reinforces a cohesive journey.\"\n    }\n  ],\n  \"strengths\": [\n    \"The core concept of using a 'flight path' as a metaphor for navigating a portfolio is strong and creative.\",\n    \"The overall visual design and aesthetic are clean and well-defined.\"\n  ],\n  \"recommendations\": [\n    \"Prioritize fixing the scroll-linked animation jank by implementing a `requestAnimationFrame` loop for smooth, decoupled rendering.\",\n    \"Implement tangential rotation for the airplane icon to make its movement along the path physically believable.\",\n    \"Re-evaluate any custom scroll-jacking logic to restore natural inertial scrolling, or fix the performance bottlenecks that are suppressing it.\",\n    \"Design and implement smooth cross-fade transitions between page sections to improve motion readability and create a more polished, cohesive experience.\"\n  ],\n  \"score_breakdown\": {\n    \"physics_consistency\": 2,\n    \"collision_stability\": 10,\n    \"motion_readability\": 3,\n    \"temporal_smoothness\": 1\n  }\n}\n```"
+        },
+        "raw_model_diagnostics": {
+          "stage1": {
+            "ok": true,
+            "status_code": 200
+          },
+          "stage2": {
+            "ok": true,
+            "status_code": 200
+          },
+          "stage3": {
+            "ok": true,
+            "status_code": 200
+          }
+        }
+      },
+      "score_breakdown": {
+        "physics_consistency": 2,
+        "collision_stability": 10,
+        "motion_readability": 3,
+        "temporal_smoothness": 1
+      }
+    },
+    "final_verdict": "pass",
+    "escalated": false,
+    "severity_threshold": 8,
+    "pass_condition": "execution.status == pass AND critique.overall_severity <= 8.0"
+  }
+}

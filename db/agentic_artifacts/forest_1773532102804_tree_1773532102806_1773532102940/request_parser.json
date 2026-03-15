@@ -1,0 +1,119 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "goto",
+      "originalAction": "Navigate to the Atlas Airfolio homepage.",
+      "target": "http://127.0.0.1:3095/",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "click",
+      "originalAction": "Click the 'Launch' link to initiate the route.",
+      "target": "text=Launch",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "assertVisible",
+      "originalAction": "Assert that the '#active-label' element is visible, indicating the route has started.",
+      "target": "#active-label",
+      "value": null,
+      "assert": {
+        "isVisible": true
+      }
+    },
+    {
+      "index": 3,
+      "action": "scrollPage",
+      "originalAction": "Scroll down the page to trigger the airplane timeline animation.",
+      "target": "document",
+      "value": "document.body.scrollHeight",
+      "assert": null
+    },
+    {
+      "index": 4,
+      "action": "assertVisible",
+      "originalAction": "Assert that the '#plane' element is visible, indicating the airplane animation is running.",
+      "target": "#plane",
+      "value": null,
+      "assert": {
+        "isVisible": true
+      }
+    },
+    {
+      "index": 5,
+      "action": "click",
+      "originalAction": "Click the 'Flight Path' link to view the flight path details.",
+      "target": "text=Flight Path",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 6,
+      "action": "assertVisible",
+      "originalAction": "Assert that the '#flight-path' element is visible, indicating the flight path details are displayed.",
+      "target": "#flight-path",
+      "value": null,
+      "assert": {
+        "isVisible": true
+      }
+    },
+    {
+      "index": 7,
+      "action": "click",
+      "originalAction": "Click the 'Black Box' link to access the black box information.",
+      "target": "text=Black Box",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 8,
+      "action": "assertVisible",
+      "originalAction": "Assert that the '#black-box' element is visible, indicating the black box information is displayed.",
+      "target": "#black-box",
+      "value": null,
+      "assert": {
+        "isVisible": true
+      }
+    },
+    {
+      "index": 9,
+      "action": "goto",
+      "originalAction": "Click the 'Hangar' link to navigate to the hangar section.",
+      "target": "text=Hangar",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 10,
+      "action": "assertVisible",
+      "originalAction": "Assert that the '#hangar' element is visible, indicating the hangar section is displayed.",
+      "target": "#hangar",
+      "value": null,
+      "assert": {
+        "isVisible": true
+      }
+    },
+    {
+      "index": 11,
+      "action": "click",
+      "originalAction": "Click the 'View hangar notes' link.",
+      "target": "text=View hangar notes",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 12,
+      "action": "click",
+      "originalAction": "Click the 'Open the hangar' link.",
+      "target": "text=Open the hangar",
+      "value": null,
+      "assert": null
+    }
+  ]
+}

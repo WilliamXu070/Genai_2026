@@ -1,0 +1,117 @@
+{
+  "completedAt": "2026-03-14T22:53:07.896Z",
+  "ok": true,
+  "requestId": "orchestrate_testing_1773528787860_1",
+  "result": {
+    "plan": {
+      "objective": "Validate the airplane portfolio scroll experience and overall polish.",
+      "rationale": "Fallback deterministic plan based on environment snapshot.",
+      "app_bootstrap": {
+        "required": false,
+        "reason": "Fallback plan assumes app is already available at target URL.",
+        "workspace": ".",
+        "files": [],
+        "install_command": "",
+        "start_command": "",
+        "startup_timeout_ms": 60000
+      },
+      "steps": [
+        {
+          "action": "goto",
+          "target": "http://127.0.0.1:3095"
+        },
+        {
+          "action": "assertVisible",
+          "target": "body"
+        },
+        {
+          "action": "wait",
+          "target": "time",
+          "value": 10000
+        },
+        {
+          "action": "scrollPage",
+          "target": "down"
+        },
+        {
+          "action": "screenshot",
+          "target": "fullPage"
+        }
+      ],
+      "assertions": [
+        "Page renders",
+        "No fatal runtime errors during observation window"
+      ],
+      "success_criteria": [
+        "Execution completes",
+        "Video artifact exists"
+      ]
+    },
+    "execution": {
+      "status": "pass",
+      "summary": "Procedure executed successfully.",
+      "steps": [],
+      "video_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_28244_1773528788166\\188f75f740e783a57870e842ffd05a46.webm",
+      "artifacts": [
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_28244_1773528788166\\188f75f740e783a57870e842ffd05a46.webm",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_28244_1773528788166\\final_1773528800163.png",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_28244_1773528788166\\playwright_executor.generated.js",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_28244_1773528788166\\request_parser.json",
+        "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_28244_1773528788166\\step_1773528799835.png"
+      ],
+      "generated_code_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_28244_1773528788166\\playwright_executor.generated.js",
+      "parser_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_28244_1773528788166\\request_parser.json",
+      "stdout": "{\"status\":\"pass\",\"summary\":\"Procedure executed successfully.\",\"steps\":[],\"video_path\":\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_28244_1773528788166\\\\188f75f740e783a57870e842ffd05a46.webm\",\"artifacts\":[\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_28244_1773528788166\\\\188f75f740e783a57870e842ffd05a46.webm\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_28244_1773528788166\\\\final_1773528800163.png\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_28244_1773528788166\\\\playwright_executor.generated.js\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_28244_1773528788166\\\\request_parser.json\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_28244_1773528788166\\\\step_1773528799835.png\"]}",
+      "stderr": "",
+      "app_runtime": {
+        "status": "already_running",
+        "target_url": "http://127.0.0.1:3095",
+        "ready": true,
+        "started_by_orchestrator": false,
+        "workspace": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio",
+        "start_command": "",
+        "install_command": "",
+        "log_path": null,
+        "pid": null,
+        "error_message": ""
+      }
+    },
+    "critique": {
+      "verdict": "pass",
+      "overall_severity": 2,
+      "summary": "Deterministic visual-critique baseline.",
+      "defects": [],
+      "strengths": [
+        "Execution finished without runtime failure.",
+        "Video artifact captured with sufficient size for review.",
+        "Plan includes passive observation window."
+      ],
+      "recommendations": [],
+      "source": "deterministic",
+      "critic_chain": {
+        "video": {
+          "video_input_used": true,
+          "video_reason": "inline_video_attached",
+          "video_bytes": 865261
+        },
+        "raw_model_outputs": {
+          "stage1_text": null,
+          "stage2_text": null,
+          "stage3_text": null
+        },
+        "raw_model_diagnostics": {
+          "stage1": {
+            "ok": false,
+            "reason": "missing_gemini_api_key"
+          },
+          "stage2": null,
+          "stage3": null
+        }
+      }
+    },
+    "final_verdict": "pass",
+    "escalated": false,
+    "severity_threshold": 8,
+    "pass_condition": "execution.status == pass AND critique.overall_severity <= 8.0"
+  }
+}

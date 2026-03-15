@@ -1,0 +1,167 @@
+{
+  "plan": {
+    "objective": "Validate the airplane portfolio scroll experience and overall polish.",
+    "rationale": "Fallback deterministic plan based on environment snapshot.",
+    "app_bootstrap": {
+      "required": false,
+      "reason": "Fallback plan assumes app is already available at target URL.",
+      "workspace": ".",
+      "files": [],
+      "install_command": "",
+      "start_command": "",
+      "startup_timeout_ms": 60000
+    },
+    "steps": [
+      {
+        "action": "goto",
+        "target": "http://127.0.0.1:3095"
+      },
+      {
+        "action": "assertVisible",
+        "target": "body"
+      },
+      {
+        "action": "wait",
+        "target": "time",
+        "value": 10000
+      },
+      {
+        "action": "scrollPage",
+        "target": "down"
+      },
+      {
+        "action": "screenshot",
+        "target": "fullPage"
+      }
+    ],
+    "assertions": [
+      "Page renders",
+      "No fatal runtime errors during observation window"
+    ],
+    "success_criteria": [
+      "Execution completes",
+      "Video artifact exists"
+    ]
+  },
+  "execution": {
+    "status": "pass",
+    "summary": "Procedure executed successfully.",
+    "steps": [],
+    "video_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13244_1773529736757\\8d506601d761b838fc6eeb728eb9900c.webm",
+    "artifacts": [
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13244_1773529736757\\8d506601d761b838fc6eeb728eb9900c.webm",
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13244_1773529736757\\final_1773529748857.png",
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13244_1773529736757\\playwright_executor.generated.js",
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13244_1773529736757\\request_parser.json",
+      "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13244_1773529736757\\step_1773529748471.png"
+    ],
+    "generated_code_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13244_1773529736757\\playwright_executor.generated.js",
+    "parser_path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio\\db\\langflow_agentic_runs\\run_13244_1773529736757\\request_parser.json",
+    "stdout": "{\"status\":\"pass\",\"summary\":\"Procedure executed successfully.\",\"steps\":[],\"video_path\":\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13244_1773529736757\\\\8d506601d761b838fc6eeb728eb9900c.webm\",\"artifacts\":[\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13244_1773529736757\\\\8d506601d761b838fc6eeb728eb9900c.webm\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13244_1773529736757\\\\final_1773529748857.png\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13244_1773529736757\\\\playwright_executor.generated.js\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13244_1773529736757\\\\request_parser.json\",\"C:\\\\Users\\\\William\\\\Desktop\\\\Projects\\\\Genai_2026\\\\Testing\\\\airplane-portfolio\\\\db\\\\langflow_agentic_runs\\\\run_13244_1773529736757\\\\step_1773529748471.png\"]}",
+    "stderr": "",
+    "app_runtime": {
+      "status": "already_running",
+      "target_url": "http://127.0.0.1:3095",
+      "ready": true,
+      "started_by_orchestrator": false,
+      "workspace": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio",
+      "start_command": "",
+      "install_command": "",
+      "log_path": null,
+      "pid": null,
+      "error_message": ""
+    }
+  },
+  "critique": {
+    "verdict": "fail",
+    "overall_severity": 8.0,
+    "summary": "The core 'flight path' concept is strong, but the execution is undermined by critical flaws in motion design. The animation is directly tied to scroll input, resulting in an inertia-less, jarring 'scroll-jacking' experience that lacks physical realism. Key visual elements, like the path-following dot and content card transitions, exhibit unnatural, jittery, and abrupt behavior, which breaks the narrative and gives the impression of a low-polish, glitchy implementation.",
+    "defects": [
+      {
+        "id": "inertia_less_transformation",
+        "severity_0_10": 9,
+        "description": "The main hero section's transformation is directly and linearly mapped to the user's scroll input. This 1:1 mapping creates an unnatural motion that lacks inertia, mass, and easing. When the user stops scrolling, the animation stops dead, which feels jarring, removes the user's sense of control, and violates the 'calm motion' principle stated in the hero text.",
+        "evidence": "At 0:09, as scrolling begins, the hero section immediately scales and translates with a velocity directly proportional to the scroll speed, stopping instantly when the scroll input ceases.",
+        "recommendation": "Decouple the animation from the raw scroll event. Use the scroll input to define a *target* progress or position. Then, employ a physics-based animation library (e.g., Framer Motion, React Spring) or a custom `requestAnimationFrame` loop with spring physics (damping, stiffness) to smoothly animate the element towards that target. This will introduce natural momentum and easing."
+      },
+      {
+        "id": "non_tangential_path_following",
+        "severity_0_10": 7,
+        "description": "The glowing dot moving along the curve does not maintain a constant speed along the path's arc length. Its velocity appears to be constant on the horizontal axis, causing it to visibly speed up and slow down as the curve's slope changes. This non-tangential movement is physically incorrect and looks unnatural. The motion also appears slightly jittery, suggesting it's updated directly in a scroll listener rather than being synced with the browser's render cycle.",
+        "evidence": "From 0:09 to 0:11, the dot noticeably accelerates in the 'dip' of the curve and slows on steeper sections. Its movement is not perfectly smooth, exhibiting minor stutters.",
+        "recommendation": "Calculate the dot's position based on a normalized progress value (0 to 1) along the SVG path's total length. Use the native SVG methods `getTotalLength()` and `getPointAtLength(progress * totalLength)` to ensure the dot travels at a constant speed along the curve's actual contour. All position updates must be performed within a `requestAnimationFrame` loop to eliminate jitter."
+      },
+      {
+        "id": "abrupt_state_transition",
+        "severity_0_10": 6,
+        "description": "The information cards on the right-hand side switch content instantaneously as the dot passes checkpoints. This complete lack of a transition is jarring, breaks the narrative flow of the 'flight path', and makes the UI feel cheap and unfinished. It provides no visual cue for the state change, harming motion readability.",
+        "evidence": "At 0:10, the content for 'Launch Runway' is instantly replaced by 'Cabin Systems' with no fade, slide, or any other transitional animation.",
+        "recommendation": "Implement animated transitions between card states. A simple cross-fade (animating opacity) is the minimum viable fix. A superior approach is a slide-and-fade effect, where the outgoing card slides out (e.g., `transform: translateY(-20px); opacity: 0;`) as the incoming card slides in, creating a clear and readable relationship between states."
+      },
+      {
+        "id": "animation_termination_jitter",
+        "severity_0_10": 5,
+        "description": "At the very end of the scroll sequence, the entire animated group of elements 'snaps' or 'jumps' by a few pixels into its final resting state. This indicates a mismatch between the final position calculated by the JavaScript animation and the element's final, static CSS state, which breaks the illusion of a seamless motion and signals a lack of polish.",
+        "evidence": "At 0:11, as the user stops scrolling and the animation concludes, the entire layout on the left visibly jumps slightly to settle into its final position.",
+        "recommendation": "Ensure the animation logic resolves perfectly to the final state. The animation should conclude by explicitly setting the element's transform properties to their exact final values. A robust solution is to use an animation library that manages this lifecycle correctly or, upon completion, remove the dynamically applied transform styles and add a final CSS class that defines the end state with perfectly matching values."
+      }
+    ],
+    "strengths": [
+      "The core conceptual metaphor of a 'flight path' to guide the user through a portfolio is strong and engaging."
+    ],
+    "recommendations": [
+      "Adopt a physics-based animation library (e.g., Framer Motion, React Spring) to manage all scroll-driven animations. This will provide natural inertia, smoothness, and solve termination jitter issues systemically.",
+      "Rework the path-following animation to use SVG's `getPointAtLength()` method within a `requestAnimationFrame` loop to achieve smooth, constant-velocity motion along the curve.",
+      "Establish a consistent motion design language by ensuring all state changes, especially content swaps, are clearly communicated with appropriate transitions like fades or slides."
+    ],
+    "source": "gemini_chain_video",
+    "critic_chain": {
+      "video": {
+        "video_input_used": true,
+        "video_reason": "inline_video_attached",
+        "video_bytes": 844247
+      },
+      "detailed_text": "As a strict animation and physics QA critic, I have analyzed the provided video. The core concept of a \"flight path\" is strong, but the execution of the motion design has several critical flaws that undermine the user experience and the physical metaphor.\n\nHere is my comprehensive, technical breakdown.\n\n---\n\n### 1) Inertia-less Layout Transformation\n**What happens**\nAt 0:09, as the user begins to scroll, the main hero section (\"Designing software...\") immediately begins to scale down and translate to the top-left corner. The velocity of this transformation is directly and linearly mapped to the user's scroll input. When the scroll stops, the animation stops dead in its tracks.\n\n**Why it looks wrong**\nThis behavior completely lacks inertia and mass. Physical objects do not start or stop moving instantaneously. This direct 1:1 mapping of scroll input to animation progress creates a feeling of \"scroll-jacking\" that is jarring and removes the user's sense of control. The motion has no easing, no momentum, and no weight. This results in high **energy volatility**; the system's kinetic energy snaps from zero to a high value and back to zero with no decay, which is physically impossible and visually uncomfortable. It breaks the \"calm motion\" principle stated in your own hero text.\n\n**Fix**\nDecouple the animation from the raw scroll event. Use the scroll input to set a *target* position or progress point. Then, use a physics-based animation library (like `react-spring`, `framer-motion`) or a custom `requestAnimationFrame` loop with spring physics (damping, stiffness, mass) to move the element towards that target. This will introduce natural-feeling easing, overshoot, and settling, giving the element a sense of weight and making the transition smooth and readable, even if the user's scroll input is jerky.\n\n### 2) Non-Tangential Path Following & Frame-Rate Clipping\n**What happens**\nAs the scene transitions, a glowing dot animates along a curved path. The dot's velocity appears to be constant on the horizontal (X) axis, not constant along the arc-length of the path itself.\n\n**Why it looks wrong**\nThis is a classic case of **missing tangential transfer**. For the motion to look natural, the dot's velocity vector must be tangent to the curve at every point. Because it moves at a constant horizontal speed, it visibly speeds up and slows down as the slope of the curve changes. This is particularly noticeable in the \"dip\" of the curve, where it appears to accelerate unnaturally. Furthermore, the dot's movement appears slightly jittery, suggesting it is being updated directly within a scroll event listener. This can lead to **frame-rate clipping** or **tunneling**, where the dot's position is not interpolated smoothly between frames, causing it to jump between points instead of moving fluidly.\n\n**Fix**\nThe dot's position should be calculated based on a normalized progress value (0 to 1) along the *total length* of the SVG path. Use `getTotalLength()` and `getPointAtLength()` methods available for SVG paths. This ensures the dot travels at a constant speed along the curve's actual contour. This calculation should be done within a `requestAnimationFrame` loop to ensure it is synchronized with the browser's render cycle, eliminating jitter.\n\n### 3) Abrupt State Transition on Information Cards\n**What happens**\nWhile scrolling, the content cards on the right (e.g., \"Launch Runway,\" \"Cabin Systems\") switch instantaneously. As the glowing dot passes a certain checkpoint, the content of the card is replaced with no transitional animation.\n\n**Why it looks wrong**\nThis is a jarring and cheap-looking state change. The human eye is sensitive to motion, and the complete lack of it here makes the transition feel like a glitch or a bug. It breaks the narrative flow of the \"flight path\" and offers poor **motion readability**. The user has no visual cue that the content is about to change or where the new content is coming from. The energy of the system is again highly volatile, with elements disappearing and appearing from nothing.\n\n**Fix**\nImplement a proper transition between the card states. A simple cross-fade (animating opacity) is the minimum viable solution. A better approach would be to have the outgoing card slide out (e.g., `transform: translateY(-20px); opacity: 0;`) while the incoming card slides in (e.g., from `transform: translateY(20px); opacity: 0;` to `transform: translateY(0); opacity: 1;`). This creates a clear, readable relationship between the states and maintains the user's focus.\n\n### 4) Animation Termination Jitter\n**What happens**\nAt the very end of the scroll sequence (0:11), as the user stops scrolling, the entire animated group of elements appears to \"snap\" or \"jump\" by a few pixels into its final resting state.\n\n**Why it looks wrong**\nThis is a form of **corner glitching** or state-settling jitter. It occurs when the final calculated position from the JavaScript-driven scroll animation does not perfectly align with the element's final CSS-defined state. This creates a visual discontinuity as the browser hands off rendering from the dynamic `transform` style to the final class or style rule. It signals a lack of polish and breaks the illusion of a seamless, physically-governed system.\n\n**Fix**\nEnsure the animation logic is perfectly resolved. The animation should not just stop; it should conclude by explicitly setting the element's transform properties to their exact final values. A robust fix is to use a dedicated animation library that handles the lifecycle of the animation, ensuring that when the animation is \"at rest,\" its properties are identical to the target state. Alternatively, on completion, remove the dynamically applied transform styles and add a CSS class that defines the final state, ensuring the values match down to the sub-pixel.",
+      "severity": {
+        "overall_severity": 8,
+        "severity_reasoning": "The animation has multiple critical flaws that violate fundamental principles of physics and motion design. The execution feels jarring, unpolished, and physically unnatural, which directly undermines the core 'flight path' metaphor and creates a poor user experience described as 'scroll-jacking' and 'glitchy'.",
+        "top_risks": [
+          "Inertia-less layout transformation creates a jarring, unnatural feel and removes the user's sense of control.",
+          "Non-tangential path following and potential frame-rate clipping make the dot's movement look unnatural and jittery.",
+          "Abrupt, non-animated state transitions on information cards look cheap and break the narrative flow.",
+          "Animation termination jitter at the end of the sequence creates a visual glitch and signals a lack of polish."
+        ],
+        "verdict": "fail"
+      },
+      "raw_model_outputs": {
+        "stage1_text": "As a strict animation and physics QA critic, I have analyzed the provided video. The core concept of a \"flight path\" is strong, but the execution of the motion design has several critical flaws that undermine the user experience and the physical metaphor.\n\nHere is my comprehensive, technical breakdown.\n\n---\n\n### 1) Inertia-less Layout Transformation\n**What happens**\nAt 0:09, as the user begins to scroll, the main hero section (\"Designing software...\") immediately begins to scale down and translate to the top-left corner. The velocity of this transformation is directly and linearly mapped to the user's scroll input. When the scroll stops, the animation stops dead in its tracks.\n\n**Why it looks wrong**\nThis behavior completely lacks inertia and mass. Physical objects do not start or stop moving instantaneously. This direct 1:1 mapping of scroll input to animation progress creates a feeling of \"scroll-jacking\" that is jarring and removes the user's sense of control. The motion has no easing, no momentum, and no weight. This results in high **energy volatility**; the system's kinetic energy snaps from zero to a high value and back to zero with no decay, which is physically impossible and visually uncomfortable. It breaks the \"calm motion\" principle stated in your own hero text.\n\n**Fix**\nDecouple the animation from the raw scroll event. Use the scroll input to set a *target* position or progress point. Then, use a physics-based animation library (like `react-spring`, `framer-motion`) or a custom `requestAnimationFrame` loop with spring physics (damping, stiffness, mass) to move the element towards that target. This will introduce natural-feeling easing, overshoot, and settling, giving the element a sense of weight and making the transition smooth and readable, even if the user's scroll input is jerky.\n\n### 2) Non-Tangential Path Following & Frame-Rate Clipping\n**What happens**\nAs the scene transitions, a glowing dot animates along a curved path. The dot's velocity appears to be constant on the horizontal (X) axis, not constant along the arc-length of the path itself.\n\n**Why it looks wrong**\nThis is a classic case of **missing tangential transfer**. For the motion to look natural, the dot's velocity vector must be tangent to the curve at every point. Because it moves at a constant horizontal speed, it visibly speeds up and slows down as the slope of the curve changes. This is particularly noticeable in the \"dip\" of the curve, where it appears to accelerate unnaturally. Furthermore, the dot's movement appears slightly jittery, suggesting it is being updated directly within a scroll event listener. This can lead to **frame-rate clipping** or **tunneling**, where the dot's position is not interpolated smoothly between frames, causing it to jump between points instead of moving fluidly.\n\n**Fix**\nThe dot's position should be calculated based on a normalized progress value (0 to 1) along the *total length* of the SVG path. Use `getTotalLength()` and `getPointAtLength()` methods available for SVG paths. This ensures the dot travels at a constant speed along the curve's actual contour. This calculation should be done within a `requestAnimationFrame` loop to ensure it is synchronized with the browser's render cycle, eliminating jitter.\n\n### 3) Abrupt State Transition on Information Cards\n**What happens**\nWhile scrolling, the content cards on the right (e.g., \"Launch Runway,\" \"Cabin Systems\") switch instantaneously. As the glowing dot passes a certain checkpoint, the content of the card is replaced with no transitional animation.\n\n**Why it looks wrong**\nThis is a jarring and cheap-looking state change. The human eye is sensitive to motion, and the complete lack of it here makes the transition feel like a glitch or a bug. It breaks the narrative flow of the \"flight path\" and offers poor **motion readability**. The user has no visual cue that the content is about to change or where the new content is coming from. The energy of the system is again highly volatile, with elements disappearing and appearing from nothing.\n\n**Fix**\nImplement a proper transition between the card states. A simple cross-fade (animating opacity) is the minimum viable solution. A better approach would be to have the outgoing card slide out (e.g., `transform: translateY(-20px); opacity: 0;`) while the incoming card slides in (e.g., from `transform: translateY(20px); opacity: 0;` to `transform: translateY(0); opacity: 1;`). This creates a clear, readable relationship between the states and maintains the user's focus.\n\n### 4) Animation Termination Jitter\n**What happens**\nAt the very end of the scroll sequence (0:11), as the user stops scrolling, the entire animated group of elements appears to \"snap\" or \"jump\" by a few pixels into its final resting state.\n\n**Why it looks wrong**\nThis is a form of **corner glitching** or state-settling jitter. It occurs when the final calculated position from the JavaScript-driven scroll animation does not perfectly align with the element's final CSS-defined state. This creates a visual discontinuity as the browser hands off rendering from the dynamic `transform` style to the final class or style rule. It signals a lack of polish and breaks the illusion of a seamless, physically-governed system.\n\n**Fix**\nEnsure the animation logic is perfectly resolved. The animation should not just stop; it should conclude by explicitly setting the element's transform properties to their exact final values. A robust fix is to use a dedicated animation library that handles the lifecycle of the animation, ensuring that when the animation is \"at rest,\" its properties are identical to the target state. Alternatively, on completion, remove the dynamically applied transform styles and add a CSS class that defines the final state, ensuring the values match down to the sub-pixel.",
+        "stage2_text": "```json\n{\n  \"overall_severity\": 8,\n  \"severity_reasoning\": \"The animation has multiple critical flaws that violate fundamental principles of physics and motion design. The execution feels jarring, unpolished, and physically unnatural, which directly undermines the core 'flight path' metaphor and creates a poor user experience described as 'scroll-jacking' and 'glitchy'.\",\n  \"top_risks\": [\n    \"Inertia-less layout transformation creates a jarring, unnatural feel and removes the user's sense of control.\",\n    \"Non-tangential path following and potential frame-rate clipping make the dot's movement look unnatural and jittery.\",\n    \"Abrupt, non-animated state transitions on information cards look cheap and break the narrative flow.\",\n    \"Animation termination jitter at the end of the sequence creates a visual glitch and signals a lack of polish.\"\n  ],\n  \"verdict\": \"fail\"\n}\n```",
+        "stage3_text": "```json\n{\n  \"verdict\": \"fail\",\n  \"overall_severity\": 8,\n  \"summary\": \"The core 'flight path' concept is strong, but the execution is undermined by critical flaws in motion design. The animation is directly tied to scroll input, resulting in an inertia-less, jarring 'scroll-jacking' experience that lacks physical realism. Key visual elements, like the path-following dot and content card transitions, exhibit unnatural, jittery, and abrupt behavior, which breaks the narrative and gives the impression of a low-polish, glitchy implementation.\",\n  \"defects\": [\n    {\n      \"id\": \"inertia_less_transformation\",\n      \"severity_0_10\": 9,\n      \"description\": \"The main hero section's transformation is directly and linearly mapped to the user's scroll input. This 1:1 mapping creates an unnatural motion that lacks inertia, mass, and easing. When the user stops scrolling, the animation stops dead, which feels jarring, removes the user's sense of control, and violates the 'calm motion' principle stated in the hero text.\",\n      \"evidence\": \"At 0:09, as scrolling begins, the hero section immediately scales and translates with a velocity directly proportional to the scroll speed, stopping instantly when the scroll input ceases.\",\n      \"recommendation\": \"Decouple the animation from the raw scroll event. Use the scroll input to define a *target* progress or position. Then, employ a physics-based animation library (e.g., Framer Motion, React Spring) or a custom `requestAnimationFrame` loop with spring physics (damping, stiffness) to smoothly animate the element towards that target. This will introduce natural momentum and easing.\"\n    },\n    {\n      \"id\": \"non_tangential_path_following\",\n      \"severity_0_10\": 7,\n      \"description\": \"The glowing dot moving along the curve does not maintain a constant speed along the path's arc length. Its velocity appears to be constant on the horizontal axis, causing it to visibly speed up and slow down as the curve's slope changes. This non-tangential movement is physically incorrect and looks unnatural. The motion also appears slightly jittery, suggesting it's updated directly in a scroll listener rather than being synced with the browser's render cycle.\",\n      \"evidence\": \"From 0:09 to 0:11, the dot noticeably accelerates in the 'dip' of the curve and slows on steeper sections. Its movement is not perfectly smooth, exhibiting minor stutters.\",\n      \"recommendation\": \"Calculate the dot's position based on a normalized progress value (0 to 1) along the SVG path's total length. Use the native SVG methods `getTotalLength()` and `getPointAtLength(progress * totalLength)` to ensure the dot travels at a constant speed along the curve's actual contour. All position updates must be performed within a `requestAnimationFrame` loop to eliminate jitter.\"\n    },\n    {\n      \"id\": \"abrupt_state_transition\",\n      \"severity_0_10\": 6,\n      \"description\": \"The information cards on the right-hand side switch content instantaneously as the dot passes checkpoints. This complete lack of a transition is jarring, breaks the narrative flow of the 'flight path', and makes the UI feel cheap and unfinished. It provides no visual cue for the state change, harming motion readability.\",\n      \"evidence\": \"At 0:10, the content for 'Launch Runway' is instantly replaced by 'Cabin Systems' with no fade, slide, or any other transitional animation.\",\n      \"recommendation\": \"Implement animated transitions between card states. A simple cross-fade (animating opacity) is the minimum viable fix. A superior approach is a slide-and-fade effect, where the outgoing card slides out (e.g., `transform: translateY(-20px); opacity: 0;`) as the incoming card slides in, creating a clear and readable relationship between states.\"\n    },\n    {\n      \"id\": \"animation_termination_jitter\",\n      \"severity_0_10\": 5,\n      \"description\": \"At the very end of the scroll sequence, the entire animated group of elements 'snaps' or 'jumps' by a few pixels into its final resting state. This indicates a mismatch between the final position calculated by the JavaScript animation and the element's final, static CSS state, which breaks the illusion of a seamless motion and signals a lack of polish.\",\n      \"evidence\": \"At 0:11, as the user stops scrolling and the animation concludes, the entire layout on the left visibly jumps slightly to settle into its final position.\",\n      \"recommendation\": \"Ensure the animation logic resolves perfectly to the final state. The animation should conclude by explicitly setting the element's transform properties to their exact final values. A robust solution is to use an animation library that manages this lifecycle correctly or, upon completion, remove the dynamically applied transform styles and add a final CSS class that defines the end state with perfectly matching values.\"\n    }\n  ],\n  \"strengths\": [\n    \"The core conceptual metaphor of a 'flight path' to guide the user through a portfolio is strong and engaging.\"\n  ],\n  \"recommendations\": [\n    \"Adopt a physics-based animation library (e.g., Framer Motion, React Spring) to manage all scroll-driven animations. This will provide natural inertia, smoothness, and solve termination jitter issues systemically.\",\n    \"Rework the path-following animation to use SVG's `getPointAtLength()` method within a `requestAnimationFrame` loop to achieve smooth, constant-velocity motion along the curve.\",\n    \"Establish a consistent motion design language by ensuring all state changes, especially content swaps, are clearly communicated with appropriate transitions like fades or slides.\"\n  ],\n  \"score_breakdown\": {\n    \"physics_consistency\": 1,\n    \"collision_stability\": 4,\n    \"motion_readability\": 2,\n    \"temporal_smoothness\": 2\n  }\n}\n```"
+      },
+      "raw_model_diagnostics": {
+        "stage1": {
+          "ok": true,
+          "status_code": 200
+        },
+        "stage2": {
+          "ok": true,
+          "status_code": 200
+        },
+        "stage3": {
+          "ok": true,
+          "status_code": 200
+        }
+      }
+    },
+    "score_breakdown": {
+      "physics_consistency": 1,
+      "collision_stability": 4,
+      "motion_readability": 2,
+      "temporal_smoothness": 2
+    }
+  },
+  "final_verdict": "pass",
+  "escalated": false,
+  "severity_threshold": 8.0,
+  "pass_condition": "execution.status == pass AND critique.overall_severity <= 8.0"
+}

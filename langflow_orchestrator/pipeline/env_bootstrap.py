@@ -22,12 +22,9 @@ def _parse_env_line(line: str) -> tuple[str, str] | None:
   return key, value
 
 
-def load_project_env(project_root: str) -> dict[str, str]:
-  root = Path(project_root).resolve()
-  env_path = root / ".env"
-  loaded: dict[str, str] = {}
+def _load_env_file(env_path: Path, loaded: dict[str, str]) -> None:
   if not env_path.exists():
-    return loaded
+    return
 
   for raw_line in env_path.read_text(encoding="utf-8").splitlines():
     parsed = _parse_env_line(raw_line)
@@ -38,4 +35,17 @@ def load_project_env(project_root: str) -> dict[str, str]:
       continue
     os.environ[key] = value
     loaded[key] = value
+
+
+def load_project_env(project_root: str) -> dict[str, str]:
+  root = Path(project_root).resolve()
+  repo_root = Path(__file__).resolve().parents[2]
+  loaded: dict[str, str] = {}
+
+  # Load Jungle repo env first so shared model/database credentials are available
+  # even when the target project root points at a separate demo app directory.
+  _load_env_file(repo_root / ".env", loaded)
+  if root != repo_root:
+    _load_env_file(root / ".env", loaded)
+
   return loaded

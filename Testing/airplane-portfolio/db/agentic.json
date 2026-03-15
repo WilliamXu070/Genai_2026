@@ -1,0 +1,271 @@
+{
+  "schemaVersion": "0.1.0",
+  "forests": [
+    {
+      "forestId": "forest_1773528095541",
+      "projectName": "Airplane Portfolio Demo",
+      "url": "http://127.0.0.1:3095",
+      "objective": "Prepare a testing plan for the airplane portfolio scroll experience and wait for approval",
+      "createdAt": "2026-03-14T22:41:35.541Z",
+      "updatedAt": "2026-03-14T22:41:35.542Z",
+      "trees": [
+        {
+          "treeId": "tree_1773528095542",
+          "version": 1,
+          "status": "draft",
+          "createdAt": "2026-03-14T22:41:35.542Z",
+          "updatedAt": "2026-03-14T22:41:35.542Z",
+          "procedure": {
+            "summary": "Comprehensive test plan for the Atlas Airfolio website, focusing on the airplane portfolio scroll experience, section readability, CTA visibility, and overall polish.",
+            "confirmMessage": "All tests passed, indicating a polished and engaging user experience with the Atlas Airfolio website.",
+            "steps": [
+              {
+                "action": "Navigate to the Atlas Airfolio website.",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "Scroll down to the 'Launch Runway' section.",
+                "target": "document",
+                "value": "Scroll to 'Launch Runway' section",
+                "assert": "Element with text 'Launch Runway' is visible."
+              },
+              {
+                "action": "Verify the airplane (#plane) motion is smooth and visually appealing during the scroll to 'Launch Runway'.",
+                "target": "#plane",
+                "assert": "Airplane motion is smooth and visually appealing."
+              },
+              {
+                "action": "Verify the 'Launch Runway' section is easily readable and understandable.",
+                "target": "text=Launch Runway",
+                "assert": "Section content is readable and understandable."
+              },
+              {
+                "action": "Verify the 'Launch' link is visible and clickable within the 'Launch Runway' section.",
+                "target": "text=Launch",
+                "assert": "Link is visible and clickable."
+              },
+              {
+                "action": "Scroll down to the 'Cabin Systems' section.",
+                "target": "document",
+                "value": "Scroll to 'Cabin Systems' section",
+                "assert": "Element with text 'Cabin Systems' is visible."
+              },
+              {
+                "action": "Verify the airplane (#plane) motion is smooth and visually appealing during the scroll to 'Cabin Systems'.",
+                "target": "#plane",
+                "assert": "Airplane motion is smooth and visually appealing."
+              },
+              {
+                "action": "Verify the 'Cabin Systems' section is easily readable and understandable.",
+                "target": "text=Cabin Systems",
+                "assert": "Section content is readable and understandable."
+              },
+              {
+                "action": "Scroll down to the 'Atlas Stack' section.",
+                "target": "document",
+                "value": "Scroll to 'Atlas Stack' section",
+                "assert": "Element with text 'Atlas Stack' is visible."
+              },
+              {
+                "action": "Verify the airplane (#plane) motion is smooth and visually appealing during the scroll to 'Atlas Stack'.",
+                "target": "#plane",
+                "assert": "Airplane motion is smooth and visually appealing."
+              },
+              {
+                "action": "Verify the 'Atlas Stack' section is easily readable and understandable.",
+                "target": "text=Atlas Stack",
+                "assert": "Section content is readable and understandable."
+              },
+              {
+                "action": "Scroll down to the 'Landing Brief' section.",
+                "target": "document",
+                "value": "Scroll to 'Landing Brief' section",
+                "assert": "Element with text 'Landing Brief' is visible."
+              },
+              {
+                "action": "Verify the airplane (#plane) motion is smooth and visually appealing during the scroll to 'Landing Brief'.",
+                "target": "#plane",
+                "assert": "Airplane motion is smooth and visually appealing."
+              },
+              {
+                "action": "Verify the 'Landing Brief' section is easily readable and understandable.",
+                "target": "text=Landing Brief",
+                "assert": "Section content is readable and understandable."
+              },
+              {
+                "action": "Verify the 'Start the route' link is visible and clickable within the 'Landing Brief' section.",
+                "target": "text=Start the route",
+                "assert": "Link is visible and clickable."
+              },
+              {
+                "action": "Scroll back to the top of the page.",
+                "target": "document",
+                "value": "Scroll to top of page",
+                "assert": "Element with text 'Atlas Airfolio' is visible."
+              },
+              {
+                "action": "Verify overall polish and visual appeal of the website.",
+                "target": "body",
+                "assert": "Website exhibits a high level of polish and visual appeal."
+              }
+            ],
+            "notes": [
+              "This test plan focuses on the core scrolling experience and section readability.",
+              "Pay close attention to the airplane's motion and ensure it doesn't feel jarring or unnatural.",
+              "Ensure all Call-To-Actions (CTAs) are clearly visible and easily accessible.",
+              "Consider testing on different screen sizes and browsers to ensure responsiveness.",
+              "The 'assert' values are guidelines; adjust them based on the specific implementation and expected behavior."
+            ]
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "Navigate to the Atlas Airfolio website.",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "scrollPage",
+                "originalAction": "Scroll down to the 'Launch Runway' section.",
+                "target": "document",
+                "value": "Scroll to 'Launch Runway' section",
+                "assert": "Element with text 'Launch Runway' is visible."
+              },
+              {
+                "index": 2,
+                "action": "scrollPage",
+                "originalAction": "Verify the airplane (#plane) motion is smooth and visually appealing during the scroll to 'Launch Runway'.",
+                "target": "#plane",
+                "value": null,
+                "assert": "Airplane motion is smooth and visually appealing."
+              },
+              {
+                "index": 3,
+                "action": null,
+                "originalAction": "Verify the 'Launch Runway' section is easily readable and understandable.",
+                "target": "text=Launch Runway",
+                "value": null,
+                "assert": "Section content is readable and understandable."
+              },
+              {
+                "index": 4,
+                "action": "click",
+                "originalAction": "Verify the 'Launch' link is visible and clickable within the 'Launch Runway' section.",
+                "target": "text=Launch",
+                "value": null,
+                "assert": "Link is visible and clickable."
+              },
+              {
+                "index": 5,
+                "action": "scrollPage",
+                "originalAction": "Scroll down to the 'Cabin Systems' section.",
+                "target": "document",
+                "value": "Scroll to 'Cabin Systems' section",
+                "assert": "Element with text 'Cabin Systems' is visible."
+              },
+              {
+                "index": 6,
+                "action": "scrollPage",
+                "originalAction": "Verify the airplane (#plane) motion is smooth and visually appealing during the scroll to 'Cabin Systems'.",
+                "target": "#plane",
+                "value": null,
+                "assert": "Airplane motion is smooth and visually appealing."
+              },
+              {
+                "index": 7,
+                "action": null,
+                "originalAction": "Verify the 'Cabin Systems' section is easily readable and understandable.",
+                "target": "text=Cabin Systems",
+                "value": null,
+                "assert": "Section content is readable and understandable."
+              },
+              {
+                "index": 8,
+                "action": "scrollPage",
+                "originalAction": "Scroll down to the 'Atlas Stack' section.",
+                "target": "document",
+                "value": "Scroll to 'Atlas Stack' section",
+                "assert": "Element with text 'Atlas Stack' is visible."
+              },
+              {
+                "index": 9,
+                "action": "scrollPage",
+                "originalAction": "Verify the airplane (#plane) motion is smooth and visually appealing during the scroll to 'Atlas Stack'.",
+                "target": "#plane",
+                "value": null,
+                "assert": "Airplane motion is smooth and visually appealing."
+              },
+              {
+                "index": 10,
+                "action": null,
+                "originalAction": "Verify the 'Atlas Stack' section is easily readable and understandable.",
+                "target": "text=Atlas Stack",
+                "value": null,
+                "assert": "Section content is readable and understandable."
+              },
+              {
+                "index": 11,
+                "action": "scrollPage",
+                "originalAction": "Scroll down to the 'Landing Brief' section.",
+                "target": "document",
+                "value": "Scroll to 'Landing Brief' section",
+                "assert": "Element with text 'Landing Brief' is visible."
+              },
+              {
+                "index": 12,
+                "action": "scrollPage",
+                "originalAction": "Verify the airplane (#plane) motion is smooth and visually appealing during the scroll to 'Landing Brief'.",
+                "target": "#plane",
+                "value": null,
+                "assert": "Airplane motion is smooth and visually appealing."
+              },
+              {
+                "index": 13,
+                "action": null,
+                "originalAction": "Verify the 'Landing Brief' section is easily readable and understandable.",
+                "target": "text=Landing Brief",
+                "value": null,
+                "assert": "Section content is readable and understandable."
+              },
+              {
+                "index": 14,
+                "action": "click",
+                "originalAction": "Verify the 'Start the route' link is visible and clickable within the 'Landing Brief' section.",
+                "target": "text=Start the route",
+                "value": null,
+                "assert": "Link is visible and clickable."
+              },
+              {
+                "index": 15,
+                "action": "scrollPage",
+                "originalAction": "Scroll back to the top of the page.",
+                "target": "document",
+                "value": "Scroll to top of page",
+                "assert": "Element with text 'Atlas Airfolio' is visible."
+              },
+              {
+                "index": 16,
+                "action": null,
+                "originalAction": "Verify overall polish and visual appeal of the website.",
+                "target": "body",
+                "value": null,
+                "assert": "Website exhibits a high level of polish and visual appeal."
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": null
+        }
+      ]
+    }
+  ],
+  "runs": []
+}

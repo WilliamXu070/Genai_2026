@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import time
 from pathlib import Path
@@ -19,6 +20,107 @@ def _read_text(path: Path, max_chars: int = 4000) -> str:
     return text[:max_chars]
   except Exception:
     return ""
+
+
+def _extract_button_controls(html_text: str, max_controls: int = 12) -> List[Dict[str, str]]:
+  controls: List[Dict[str, str]] = []
+  if not html_text:
+    return controls
+
+  button_pattern = re.compile(r"<button([^>]*)>(.*?)</button>", re.IGNORECASE | re.DOTALL)
+  for attrs, inner_html in button_pattern.findall(html_text):
+    selector = ""
+    id_match = re.search(r'id=["\']([^"\']+)["\']', attrs, flags=re.IGNORECASE)
+    testid_match = re.search(r'data-testid=["\']([^"\']+)["\']', attrs, flags=re.IGNORECASE)
+    class_match = re.search(r'class=["\']([^"\']+)["\']', attrs, flags=re.IGNORECASE)
+
+    if id_match:
+      selector = f"#{id_match.group(1)}"
+    elif testid_match:
+      selector = f'[data-testid="{testid_match.group(1)}"]'
+    elif class_match:
+      first_class = class_match.group(1).split()[0]
+      if first_class:
+        selector = f".{first_class}"
+    if not selector:
+      continue
+
+    label = re.sub(r"<[^>]+>", "", inner_html)
+    label = re.sub(r"\s+", " ", label).strip()
+    controls.append({"selector": selector, "label": label or selector})
+    if len(controls) >= max_controls:
+      break
+  return controls
+
+
+def _extract_link_controls(html_text: str, max_controls: int = 12) -> List[Dict[str, str]]:
+  controls: List[Dict[str, str]] = []
+  if not html_text:
+    return controls
+
+  link_pattern = re.compile(r"<a([^>]*)>(.*?)</a>", re.IGNORECASE | re.DOTALL)
+  for attrs, inner_html in link_pattern.findall(html_text):
+    href_match = re.search(r'href=["\']([^"\']+)["\']', attrs, flags=re.IGNORECASE)
+    if not href_match:
+      continue
+    href = href_match.group(1).strip()
+    if not href or href.lower().startswith("mailto:") or href.lower().startswith("tel:"):
+      continue
+    if not (href.startswith("#") or href.startswith("/")):
+      continue
+
+    id_match = re.search(r'id=["\']([^"\']+)["\']', attrs, flags=re.IGNORECASE)
+    class_match = re.search(r'class=["\']([^"\']+)["\']', attrs, flags=re.IGNORECASE)
+    selector = ""
+    if id_match:
+      selector = f"#{id_match.group(1)}"
+    elif class_match:
+      first_class = class_match.group(1).split()[0]
+      if first_class:
+        selector = f".{first_class}"
+    if not selector:
+      text = re.sub(r"<[^>]+>", "", inner_html)
+      text = re.sub(r"\s+", " ", text).strip()
+      selector = f"text={text}" if text else f'a[href="{href}"]'
+
+    label = re.sub(r"<[^>]+>", "", inner_html)
+    label = re.sub(r"\s+", " ", label).strip()
+    controls.append({"selector": selector, "label": label or selector})
+    if len(controls) >= max_controls:
+      break
+  return controls
+
+
+def _infer_required_interactions(
+  controls: List[Dict[str, str]],
+  feature_goal: str,
+  environment_context: str,
+  constraints: str
+) -> List[Dict[str, str]]:
+  interactions: List[Dict[str, str]] = []
+  seen_targets = set()
+
+  # Default behavior is broad coverage unless the request is explicitly narrow.
+  scope_text = " ".join([feature_goal or "", environment_context or "", constraints or ""]).lower()
+  narrow_only = any(token in scope_text for token in ["single flow", "one flow", "only one", "only this button"])
+
+  for control in controls:
+    selector = str(control.get("selector", "")).strip()
+    if not selector or selector in seen_targets:
+      continue
+    seen_targets.add(selector)
+    interactions.append(
+      {
+        "action": "click",
+        "target": selector,
+        "reason": "Coverage pass: interact with discovered UI control."
+      }
+    )
+    if narrow_only and len(interactions) >= 1:
+      break
+    if len(interactions) >= 12:
+      break
+  return interactions
 
 
 def build_environment_snapshot(
@@ -48,12 +150,56 @@ def build_environment_snapshot(
       if len(file_inventory) >= 250:
         break
 
+  primary_html_candidates = [
+    root / "public" / "index.html",
+    root / "index.html",
+    root / "src" / "renderer" / "index.html",
+    root / "src" / "renderer" / "v2" / "index.html",
+    root / "Testing" / "airplane-portfolio" / "public" / "index.html"
+  ]
+  primary_html_path = next((p for p in primary_html_candidates if p.exists()), None)
+  primary_html_text = _read_text(primary_html_path) if primary_html_path else ""
+
   key_files = {
     "package.json": _read_text(root / "package.json"),
     "src/main.js": _read_text(root / "src" / "main.js"),
     "src/runtime/agentic_loop.js": _read_text(root / "src" / "runtime" / "agentic_loop.js"),
-    "src/renderer/index.html": _read_text(root / "src" / "renderer" / "index.html")
+    "src/renderer/index.html": _read_text(root / "src" / "renderer" / "index.html"),
+    "public/index.html": _read_text(root / "public" / "index.html"),
+    "Testing/Testing Loop/AGENTS.md": _read_text(root / "Testing" / "Testing Loop" / "AGENTS.md"),
+    "Testing/Testing Loop/shm-visualization/public/index.html": _read_text(
+      root / "Testing" / "Testing Loop" / "shm-visualization" / "public" / "index.html"
+    ),
+    "Testing/Testing Loop/shm-visualization/public/app.js": _read_text(
+      root / "Testing" / "Testing Loop" / "shm-visualization" / "public" / "app.js"
+    )
   }
+  button_controls = []
+  button_controls.extend(_extract_button_controls(primary_html_text, max_controls=16))
+  button_controls.extend(_extract_link_controls(primary_html_text, max_controls=16))
+  if not button_controls:
+    button_controls.extend(
+      _extract_button_controls(key_files.get("Testing/Testing Loop/shm-visualization/public/index.html", ""), max_controls=12)
+    )
+
+  # Stable de-dup for controls pulled from buttons + links.
+  deduped_controls: List[Dict[str, str]] = []
+  seen_selectors = set()
+  for control in button_controls:
+    selector = str(control.get("selector", "")).strip()
+    if not selector or selector in seen_selectors:
+      continue
+    seen_selectors.add(selector)
+    deduped_controls.append(control)
+    if len(deduped_controls) >= 16:
+      break
+
+  required_interactions = _infer_required_interactions(
+    deduped_controls,
+    feature_goal,
+    environment_context,
+    constraints
+  )
 
   detected_stack = []
   if (root / "package.json").exists():
@@ -72,7 +218,13 @@ def build_environment_snapshot(
     "scripts": scripts,
     "key_files": key_files,
     "file_inventory": file_inventory,
-    "detected_stack": detected_stack
+    "detected_stack": detected_stack,
+    "button_controls": deduped_controls,
+    "required_interactions": required_interactions,
+    "workflow_notes": {
+      "testing_loop_entrypoint": "Testing/Testing Loop/orchestrate_testing.js",
+      "bridge_entrypoint": "Testing/tools/jungle_tool_bridge.js --mode langflow-cli"
+    }
   }
 
 
@@ -395,35 +547,65 @@ def ensure_target_app(
 
 
 def _plan_to_executor_code(plan: ExecutionPlan) -> str:
+  def _post_step_delay_ms(step: Dict[str, Any]) -> int:
+    action = str(step.get("action", "")).strip()
+    base_delay = max(0, int(os.getenv("JUNGLE_ACTION_DELAY_MS", "500") or "500"))
+    if action == "goto":
+      return max(base_delay, 700)
+    if action == "wait":
+      return max(200, min(base_delay, 400))
+    if action == "scrollPage":
+      return max(base_delay, 900)
+    if action in {"click", "fill"}:
+      return max(base_delay, 500)
+    if action in {"assertVisible", "assertChanged", "assertText"}:
+      return max(350, min(base_delay, 650))
+    if action == "captureText":
+      return max(350, min(base_delay, 600))
+    return max(250, min(base_delay, 500))
+
   code_lines: List[str] = []
   for step in plan.get("steps", []):
     action = str(step.get("action", ""))
     target = json.dumps(step.get("target", "body"))
     value = json.dumps(step.get("value", ""))
+    delay_ms = _post_step_delay_ms(step)
     if action == "goto":
       code_lines.append(f"await page.goto({target}, {{ waitUntil: 'domcontentloaded', timeout: 30000 }});")
+      code_lines.append(f"await page.waitForTimeout({delay_ms});")
     elif action == "assertVisible":
       code_lines.append(f"await page.locator({target}).first().waitFor({{ state: 'visible', timeout: 10000 }});")
+      code_lines.append(f"await page.waitForTimeout({delay_ms});")
     elif action == "captureText":
       code_lines.append(f"stateStore[{value}] = await page.locator({target}).first().innerText({{ timeout: 10000 }});")
+      code_lines.append(f"await page.waitForTimeout({delay_ms});")
     elif action == "click":
       code_lines.append(f"await page.locator({target}).first().click({{ timeout: 10000 }});")
+      code_lines.append(f"await page.waitForTimeout({delay_ms});")
     elif action == "fill":
       code_lines.append(f"await page.locator({target}).first().fill({value}, {{ timeout: 10000 }});")
+      code_lines.append(f"await page.waitForTimeout({delay_ms});")
     elif action == "assertChanged":
       code_lines.append(
         "await page.waitForFunction(({ selector, before }) => { const el = document.querySelector(selector); if (!el) return false; const current = (el.innerText || el.textContent || '').trim(); return current !== before; }, "
         + f"{{ selector: {target}, before: (stateStore[{value}] || '') }}, {{ timeout: 10000 }});"
       )
+      code_lines.append(f"await page.waitForTimeout({delay_ms});")
     elif action == "scrollPage":
       code_lines.append(
-        "await page.evaluate(async () => { const maxY = document.documentElement.scrollHeight - window.innerHeight; let y = 0; const stride = Math.max(120, Math.floor(window.innerHeight * 0.75)); while (y < maxY) { y = Math.min(maxY, y + stride); window.scrollTo(0, y); await new Promise((resolve) => setTimeout(resolve, 250)); } });"
+        "await page.evaluate(async () => { const maxY = document.documentElement.scrollHeight - window.innerHeight; let y = 0; const stride = Math.max(64, Math.floor(window.innerHeight * 0.35)); while (y < maxY) { y = Math.min(maxY, y + stride); window.scrollTo(0, y); await new Promise((resolve) => setTimeout(resolve, 450)); } });"
       )
+      code_lines.append(f"await page.waitForTimeout({delay_ms});")
     elif action == "wait":
       ms = int(step.get("value", 10000))
+      wait_target = str(step.get("target", "")).lower()
+      if any(token in wait_target for token in ["anim", "motion", "transition", "scroll"]):
+        ms = max(ms, 1800)
       code_lines.append(f"await page.waitForTimeout({ms});")
+      code_lines.append(f"await page.waitForTimeout({delay_ms});")
     elif action == "screenshot":
       code_lines.append("await page.screenshot({ path: path.join(artifactsDir, `step_${Date.now()}.png`), fullPage: true });")
+      code_lines.append(f"await page.waitForTimeout({delay_ms});")
     else:
       code_lines.append(f"// unsupported action preserved: {action}")
 

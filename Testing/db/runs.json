@@ -2,6 +2,40 @@
   "schemaVersion": "0.1.0",
   "runs": [
     {
+      "runId": "run_1773528026751",
+      "projectName": "Testing",
+      "scenarioName": "ui_open",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3095",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T22:40:26.752Z",
+      "updatedAt": "2026-03-14T22:40:27.109Z",
+      "startedAt": "2026-03-14T22:40:26.753Z",
+      "endedAt": "2026-03-14T22:40:27.109Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\runs\\run_1773528026751\\1773528027108_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\db\\runs\\run_1773528026751\\1773528027109_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "Atlas Airfolio",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
       "runId": "run_1773517403449",
       "projectName": "Testing",
       "scenarioName": "ui_open",

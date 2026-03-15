@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Atlas Airfolio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="sky-grid" aria-hidden="true"></div>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Portfolio Flight Deck</p>
+        <h1>Atlas Airfolio</h1>
+      </div>
+      <nav class="topnav" aria-label="Primary">
+        <a href="#launch">Launch</a>
+        <a href="#flight-path">Flight Path</a>
+        <a href="#black-box">Black Box</a>
+        <a href="#hangar">Hangar</a>
+      </nav>
+    </header>
+
+    <main class="experience">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">William Xu</p>
+          <h2>Designing software like a long-haul route: visible checkpoints, calm motion, hard systems thinking.</h2>
+          <p class="hero-lead">
+            Scroll through the aircraft path to move from launch to landing. Each waypoint opens a
+            different layer of product thinking, from interface craft to systems reliability.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#launch">Start the route</a>
+            <a class="secondary-link" href="#hangar">View hangar notes</a>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <article>
+            <span class="stat-label">Routes shipped</span>
+            <strong>12</strong>
+          </article>
+          <article>
+            <span class="stat-label">Systems rebuilt</span>
+            <strong>8</strong>
+          </article>
+          <article>
+            <span class="stat-label">Avg. polish cycle</span>
+            <strong>3 days</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="flight-shell">
+        <div class="sticky-stage">
+          <div class="stage-frame">
+            <div class="stage-head">
+              <p class="eyebrow">Live Route</p>
+              <div class="stage-readout">
+                <span id="active-label">Launch Runway</span>
+                <span id="progress-readout">0%</span>
+              </div>
+            </div>
+
+            <div class="radar">
+              <svg class="route-map" viewBox="0 0 1000 760" aria-hidden="true">
+                <defs>
+                  <linearGradient id="routeGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#9be7c4" />
+                    <stop offset="100%" stop-color="#8dd0ff" />
+                  </linearGradient>
+                </defs>
+                <path
+                  id="flight-path-line"
+                  d="M 90 660 C 230 560, 230 470, 350 430 S 560 300, 640 260 S 760 190, 900 90"
+                  pathLength="100"
+                />
+                <path
+                  class="route-map__outline"
+                  d="M 90 660 C 230 560, 230 470, 350 430 S 560 300, 640 260 S 760 190, 900 90"
+                />
+                <path
+                  class="route-map__glow"
+                  d="M 90 660 C 230 560, 230 470, 350 430 S 560 300, 640 260 S 760 190, 900 90"
+                />
+              </svg>
+              <div class="cloud cloud-a"></div>
+              <div class="cloud cloud-b"></div>
+              <div class="cloud cloud-c"></div>
+              <div class="sun-dial"></div>
+
+              <div class="plane" id="plane">
+                <svg viewBox="0 0 160 160" aria-hidden="true">
+                  <path
+                    d="M76 10 L95 65 L150 78 L150 92 L95 95 L76 150 L61 150 L67 95 L16 112 L10 102 L52 82 L10 58 L16 48 L67 65 L61 10 Z"
+                  />
+                </svg>
+              </div>
+
+              <div class="waypoint waypoint-launch" data-waypoint="Launch Runway"></div>
+              <div class="waypoint waypoint-cabin" data-waypoint="Cabin Systems"></div>
+              <div class="waypoint waypoint-atlas" data-waypoint="Atlas Stack"></div>
+              <div class="waypoint waypoint-landing" data-waypoint="Landing Brief"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="scroll-story">
+          <article class="story-panel is-active" id="launch" data-label="Launch Runway">
+            <p class="panel-index">01</p>
+            <h3>Launch Runway</h3>
+            <p>
+              I build interfaces with a visible starting point. Every product needs an opening
+              scene that tells the user what kind of system they just entered.
+            </p>
+            <ul class="chip-list">
+              <li>Product direction</li>
+              <li>Visual systems</li>
+              <li>Interaction pacing</li>
+            </ul>
+          </article>
+
+          <article class="story-panel" id="flight-path" data-label="Cabin Systems">
+            <p class="panel-index">02</p>
+            <h3>Cabin Systems</h3>
+            <p>
+              My favorite work sits between interface and operations. I like products that can
+              explain themselves while still exposing enough instrumentation for operators.
+            </p>
+            <div class="panel-grid">
+              <div>
+                <span class="detail-label">Recent Focus</span>
+                <strong>Agentic QA Control Loops</strong>
+              </div>
+              <div>
+                <span class="detail-label">Style</span>
+                <strong>Calm, visible, no black boxes</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="story-panel" id="black-box" data-label="Atlas Stack">
+            <p class="panel-index">03</p>
+            <h3>Atlas Stack</h3>
+            <p>
+              I treat every feature like a route card. Inputs, checkpoints, failure modes, and
+              recovery paths should all be legible to the people operating the system.
+            </p>
+            <div class="capsule-list">
+              <span>Electron tooling</span>
+              <span>Agentic orchestration</span>
+              <span>Persistent runtime history</span>
+              <span>Approval gates</span>
+            </div>
+          </article>
+
+          <article class="story-panel" id="hangar" data-label="Landing Brief">
+            <p class="panel-index">04</p>
+            <h3>Landing Brief</h3>
+            <p>
+              The best products land cleanly. They leave behind readable history, clear next steps,
+              and enough evidence that the next operator can pick up without guesswork.
+            </p>
+            <a class="primary-link" href="mailto:william@example.com">Open the hangar</a>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+  </html>

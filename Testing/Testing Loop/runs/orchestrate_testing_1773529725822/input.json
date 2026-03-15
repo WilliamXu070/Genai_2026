@@ -1,0 +1,9 @@
+{
+  "feature_goal": "Validate the airplane portfolio scroll experience and overall polish.",
+  "target_url": "http://127.0.0.1:3095",
+  "environment_context": "Local static portfolio demo served from Testing/airplane-portfolio.",
+  "constraints": "Focus on airplane motion during scroll, section readability, CTA visibility, and exit early if consecutive retries produce the same failure signals.",
+  "severity_threshold": 8,
+  "max_retries": 2,
+  "project_root": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio"
+}

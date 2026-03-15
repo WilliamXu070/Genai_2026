@@ -2,6 +2,1991 @@
   "schemaVersion": "0.1.0",
   "forests": [
     {
+      "forestId": "forest_1773534574658",
+      "projectName": "Airplane Portfolio Demo",
+      "url": "http://127.0.0.1:3095",
+      "objective": "Create source run for variant smoke",
+      "createdAt": "2026-03-15T00:29:34.658Z",
+      "updatedAt": "2026-03-15T00:29:54.052Z",
+      "trees": [
+        {
+          "treeId": "tree_1773534574661",
+          "version": 1,
+          "status": "validated",
+          "createdAt": "2026-03-15T00:29:34.661Z",
+          "updatedAt": "2026-03-15T00:29:54.052Z",
+          "procedure": {
+            "summary": "Validate Atlas Airfolio flow and core interactions for objective: Smoke test to verify basic functionality of Atlas Airfolio application, with focus on Hangar and Black Box sections.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Atlas Airfolio"
+              },
+              {
+                "action": "wait",
+                "target": "time",
+                "value": 10000
+              },
+              {
+                "action": "scrollPage",
+                "target": "down"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "Source run for variant creation smoke test. Variant derived from run test_run_1773534536765_4mbqub. Use the stored testing instructions as the baseline for this new approval-gated run. Variant should focus on the Hangar and Black Box sections as well."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Atlas Airfolio",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "time",
+                "value": 10000,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "down",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773534594050",
+          "confirmedAt": "2026-03-15T00:29:54.052Z"
+        }
+      ],
+      "summary": {
+        "totalRuns": 1,
+        "passRuns": 1,
+        "failRuns": 0,
+        "passRate": 100,
+        "avgReadiness": 100,
+        "latestRunId": "agentic_run_1773534594050",
+        "latestStatus": "pass",
+        "recurringIssues": [],
+        "updatedAt": "2026-03-15T00:29:54.050Z"
+      }
+    },
+    {
+      "forestId": "forest_1773534539668",
+      "projectName": "Airplane Portfolio Demo",
+      "url": "http://127.0.0.1:3095",
+      "objective": "Create source run for variant smoke",
+      "createdAt": "2026-03-15T00:28:59.668Z",
+      "updatedAt": "2026-03-15T00:29:19.022Z",
+      "trees": [
+        {
+          "treeId": "tree_1773534539670",
+          "version": 1,
+          "status": "validated",
+          "createdAt": "2026-03-15T00:28:59.670Z",
+          "updatedAt": "2026-03-15T00:29:19.022Z",
+          "procedure": {
+            "summary": "Validate Atlas Airfolio flow and core interactions for objective: Smoke test to verify basic functionality of Atlas Airfolio application.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Atlas Airfolio"
+              },
+              {
+                "action": "wait",
+                "target": "time",
+                "value": 10000
+              },
+              {
+                "action": "scrollPage",
+                "target": "down"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "Source run for variant creation smoke test. Verifies navigation between key sections of the application."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Atlas Airfolio",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "time",
+                "value": 10000,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "down",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773534559020",
+          "confirmedAt": "2026-03-15T00:29:19.022Z"
+        }
+      ],
+      "summary": {
+        "totalRuns": 1,
+        "passRuns": 1,
+        "failRuns": 0,
+        "passRate": 100,
+        "avgReadiness": 100,
+        "latestRunId": "agentic_run_1773534559020",
+        "latestStatus": "pass",
+        "recurringIssues": [],
+        "updatedAt": "2026-03-15T00:29:19.020Z"
+      }
+    },
+    {
+      "forestId": "forest_1773533718806",
+      "projectName": "Airplane Portfolio Demo",
+      "url": "http://127.0.0.1:3095",
+      "objective": "Approval edit smoke 2",
+      "createdAt": "2026-03-15T00:15:18.806Z",
+      "updatedAt": "2026-03-15T00:15:53.795Z",
+      "trees": [
+        {
+          "treeId": "tree_1773533734480",
+          "version": 3,
+          "status": "validated",
+          "createdAt": "2026-03-15T00:15:34.480Z",
+          "updatedAt": "2026-03-15T00:15:53.795Z",
+          "procedure": {
+            "summary": "Validate Atlas Airfolio flow and core interactions for objective: Smoke test to verify basic functionality and navigation of the Atlas Airfolio website.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Atlas Airfolio"
+              },
+              {
+                "action": "wait",
+                "target": "time",
+                "value": 10000
+              },
+              {
+                "action": "scrollPage",
+                "target": "down"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "Initial smoke test to ensure basic navigation and element interaction.  Full page screenshots are captured after each action to provide visual confirmation of state changes."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Atlas Airfolio",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "time",
+                "value": 10000,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "down",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773533753793",
+          "confirmedAt": "2026-03-15T00:15:53.795Z"
+        },
+        {
+          "treeId": "tree_1773533722177",
+          "version": 2,
+          "status": "validated",
+          "createdAt": "2026-03-15T00:15:22.177Z",
+          "updatedAt": "2026-03-15T00:15:30.200Z",
+          "procedure": {
+            "summary": "Smoke test to verify basic functionality and navigation of the Atlas Airfolio application.",
+            "confirmMessage": "Successfully navigated through the main sections of the application.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "notes": "Navigate to the base URL."
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage",
+                "notes": "Take a full page screenshot for visual baseline."
+              },
+              {
+                "action": "click",
+                "target": "text=Launch",
+                "notes": "Click the 'Launch' link to navigate to the Launch section."
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage",
+                "notes": "Take a full page screenshot after clicking Launch."
+              },
+              {
+                "action": "click",
+                "target": "text=Flight Path",
+                "notes": "Click the 'Flight Path' link to navigate to the Flight Path section."
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage",
+                "notes": "Take a full page screenshot after clicking Flight Path."
+              },
+              {
+                "action": "click",
+                "target": "text=Black Box",
+                "notes": "Click the 'Black Box' link to navigate to the Black Box section."
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage",
+                "notes": "Take a full page screenshot after clicking Black Box."
+              },
+              {
+                "action": "click",
+                "target": "text=Hangar",
+                "notes": "Click the 'Hangar' link to navigate to the Hangar section."
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage",
+                "notes": "Take a full page screenshot after clicking Hangar."
+              }
+            ],
+            "notes": "Initial smoke test to ensure basic navigation is functional.  Full page screenshots are taken at each step to provide a visual record of the application state."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Launch",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Flight Path",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Black Box",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 7,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 8,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Hangar",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 9,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773533730198",
+          "confirmedAt": "2026-03-15T00:15:30.200Z"
+        },
+        {
+          "treeId": "tree_1773533718808",
+          "version": 1,
+          "status": "draft",
+          "createdAt": "2026-03-15T00:15:18.808Z",
+          "updatedAt": "2026-03-15T00:15:18.808Z",
+          "procedure": {
+            "summary": "Smoke test to verify basic navigation and element visibility on the Atlas Airfolio website.",
+            "confirmMessage": "Atlas Airfolio smoke test completed successfully.",
+            "steps": [
+              {
+                "action": "Navigate to the Atlas Airfolio homepage.",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "Verify the 'Atlas Airfolio' heading is visible.",
+                "target": "text=Atlas Airfolio",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'Launch' link.",
+                "target": "text=Launch"
+              },
+              {
+                "action": "Verify the '#launch' element is visible.",
+                "target": "#launch",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'Flight Path' link.",
+                "target": "text=Flight Path"
+              },
+              {
+                "action": "Verify the '#flight-path' element is visible.",
+                "target": "#flight-path",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'Black Box' link.",
+                "target": "text=Black Box"
+              },
+              {
+                "action": "Verify the '#black-box' element is visible.",
+                "target": "#black-box",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'Hangar' link.",
+                "target": "text=Hangar"
+              },
+              {
+                "action": "Verify the '#hangar' element is visible.",
+                "target": "#hangar",
+                "assert": "isVisible"
+              }
+            ],
+            "notes": "Initial smoke test to ensure basic navigation and element visibility.  Uses text selectors for links and IDs for element visibility checks.  No form interactions are included in this initial test."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "Navigate to the Atlas Airfolio homepage.",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": null,
+                "originalAction": "Verify the 'Atlas Airfolio' heading is visible.",
+                "target": "text=Atlas Airfolio",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 2,
+                "action": "click",
+                "originalAction": "Click the 'Launch' link.",
+                "target": "text=Launch",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": null,
+                "originalAction": "Verify the '#launch' element is visible.",
+                "target": "#launch",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 4,
+                "action": "click",
+                "originalAction": "Click the 'Flight Path' link.",
+                "target": "text=Flight Path",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": null,
+                "originalAction": "Verify the '#flight-path' element is visible.",
+                "target": "#flight-path",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 6,
+                "action": "click",
+                "originalAction": "Click the 'Black Box' link.",
+                "target": "text=Black Box",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 7,
+                "action": null,
+                "originalAction": "Verify the '#black-box' element is visible.",
+                "target": "#black-box",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 8,
+                "action": "click",
+                "originalAction": "Click the 'Hangar' link.",
+                "target": "text=Hangar",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 9,
+                "action": null,
+                "originalAction": "Verify the '#hangar' element is visible.",
+                "target": "#hangar",
+                "value": null,
+                "assert": "isVisible"
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": null
+        }
+      ],
+      "summary": {
+        "totalRuns": 2,
+        "passRuns": 2,
+        "failRuns": 0,
+        "passRate": 100,
+        "avgReadiness": 95,
+        "latestRunId": "agentic_run_1773533753793",
+        "latestStatus": "pass",
+        "recurringIssues": [
+          {
+            "id": "insufficient_observation_window",
+            "count": 1
+          }
+        ],
+        "updatedAt": "2026-03-15T00:15:53.793Z"
+      }
+    },
+    {
+      "forestId": "forest_1773533649033",
+      "projectName": "Airplane Portfolio Demo",
+      "url": "http://127.0.0.1:3095",
+      "objective": "Approval edit smoke",
+      "createdAt": "2026-03-15T00:14:09.033Z",
+      "updatedAt": "2026-03-15T00:14:38.991Z",
+      "trees": [
+        {
+          "treeId": "tree_1773533659651",
+          "version": 3,
+          "status": "validated",
+          "createdAt": "2026-03-15T00:14:19.651Z",
+          "updatedAt": "2026-03-15T00:14:38.991Z",
+          "procedure": {
+            "summary": "Validate Atlas Airfolio flow and core interactions for objective: Smoke test to verify basic navigation and page load on Atlas Airfolio.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Atlas Airfolio"
+              },
+              {
+                "action": "wait",
+                "target": "time",
+                "value": 10000
+              },
+              {
+                "action": "scrollPage",
+                "target": "down"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "Initial notes: Basic smoke test to ensure core navigation is functional. Fail fast on repeated errors."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Atlas Airfolio",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "time",
+                "value": 10000,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "down",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773533678989",
+          "confirmedAt": "2026-03-15T00:14:38.991Z"
+        },
+        {
+          "treeId": "tree_1773533651541",
+          "version": 2,
+          "status": "validated",
+          "createdAt": "2026-03-15T00:14:11.541Z",
+          "updatedAt": "2026-03-15T00:14:16.128Z",
+          "procedure": {
+            "summary": "Smoke test to verify basic navigation and page load on Atlas Airfolio.",
+            "confirmMessage": "Successfully navigated to all main sections of the Atlas Airfolio application.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "assertVisible": "text=Atlas Airfolio"
+              },
+              {
+                "action": "click",
+                "target": "text=Launch",
+                "assertVisible": "#launch"
+              },
+              {
+                "action": "click",
+                "target": "text=Flight Path",
+                "assertVisible": "#flight-path"
+              },
+              {
+                "action": "click",
+                "target": "text=Black Box",
+                "assertVisible": "#black-box"
+              },
+              {
+                "action": "click",
+                "target": "text=Hangar",
+                "assertVisible": "#hangar"
+              },
+              {
+                "action": "screenshot",
+                "target": "page",
+                "notes": "Capturing screenshot of the final state."
+              }
+            ],
+            "notes": "Initial notes: This test performs a basic smoke test to ensure core navigation elements are functional. Fail fast if repeated identical errors across retries."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Launch",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Flight Path",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Black Box",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Hangar",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "page",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773533656127",
+          "confirmedAt": "2026-03-15T00:14:16.128Z"
+        },
+        {
+          "treeId": "tree_1773533649035",
+          "version": 1,
+          "status": "draft",
+          "createdAt": "2026-03-15T00:14:09.035Z",
+          "updatedAt": "2026-03-15T00:14:09.035Z",
+          "procedure": {
+            "summary": "Smoke test to verify basic navigation and element visibility on the Atlas Airfolio website.",
+            "confirmMessage": "Successfully navigated to all major sections and verified key elements are visible.",
+            "steps": [
+              {
+                "action": "Navigate to the base URL",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "Verify the 'Atlas Airfolio' heading is visible",
+                "target": "text=Atlas Airfolio",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'Launch' link",
+                "target": "text=Launch"
+              },
+              {
+                "action": "Verify the '#launch' element is visible",
+                "target": "#launch",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'Flight Path' link",
+                "target": "text=Flight Path"
+              },
+              {
+                "action": "Verify the '#flight-path' element is visible",
+                "target": "#flight-path",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'Black Box' link",
+                "target": "text=Black Box"
+              },
+              {
+                "action": "Verify the '#black-box' element is visible",
+                "target": "#black-box",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'Hangar' link",
+                "target": "text=Hangar"
+              },
+              {
+                "action": "Verify the '#hangar' element is visible",
+                "target": "#hangar",
+                "assert": "isVisible"
+              }
+            ],
+            "notes": "Initial smoke test to ensure basic navigation and element loading are functional.  Further tests should include more detailed interactions and assertions."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "Navigate to the base URL",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": null,
+                "originalAction": "Verify the 'Atlas Airfolio' heading is visible",
+                "target": "text=Atlas Airfolio",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 2,
+                "action": "click",
+                "originalAction": "Click the 'Launch' link",
+                "target": "text=Launch",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": null,
+                "originalAction": "Verify the '#launch' element is visible",
+                "target": "#launch",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 4,
+                "action": "click",
+                "originalAction": "Click the 'Flight Path' link",
+                "target": "text=Flight Path",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": null,
+                "originalAction": "Verify the '#flight-path' element is visible",
+                "target": "#flight-path",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 6,
+                "action": "click",
+                "originalAction": "Click the 'Black Box' link",
+                "target": "text=Black Box",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 7,
+                "action": null,
+                "originalAction": "Verify the '#black-box' element is visible",
+                "target": "#black-box",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 8,
+                "action": "click",
+                "originalAction": "Click the 'Hangar' link",
+                "target": "text=Hangar",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 9,
+                "action": null,
+                "originalAction": "Verify the '#hangar' element is visible",
+                "target": "#hangar",
+                "value": null,
+                "assert": "isVisible"
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": null
+        }
+      ],
+      "summary": {
+        "totalRuns": 2,
+        "passRuns": 2,
+        "failRuns": 0,
+        "passRate": 100,
+        "avgReadiness": 95,
+        "latestRunId": "agentic_run_1773533678989",
+        "latestStatus": "pass",
+        "recurringIssues": [
+          {
+            "id": "insufficient_observation_window",
+            "count": 1
+          }
+        ],
+        "updatedAt": "2026-03-15T00:14:38.989Z"
+      }
+    },
+    {
+      "forestId": "forest_1773532220454",
+      "projectName": "Airplane Portfolio Demo",
+      "url": "http://127.0.0.1:3095",
+      "objective": "UI approval hold test: pause before execution",
+      "createdAt": "2026-03-14T23:50:20.454Z",
+      "updatedAt": "2026-03-14T23:50:43.920Z",
+      "trees": [
+        {
+          "treeId": "tree_1773532220456",
+          "version": 1,
+          "status": "validated",
+          "createdAt": "2026-03-14T23:50:20.456Z",
+          "updatedAt": "2026-03-14T23:50:43.920Z",
+          "procedure": {
+            "summary": "Validate Atlas Airfolio flow and core interactions for objective: UI Approval Hold Test for Atlas Airfolio",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Atlas Airfolio"
+              },
+              {
+                "action": "wait",
+                "target": "time",
+                "value": 10000
+              },
+              {
+                "action": "scrollPage",
+                "target": "down"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "This test is designed to pause execution and require manual UI approval before proceeding.  It verifies the basic presence of key elements on the page.  Ensure the application is in its expected initial state before approving the test.\nAfter UI approval, execution should resume."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Atlas Airfolio",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "time",
+                "value": 10000,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "down",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773532243915",
+          "confirmedAt": "2026-03-14T23:50:43.920Z"
+        }
+      ],
+      "summary": {
+        "totalRuns": 1,
+        "passRuns": 1,
+        "failRuns": 0,
+        "passRate": 100,
+        "avgReadiness": 100,
+        "latestRunId": "agentic_run_1773532243915",
+        "latestStatus": "pass",
+        "recurringIssues": [],
+        "updatedAt": "2026-03-14T23:50:43.915Z"
+      }
+    },
+    {
+      "forestId": "forest_1773532155172",
+      "projectName": "Airplane Portfolio Demo",
+      "url": "http://127.0.0.1:3095",
+      "objective": "Demo run 2: validate scrolling airplane timeline and button interactions",
+      "createdAt": "2026-03-14T23:49:15.172Z",
+      "updatedAt": "2026-03-14T23:50:00.683Z",
+      "trees": [
+        {
+          "treeId": "tree_1773532181321",
+          "version": 2,
+          "status": "validated",
+          "createdAt": "2026-03-14T23:49:41.321Z",
+          "updatedAt": "2026-03-14T23:50:00.683Z",
+          "procedure": {
+            "summary": "Validate Atlas Airfolio flow and core interactions for objective: Demo run 2: Validate scrolling airplane timeline and button interactions on Atlas Airfolio.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Atlas Airfolio"
+              },
+              {
+                "action": "wait",
+                "target": "time",
+                "value": 10000
+              },
+              {
+                "action": "scrollPage",
+                "target": "down"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "This test validates the basic functionality of the Atlas Airfolio website, including navigation through the timeline and interaction with key buttons. Screenshots are captured for evidence.\nValidate sections render while scrolling and no obvious runtime errors."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Atlas Airfolio",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "time",
+                "value": 10000,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "down",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773532200682",
+          "confirmedAt": "2026-03-14T23:50:00.683Z"
+        },
+        {
+          "treeId": "tree_1773532155173",
+          "version": 1,
+          "status": "failed",
+          "createdAt": "2026-03-14T23:49:15.173Z",
+          "updatedAt": "2026-03-14T23:49:37.214Z",
+          "procedure": {
+            "summary": "Atlas Airfolio Demo Run 2: Validate scrolling airplane timeline and button interactions.",
+            "confirmMessage": "Successfully validated scrolling timeline and button interactions on Atlas Airfolio.",
+            "steps": [
+              {
+                "action": "Navigate to the Atlas Airfolio homepage.",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "Click the 'Launch' link to initiate the route.",
+                "target": "text=Launch"
+              },
+              {
+                "action": "Assert that the '#active-label' element is visible, indicating route progression.",
+                "target": "#active-label",
+                "assert": "isVisible"
+              },
+              {
+                "action": "scroll",
+                "target": "document",
+                "value": "document.body.scrollHeight"
+              },
+              {
+                "action": "Assert that the '#plane' element is visible, indicating the airplane is moving.",
+                "target": "#plane",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'Flight Path' link to view the flight path details.",
+                "target": "text=Flight Path"
+              },
+              {
+                "action": "Assert that the '#flight-path' element is visible, confirming the flight path details are displayed.",
+                "target": "#flight-path",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'Black Box' link to access the black box information.",
+                "target": "text=Black Box"
+              },
+              {
+                "action": "Assert that the '#black-box' element is visible, confirming the black box information is displayed.",
+                "target": "#black-box",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'Hangar' link to navigate to the hangar section.",
+                "target": "text=Hangar"
+              },
+              {
+                "action": "Assert that the '#hangar' element is visible, confirming the hangar section is displayed.",
+                "target": "#hangar",
+                "assert": "isVisible"
+              },
+              {
+                "action": "Click the 'View hangar notes' link.",
+                "target": "text=View hangar notes"
+              },
+              {
+                "action": "Click the 'Open the hangar' link.",
+                "target": "text=Open the hangar"
+              }
+            ],
+            "notes": "This test validates the core functionality of the Atlas Airfolio application, focusing on the scrolling timeline and button interactions.,Screenshots should be captured at key steps to provide visual evidence of the application's state.,Consider adding more specific assertions to validate the content displayed in each section (Flight Path, Black Box, Hangar).,The scroll action is generalized. Consider adding more granular scroll actions to test different scroll positions.\nValidate sections render while scrolling and no obvious runtime errors."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "Navigate to the Atlas Airfolio homepage.",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "click",
+                "originalAction": "Click the 'Launch' link to initiate the route.",
+                "target": "text=Launch",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "assertVisible",
+                "originalAction": "Assert that the '#active-label' element is visible, indicating route progression.",
+                "target": "#active-label",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scroll",
+                "target": "document",
+                "value": "document.body.scrollHeight",
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "assertVisible",
+                "originalAction": "Assert that the '#plane' element is visible, indicating the airplane is moving.",
+                "target": "#plane",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 5,
+                "action": "click",
+                "originalAction": "Click the 'Flight Path' link to view the flight path details.",
+                "target": "text=Flight Path",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "assertVisible",
+                "originalAction": "Assert that the '#flight-path' element is visible, confirming the flight path details are displayed.",
+                "target": "#flight-path",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 7,
+                "action": "click",
+                "originalAction": "Click the 'Black Box' link to access the black box information.",
+                "target": "text=Black Box",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 8,
+                "action": "assertVisible",
+                "originalAction": "Assert that the '#black-box' element is visible, confirming the black box information is displayed.",
+                "target": "#black-box",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 9,
+                "action": "goto",
+                "originalAction": "Click the 'Hangar' link to navigate to the hangar section.",
+                "target": "text=Hangar",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 10,
+                "action": "assertVisible",
+                "originalAction": "Assert that the '#hangar' element is visible, confirming the hangar section is displayed.",
+                "target": "#hangar",
+                "value": null,
+                "assert": "isVisible"
+              },
+              {
+                "index": 11,
+                "action": "click",
+                "originalAction": "Click the 'View hangar notes' link.",
+                "target": "text=View hangar notes",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 12,
+                "action": "click",
+                "originalAction": "Click the 'Open the hangar' link.",
+                "target": "text=Open the hangar",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773532177213",
+          "confirmedAt": "2026-03-14T23:49:37.214Z"
+        }
+      ],
+      "summary": {
+        "totalRuns": 2,
+        "passRuns": 1,
+        "failRuns": 1,
+        "passRate": 50,
+        "avgReadiness": 55,
+        "latestRunId": "agentic_run_1773532200682",
+        "latestStatus": "pass",
+        "recurringIssues": [
+          {
+            "id": "run_failed",
+            "count": 1
+          },
+          {
+            "id": "semantic_checks_failed",
+            "count": 1
+          },
+          {
+            "id": "insufficient_observation_window",
+            "count": 1
+          },
+          {
+            "id": "execution_instability",
+            "count": 1
+          }
+        ],
+        "updatedAt": "2026-03-14T23:50:00.682Z"
+      }
+    },
+    {
+      "forestId": "forest_1773532102804",
+      "projectName": "Airplane Portfolio Demo",
+      "url": "http://127.0.0.1:3095",
+      "objective": "Demo run 1: validate scrolling airplane timeline and button interactions",
+      "createdAt": "2026-03-14T23:48:22.805Z",
+      "updatedAt": "2026-03-14T23:49:10.015Z",
+      "trees": [
+        {
+          "treeId": "tree_1773532130665",
+          "version": 2,
+          "status": "validated",
+          "createdAt": "2026-03-14T23:48:50.666Z",
+          "updatedAt": "2026-03-14T23:49:10.015Z",
+          "procedure": {
+            "summary": "Validate Atlas Airfolio flow and core interactions for objective: Demo run 1: Validate scrolling airplane timeline and button interactions on Atlas Airfolio.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Atlas Airfolio"
+              },
+              {
+                "action": "wait",
+                "target": "time",
+                "value": 10000
+              },
+              {
+                "action": "scrollPage",
+                "target": "down"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "This test procedure validates the basic functionality of the Atlas Airfolio website, including navigation and interaction with key elements. Screenshots are captured at each step to provide visual evidence of the test execution.\nValidate sections render while scrolling and no obvious runtime errors."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Atlas Airfolio",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "time",
+                "value": 10000,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "down",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773532150014",
+          "confirmedAt": "2026-03-14T23:49:10.015Z"
+        },
+        {
+          "treeId": "tree_1773532102806",
+          "version": 1,
+          "status": "failed",
+          "createdAt": "2026-03-14T23:48:22.806Z",
+          "updatedAt": "2026-03-14T23:48:45.285Z",
+          "procedure": {
+            "summary": "Atlas Airfolio Demo Run 1: Validate scrolling airplane timeline and button interactions.",
+            "confirmMessage": "Successfully validated scrolling timeline and button interactions on Atlas Airfolio.",
+            "steps": [
+              {
+                "action": "Navigate to the Atlas Airfolio homepage.",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "Click the 'Launch' link to initiate the route.",
+                "target": "text=Launch"
+              },
+              {
+                "action": "Assert that the '#active-label' element is visible, indicating the route has started.",
+                "target": "#active-label",
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "action": "Scroll down the page to trigger the airplane timeline animation.",
+                "target": "document",
+                "actionType": "scroll",
+                "value": "document.body.scrollHeight"
+              },
+              {
+                "action": "Assert that the '#plane' element is visible, indicating the airplane animation is running.",
+                "target": "#plane",
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "action": "Click the 'Flight Path' link to view the flight path details.",
+                "target": "text=Flight Path"
+              },
+              {
+                "action": "Assert that the '#flight-path' element is visible, indicating the flight path details are displayed.",
+                "target": "#flight-path",
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "action": "Click the 'Black Box' link to access the black box information.",
+                "target": "text=Black Box"
+              },
+              {
+                "action": "Assert that the '#black-box' element is visible, indicating the black box information is displayed.",
+                "target": "#black-box",
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "action": "Click the 'Hangar' link to navigate to the hangar section.",
+                "target": "text=Hangar"
+              },
+              {
+                "action": "Assert that the '#hangar' element is visible, indicating the hangar section is displayed.",
+                "target": "#hangar",
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "action": "Click the 'View hangar notes' link.",
+                "target": "text=View hangar notes"
+              },
+              {
+                "action": "Click the 'Open the hangar' link.",
+                "target": "text=Open the hangar"
+              }
+            ],
+            "notes": "This test validates the core functionality of the Atlas Airfolio application, including the scrolling timeline animation and navigation between key sections.,Robust selectors (text and ids) are used to ensure the test remains stable even if the application's layout changes.,Assertions are included to verify that the expected elements are visible after each action.,Consider adding more specific assertions to validate the content of each section in future tests.\nValidate sections render while scrolling and no obvious runtime errors."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "Navigate to the Atlas Airfolio homepage.",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "click",
+                "originalAction": "Click the 'Launch' link to initiate the route.",
+                "target": "text=Launch",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "assertVisible",
+                "originalAction": "Assert that the '#active-label' element is visible, indicating the route has started.",
+                "target": "#active-label",
+                "value": null,
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "Scroll down the page to trigger the airplane timeline animation.",
+                "target": "document",
+                "value": "document.body.scrollHeight",
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "assertVisible",
+                "originalAction": "Assert that the '#plane' element is visible, indicating the airplane animation is running.",
+                "target": "#plane",
+                "value": null,
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "index": 5,
+                "action": "click",
+                "originalAction": "Click the 'Flight Path' link to view the flight path details.",
+                "target": "text=Flight Path",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "assertVisible",
+                "originalAction": "Assert that the '#flight-path' element is visible, indicating the flight path details are displayed.",
+                "target": "#flight-path",
+                "value": null,
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "index": 7,
+                "action": "click",
+                "originalAction": "Click the 'Black Box' link to access the black box information.",
+                "target": "text=Black Box",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 8,
+                "action": "assertVisible",
+                "originalAction": "Assert that the '#black-box' element is visible, indicating the black box information is displayed.",
+                "target": "#black-box",
+                "value": null,
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "index": 9,
+                "action": "goto",
+                "originalAction": "Click the 'Hangar' link to navigate to the hangar section.",
+                "target": "text=Hangar",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 10,
+                "action": "assertVisible",
+                "originalAction": "Assert that the '#hangar' element is visible, indicating the hangar section is displayed.",
+                "target": "#hangar",
+                "value": null,
+                "assert": {
+                  "isVisible": true
+                }
+              },
+              {
+                "index": 11,
+                "action": "click",
+                "originalAction": "Click the 'View hangar notes' link.",
+                "target": "text=View hangar notes",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 12,
+                "action": "click",
+                "originalAction": "Click the 'Open the hangar' link.",
+                "target": "text=Open the hangar",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773532125284",
+          "confirmedAt": "2026-03-14T23:48:45.285Z"
+        }
+      ],
+      "summary": {
+        "totalRuns": 2,
+        "passRuns": 1,
+        "failRuns": 1,
+        "passRate": 50,
+        "avgReadiness": 55,
+        "latestRunId": "agentic_run_1773532150014",
+        "latestStatus": "pass",
+        "recurringIssues": [
+          {
+            "id": "run_failed",
+            "count": 1
+          },
+          {
+            "id": "semantic_checks_failed",
+            "count": 1
+          },
+          {
+            "id": "insufficient_observation_window",
+            "count": 1
+          },
+          {
+            "id": "execution_instability",
+            "count": 1
+          }
+        ],
+        "updatedAt": "2026-03-14T23:49:10.014Z"
+      }
+    },
+    {
+      "forestId": "forest_1773530235762",
+      "projectName": "Airplane Portfolio Demo",
+      "url": "http://127.0.0.1:3095",
+      "objective": "Prepare a testing plan for the airplane portfolio scroll experience and wait for approval",
+      "createdAt": "2026-03-14T23:17:15.762Z",
+      "updatedAt": "2026-03-14T23:17:43.639Z",
+      "trees": [
+        {
+          "treeId": "tree_1773530235772",
+          "version": 1,
+          "status": "validated",
+          "createdAt": "2026-03-14T23:17:15.772Z",
+          "updatedAt": "2026-03-14T23:17:43.639Z",
+          "procedure": {
+            "summary": "Validate Atlas Airfolio flow and core interactions for objective: Comprehensive test plan for the Atlas Airfolio website, focusing on the airplane portfolio scroll experience, section readability, CTA visibility, and overall polish.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:3095/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Atlas Airfolio"
+              },
+              {
+                "action": "wait",
+                "target": "time",
+                "value": 10000
+              },
+              {
+                "action": "scrollPage",
+                "target": "down"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "This test plan focuses on the core scrolling experience and section readability.,Pay close attention to the airplane's motion and ensure it doesn't feel jarring or unnatural.,Ensure all Call-To-Actions (CTAs) are clearly visible and easily accessible.,Consider testing on different screen sizes and browsers to ensure responsiveness.,The 'assert' values are guidelines; adjust them based on the specific implementation and expected behavior."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:3095/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Atlas Airfolio",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "time",
+                "value": 10000,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "down",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773530263633",
+          "confirmedAt": "2026-03-14T23:17:43.639Z"
+        }
+      ],
+      "summary": {
+        "totalRuns": 1,
+        "passRuns": 1,
+        "failRuns": 0,
+        "passRate": 100,
+        "avgReadiness": 100,
+        "latestRunId": "agentic_run_1773530263633",
+        "latestStatus": "pass",
+        "recurringIssues": [],
+        "updatedAt": "2026-03-14T23:17:43.633Z"
+      }
+    },
+    {
+      "forestId": "forest_1773530127836",
+      "projectName": "Airplane Portfolio Demo",
+      "url": "http://127.0.0.1:3095",
+      "objective": "Validate the airplane portfolio scroll experience",
+      "createdAt": "2026-03-14T23:15:27.836Z",
+      "updatedAt": "2026-03-14T23:15:37.380Z",
+      "trees": [
+        {
+          "treeId": "tree_1773530127846",
+          "version": 1,
+          "status": "validated",
+          "createdAt": "2026-03-14T23:15:27.846Z",
+          "updatedAt": "2026-03-14T23:15:37.380Z",
+          "procedure": {
+            "notes": "The route map should move visually as the page scrolls through Launch Runway, Cabin Systems, Atlas Stack, and Landing Brief.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:3095"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Atlas Airfolio"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Launch Runway"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Cabin Systems"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Landing Brief"
+              },
+              {
+                "action": "scrollPage",
+                "target": "down"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Open the hangar"
+              }
+            ],
+            "summary": "Review the single-page airplane portfolio and confirm the scroll-linked plane journey feels readable and intentional."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:3095",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Atlas Airfolio",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Launch Runway",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Cabin Systems",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Landing Brief",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "down",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Open the hangar",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "playwright"
+          },
+          "lastRunId": "agentic_run_1773530137374",
+          "confirmedAt": "2026-03-14T23:15:37.380Z"
+        }
+      ],
+      "summary": {
+        "totalRuns": 1,
+        "passRuns": 1,
+        "failRuns": 0,
+        "passRate": 100,
+        "avgReadiness": 90,
+        "latestRunId": "agentic_run_1773530137374",
+        "latestStatus": "pass",
+        "recurringIssues": [
+          {
+            "id": "insufficient_observation_window",
+            "count": 1
+          }
+        ],
+        "updatedAt": "2026-03-14T23:15:37.375Z"
+      }
+    },
+    {
       "forestId": "forest_1773503020151",
       "projectName": "Animation Physics",
       "url": "http://127.0.0.1:8088",
@@ -689,6 +2674,2344 @@
     }
   ],
   "runs": [
+    {
+      "runId": "agentic_run_1773534594050",
+      "forestId": "forest_1773534574658",
+      "treeId": "tree_1773534574661",
+      "createdAt": "2026-03-15T00:29:54.050Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Atlas Airfolio",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "wait",
+          "target": "time",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "down",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\9167d08ce218b49d80f0ad1abce40d69.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\final_1773534593544.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\step_1773534592664.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\9167d08ce218b49d80f0ad1abce40d69.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=5"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=1522072 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=5",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=1522072 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534574658_tree_1773534574661_1773534574828\\9167d08ce218b49d80f0ad1abce40d69.webm",
+          "sizeBytes": 1522072,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Validate Atlas Airfolio flow and core interactions for objective: Smoke test to verify basic functionality of Atlas Airfolio application, with focus on Hangar and Black Box sections.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T00:29:54.049Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773534559020",
+      "forestId": "forest_1773534539668",
+      "treeId": "tree_1773534539670",
+      "createdAt": "2026-03-15T00:29:19.020Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Atlas Airfolio",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "wait",
+          "target": "time",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "down",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\critique_report.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\ee1f2dcb29f7195e990f5b2e983518ca.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\final_1773534558512.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\step_1773534557624.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\ee1f2dcb29f7195e990f5b2e983518ca.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=5"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=1551047 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=5",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=1551047 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773534539668_tree_1773534539670_1773534539858\\ee1f2dcb29f7195e990f5b2e983518ca.webm",
+          "sizeBytes": 1551047,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Validate Atlas Airfolio flow and core interactions for objective: Smoke test to verify basic functionality of Atlas Airfolio application.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T00:29:19.018Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773533753793",
+      "forestId": "forest_1773533718806",
+      "treeId": "tree_1773533734480",
+      "createdAt": "2026-03-15T00:15:53.793Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Atlas Airfolio",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "wait",
+          "target": "time",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "down",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\78d6d288382bce6a138786d708fe8b22.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\final_1773533753266.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\step_1773533752387.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\78d6d288382bce6a138786d708fe8b22.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=5"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=1534463 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=5",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=1534463 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533734480_1773533734640\\78d6d288382bce6a138786d708fe8b22.webm",
+          "sizeBytes": 1534463,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Validate Atlas Airfolio flow and core interactions for objective: Smoke test to verify basic functionality and navigation of the Atlas Airfolio website.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T00:15:53.792Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773533730198",
+      "forestId": "forest_1773533718806",
+      "treeId": "tree_1773533722177",
+      "createdAt": "2026-03-15T00:15:30.198Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "click",
+          "target": "text=Launch",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "click",
+          "target": "text=Flight Path",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 6,
+          "action": "click",
+          "target": "text=Black Box",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 7,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 8,
+          "action": "click",
+          "target": "text=Hangar",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 9,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\c68aea884be45d5cdda10b693fae3555.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\final_1773533729663.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\step_1773533723116.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\step_1773533724518.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\step_1773533725917.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\step_1773533727361.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\step_1773533728777.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\c68aea884be45d5cdda10b693fae3555.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=10"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=12"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=876520 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=10",
+          "artifacts_present: artifacts=12",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=876520 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533718806_tree_1773533722177_1773533722179\\c68aea884be45d5cdda10b693fae3555.webm",
+          "sizeBytes": 876520,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.7,
+        "summary": "Critic detected 1 issue(s) requiring attention.",
+        "expectedVsObserved": {
+          "expected": "Smoke test to verify basic functionality and navigation of the Atlas Airfolio application.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied."
+        ],
+        "issues": [
+          {
+            "id": "insufficient_observation_window",
+            "severity": "medium",
+            "description": "No dedicated wait/observation window detected.",
+            "evidence": "A wait step is missing from executed sequence.",
+            "fix": "Include a wait step (>= 10 seconds) before post-observation assertions."
+          }
+        ],
+        "readinessScore": 90,
+        "generatedAt": "2026-03-15T00:15:30.197Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773533678989",
+      "forestId": "forest_1773533649033",
+      "treeId": "tree_1773533659651",
+      "createdAt": "2026-03-15T00:14:38.989Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Atlas Airfolio",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "wait",
+          "target": "time",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "down",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\778a5374edba42d05d5fa7db8b8873db.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\final_1773533678487.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\step_1773533677614.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\778a5374edba42d05d5fa7db8b8873db.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=5"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=1535205 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=5",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=1535205 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533659651_1773533659811\\778a5374edba42d05d5fa7db8b8873db.webm",
+          "sizeBytes": 1535205,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Validate Atlas Airfolio flow and core interactions for objective: Smoke test to verify basic navigation and page load on Atlas Airfolio.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T00:14:38.988Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773533656127",
+      "forestId": "forest_1773533649033",
+      "treeId": "tree_1773533651541",
+      "createdAt": "2026-03-15T00:14:16.127Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "click",
+          "target": "text=Launch",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "click",
+          "target": "text=Flight Path",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "click",
+          "target": "text=Black Box",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "click",
+          "target": "text=Hangar",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "screenshot",
+          "target": "page",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\cf87b143c85e3a42b8da16b428bc685b.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\final_1773533655552.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\step_1773533654651.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\cf87b143c85e3a42b8da16b428bc685b.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=6"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=489922 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=6",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=489922 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773533649033_tree_1773533651541_1773533651542\\cf87b143c85e3a42b8da16b428bc685b.webm",
+          "sizeBytes": 489922,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.7,
+        "summary": "Critic detected 1 issue(s) requiring attention.",
+        "expectedVsObserved": {
+          "expected": "Smoke test to verify basic navigation and page load on Atlas Airfolio.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied."
+        ],
+        "issues": [
+          {
+            "id": "insufficient_observation_window",
+            "severity": "medium",
+            "description": "No dedicated wait/observation window detected.",
+            "evidence": "A wait step is missing from executed sequence.",
+            "fix": "Include a wait step (>= 10 seconds) before post-observation assertions."
+          }
+        ],
+        "readinessScore": 90,
+        "generatedAt": "2026-03-15T00:14:16.126Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773532243915",
+      "forestId": "forest_1773532220454",
+      "treeId": "tree_1773532220456",
+      "createdAt": "2026-03-14T23:50:43.915Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Atlas Airfolio",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "wait",
+          "target": "time",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "down",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\573aae18caa494915975ae7eaed01b31.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\final_1773532243409.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\step_1773532242487.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\573aae18caa494915975ae7eaed01b31.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=5"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=1588450 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=5",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=1588450 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532220454_tree_1773532220456_1773532224505\\573aae18caa494915975ae7eaed01b31.webm",
+          "sizeBytes": 1588450,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Validate Atlas Airfolio flow and core interactions for objective: UI Approval Hold Test for Atlas Airfolio",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-14T23:50:43.914Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773532200682",
+      "forestId": "forest_1773532155172",
+      "treeId": "tree_1773532181321",
+      "createdAt": "2026-03-14T23:50:00.682Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Atlas Airfolio",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "wait",
+          "target": "time",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "down",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\0a21d73235dc736b8acf0eca7e121a86.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\final_1773532200148.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\step_1773532199262.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\0a21d73235dc736b8acf0eca7e121a86.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=5"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=1522962 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=5",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=1522962 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532181321_1773532181466\\0a21d73235dc736b8acf0eca7e121a86.webm",
+          "sizeBytes": 1522962,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Validate Atlas Airfolio flow and core interactions for objective: Demo run 2: Validate scrolling airplane timeline and button interactions on Atlas Airfolio.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-14T23:50:00.681Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773532177213",
+      "forestId": "forest_1773532155172",
+      "treeId": "tree_1773532155173",
+      "createdAt": "2026-03-14T23:49:37.213Z",
+      "status": "fail",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "click",
+          "target": "text=Launch",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "assertVisible",
+          "target": "#active-label",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "document",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "assertVisible",
+          "target": "#plane",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "click",
+          "target": "text=Flight Path",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 6,
+          "action": "assertVisible",
+          "target": "#flight-path",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 7,
+          "action": "click",
+          "target": "text=Black Box",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 8,
+          "action": "assertVisible",
+          "target": "#black-box",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 9,
+          "action": "goto",
+          "target": "text=Hangar",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 10,
+          "action": "assertVisible",
+          "target": "#hangar",
+          "status": "fail",
+          "note": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\2aafb64aca0ac1101094de2066b3e833.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\final_1773532176475.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\request_parser.json"
+        }
+      ],
+      "summary": "Failed at step 11: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\2aafb64aca0ac1101094de2066b3e833.webm",
+      "semantics": {
+        "overallPass": false,
+        "verdict": "fail",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=11"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=7"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=1386851 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=fail failedSteps=1"
+          }
+        ],
+        "right": [
+          "steps_present: steps=11",
+          "artifacts_present: artifacts=7",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=1386851 headerValid=true",
+          "run_status_consistent: status=fail failedSteps=1"
+        ],
+        "wrong": [
+          "run_summary: Failed at step 11: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+          "failed_step_note: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n"
+        ],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532155172_tree_1773532155173_1773532155218\\2aafb64aca0ac1101094de2066b3e833.webm",
+          "sizeBytes": 1386851,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "fail",
+        "confidence": 0.7,
+        "summary": "Critic detected 4 issue(s) requiring attention.",
+        "expectedVsObserved": {
+          "expected": "Atlas Airfolio Demo Run 2: Validate scrolling airplane timeline and button interactions.",
+          "observed": "Run failed; evidence indicates unmet expectations."
+        },
+        "strengths": [],
+        "issues": [
+          {
+            "id": "run_failed",
+            "severity": "critical",
+            "description": "Failed at step 11: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+            "evidence": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+            "fix": "Fix failing selector/assertion and re-run with stronger deterministic checks."
+          },
+          {
+            "id": "semantic_checks_failed",
+            "severity": "high",
+            "description": "One or more semantic checks failed.",
+            "evidence": "run_summary: Failed at step 11: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n | failed_step_note: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+            "fix": "Inspect semantic_report and harden assertions around expected motion/state changes."
+          },
+          {
+            "id": "insufficient_observation_window",
+            "severity": "medium",
+            "description": "No dedicated wait/observation window detected.",
+            "evidence": "A wait step is missing from executed sequence.",
+            "fix": "Include a wait step (>= 10 seconds) before post-observation assertions."
+          },
+          {
+            "id": "execution_instability",
+            "severity": "high",
+            "description": "Execution output indicates instability or selector mismatch.",
+            "evidence": "Failed at step 11: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+            "fix": "Use resilient selectors and fallback observation-only plan when controls are absent."
+          }
+        ],
+        "readinessScore": 10,
+        "generatedAt": "2026-03-14T23:49:37.212Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773532150014",
+      "forestId": "forest_1773532102804",
+      "treeId": "tree_1773532130665",
+      "createdAt": "2026-03-14T23:49:10.014Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Atlas Airfolio",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "wait",
+          "target": "time",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "down",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\critique_report.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\d5d084ce39d2c0097b1fc68551b5d1da.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\final_1773532149498.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\step_1773532148628.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\d5d084ce39d2c0097b1fc68551b5d1da.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=5"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=1545020 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=5",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=1545020 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532130665_1773532130816\\d5d084ce39d2c0097b1fc68551b5d1da.webm",
+          "sizeBytes": 1545020,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Validate Atlas Airfolio flow and core interactions for objective: Demo run 1: Validate scrolling airplane timeline and button interactions on Atlas Airfolio.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-14T23:49:10.013Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773532125284",
+      "forestId": "forest_1773532102804",
+      "treeId": "tree_1773532102806",
+      "createdAt": "2026-03-14T23:48:45.284Z",
+      "status": "fail",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "click",
+          "target": "text=Launch",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "assertVisible",
+          "target": "#active-label",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "document",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "assertVisible",
+          "target": "#plane",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "click",
+          "target": "text=Flight Path",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 6,
+          "action": "assertVisible",
+          "target": "#flight-path",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 7,
+          "action": "click",
+          "target": "text=Black Box",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 8,
+          "action": "assertVisible",
+          "target": "#black-box",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 9,
+          "action": "goto",
+          "target": "text=Hangar",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 10,
+          "action": "assertVisible",
+          "target": "#hangar",
+          "status": "fail",
+          "note": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\66e5bb5ffb46c6fd3fa37870e831eb24.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\final_1773532124318.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\request_parser.json"
+        }
+      ],
+      "summary": "Failed at step 11: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\66e5bb5ffb46c6fd3fa37870e831eb24.webm",
+      "semantics": {
+        "overallPass": false,
+        "verdict": "fail",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=11"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=7"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=1464960 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=fail failedSteps=1"
+          }
+        ],
+        "right": [
+          "steps_present: steps=11",
+          "artifacts_present: artifacts=7",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=1464960 headerValid=true",
+          "run_status_consistent: status=fail failedSteps=1"
+        ],
+        "wrong": [
+          "run_summary: Failed at step 11: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+          "failed_step_note: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n"
+        ],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773532102804_tree_1773532102806_1773532102940\\66e5bb5ffb46c6fd3fa37870e831eb24.webm",
+          "sizeBytes": 1464960,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "fail",
+        "confidence": 0.7,
+        "summary": "Critic detected 4 issue(s) requiring attention.",
+        "expectedVsObserved": {
+          "expected": "Atlas Airfolio Demo Run 1: Validate scrolling airplane timeline and button interactions.",
+          "observed": "Run failed; evidence indicates unmet expectations."
+        },
+        "strengths": [],
+        "issues": [
+          {
+            "id": "run_failed",
+            "severity": "critical",
+            "description": "Failed at step 11: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+            "evidence": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+            "fix": "Fix failing selector/assertion and re-run with stronger deterministic checks."
+          },
+          {
+            "id": "semantic_checks_failed",
+            "severity": "high",
+            "description": "One or more semantic checks failed.",
+            "evidence": "run_summary: Failed at step 11: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n | failed_step_note: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+            "fix": "Inspect semantic_report and harden assertions around expected motion/state changes."
+          },
+          {
+            "id": "insufficient_observation_window",
+            "severity": "medium",
+            "description": "No dedicated wait/observation window detected.",
+            "evidence": "A wait step is missing from executed sequence.",
+            "fix": "Include a wait step (>= 10 seconds) before post-observation assertions."
+          },
+          {
+            "id": "execution_instability",
+            "severity": "high",
+            "description": "Execution output indicates instability or selector mismatch.",
+            "evidence": "Failed at step 11: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#hangar').first() to be visible\u001b[22m\n",
+            "fix": "Use resilient selectors and fallback observation-only plan when controls are absent."
+          }
+        ],
+        "readinessScore": 10,
+        "generatedAt": "2026-03-14T23:48:45.283Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773530263633",
+      "forestId": "forest_1773530235762",
+      "treeId": "tree_1773530235772",
+      "createdAt": "2026-03-14T23:17:43.633Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Atlas Airfolio",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "wait",
+          "target": "time",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "down",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\critique_report.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\e43867a9bf7f4eaaed7f737061fa43c9.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\final_1773530263193.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\step_1773530259752.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\e43867a9bf7f4eaaed7f737061fa43c9.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=5"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=1482341 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=5",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=1482341 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530235762_tree_1773530235772_1773530235999\\e43867a9bf7f4eaaed7f737061fa43c9.webm",
+          "sizeBytes": 1482341,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Validate Atlas Airfolio flow and core interactions for objective: Comprehensive test plan for the Atlas Airfolio website, focusing on the airplane portfolio scroll experience, section readability, CTA visibility, and overall polish.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-14T23:17:43.632Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773530137374",
+      "forestId": "forest_1773530127836",
+      "treeId": "tree_1773530127846",
+      "createdAt": "2026-03-14T23:15:37.374Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:3095",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Atlas Airfolio",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "assertVisible",
+          "target": "text=Launch Runway",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "assertVisible",
+          "target": "text=Cabin Systems",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "assertVisible",
+          "target": "text=Landing Brief",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "scrollPage",
+          "target": "down",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 6,
+          "action": "assertVisible",
+          "target": "text=Open the hangar",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\critique_report.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\dcb3eb9d0b82e8800283faf1db3684b0.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\final_1773530136811.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\request_parser.json"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\dcb3eb9d0b82e8800283faf1db3684b0.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=7"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=7"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=702898 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=7",
+          "artifacts_present: artifacts=7",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=702898 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773530127836_tree_1773530127846_1773530127869\\dcb3eb9d0b82e8800283faf1db3684b0.webm",
+          "sizeBytes": 702898,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.7,
+        "summary": "Critic detected 1 issue(s) requiring attention.",
+        "expectedVsObserved": {
+          "expected": "Review the single-page airplane portfolio and confirm the scroll-linked plane journey feels readable and intentional.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied."
+        ],
+        "issues": [
+          {
+            "id": "insufficient_observation_window",
+            "severity": "medium",
+            "description": "No dedicated wait/observation window detected.",
+            "evidence": "A wait step is missing from executed sequence.",
+            "fix": "Include a wait step (>= 10 seconds) before post-observation assertions."
+          }
+        ],
+        "readinessScore": 90,
+        "generatedAt": "2026-03-14T23:15:37.374Z",
+        "source": "deterministic"
+      }
+    },
     {
       "runId": "agentic_run_1773503032988",
       "forestId": "forest_1773503020151",

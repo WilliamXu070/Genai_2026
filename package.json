@@ -10,6 +10,13 @@
     "db:start": "docker compose up -d db",
     "db:status": "docker compose ps db",
     "db:stop": "docker compose stop db",
+    "db:mysql:down": "docker compose stop mysql",
+    "db:mysql:logs": "docker compose logs -f mysql",
+    "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+    "db:mysql:start": "docker compose up -d mysql",
+    "db:mysql:status": "docker compose ps mysql",
+    "db:mysql:stop": "docker compose stop mysql",
+    "db:mysql:verify": "node tools/verify_agentic_mysql.js",
     "start": "electron .",
     "dev": "electron .",
     "test": "node tests/run_all.js",
@@ -25,6 +32,7 @@
   },
   "dependencies": {
     "@xterm/addon-fit": "^0.11.0",
+    "mysql2": "^3.19.1",
     "node-pty": "^1.1.0",
     "xterm": "^5.3.0"
   }

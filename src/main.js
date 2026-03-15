@@ -350,6 +350,54 @@ ipcMain.handle("agentic:list-runs", (_, forestId) => {
   return agenticLoopManager ? agenticLoopManager.listRuns(forestId) : [];
 });
 
+ipcMain.handle("agentic:list-projects", async () => {
+  return agenticLoopManager ? agenticLoopManager.listProjects() : [];
+});
+
+ipcMain.handle("agentic:list-awaiting-approval-runs", async (_, projectId) => {
+  return agenticLoopManager ? agenticLoopManager.listAwaitingApprovalRuns(projectId || null) : [];
+});
+
+ipcMain.handle("agentic:list-in-progress-runs", async (_, projectId) => {
+  return agenticLoopManager ? agenticLoopManager.listInProgressRuns(projectId || null) : [];
+});
+
+ipcMain.handle("agentic:list-project-test-runs", async (_, projectId) => {
+  return agenticLoopManager && projectId ? agenticLoopManager.listProjectTestRuns(projectId) : [];
+});
+
+ipcMain.handle("agentic:get-project-test-run", async (_, runId) => {
+  return agenticLoopManager && runId ? agenticLoopManager.getProjectTestRun(runId) : null;
+});
+
+ipcMain.handle("agentic:approve-run", async (_, payload) => {
+  if (!agenticLoopManager) {
+    throw new Error("Agentic loop manager unavailable");
+  }
+  return agenticLoopManager.approveRun(payload || {});
+});
+
+ipcMain.handle("agentic:update-run-testing-instructions", async (_, payload) => {
+  if (!agenticLoopManager) {
+    throw new Error("Agentic loop manager unavailable");
+  }
+  return agenticLoopManager.updateRunTestingInstructions(payload || {});
+});
+
+ipcMain.handle("agentic:create-variant-run", async (_, payload) => {
+  if (!agenticLoopManager) {
+    throw new Error("Agentic loop manager unavailable");
+  }
+  return agenticLoopManager.createVariantRun(payload || {});
+});
+
+ipcMain.handle("agentic:cancel-run", async (_, payload) => {
+  if (!agenticLoopManager) {
+    throw new Error("Agentic loop manager unavailable");
+  }
+  return agenticLoopManager.cancelRun(payload || {});
+});
+
 ipcMain.handle("agentic:create-draft", async (_, payload) => {
   if (!agenticLoopManager) {
     throw new Error("Agentic loop manager unavailable");

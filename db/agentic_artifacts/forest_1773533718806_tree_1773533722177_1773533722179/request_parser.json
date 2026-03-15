@@ -1,0 +1,85 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "goto",
+      "originalAction": "goto",
+      "target": "http://127.0.0.1:3095/",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "fullPage",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Launch",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "fullPage",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 4,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Flight Path",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 5,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "fullPage",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 6,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Black Box",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 7,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "fullPage",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 8,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Hangar",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 9,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "fullPage",
+      "value": null,
+      "assert": null
+    }
+  ]
+}

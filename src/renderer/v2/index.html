@@ -3,84 +3,151 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jungle Test Catalog</title>
-    <link rel="stylesheet" href="../../../node_modules/xterm/css/xterm.css" />
+    <title>Jungle Approval Queue</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
         <div class="brand">
-          <h1>Jungle Catalog</h1>
-          <p>Read-only orchestration view with editable test versions.</p>
+          <p class="eyebrow">Agentic Approval Control</p>
+          <h1>Jungle Approval Queue</h1>
+          <p>
+            Review persisted drafts, approve or cancel held runs, and inspect active execution
+            state loop-by-loop from the same MySQL-backed view.
+          </p>
         </div>
         <div class="status-wrap">
-          <span id="session-status" class="status-pill">Loading catalog</span>
+          <span id="session-status" class="status-pill">Loading MySQL state</span>
           <span id="version-text" class="version-pill">Jungle</span>
         </div>
       </header>
 
       <section class="layout-grid">
-        <aside class="panel panel-list">
+        <aside class="panel project-panel">
           <div class="panel-header">
-            <h2>Project Tests</h2>
-            <input id="search-input" type="text" placeholder="Search tests..." />
+            <div>
+              <p class="section-kicker">Projects</p>
+              <h2>Persisted Projects</h2>
+            </div>
+            <button id="refresh-projects" type="button">Refresh</button>
           </div>
-          <ul id="test-list" class="test-list"></ul>
+          <div id="project-count" class="subtle-copy">Loading projects...</div>
+          <ul id="project-list" class="entity-list"></ul>
         </aside>
 
-        <section class="panel panel-detail">
+        <section class="panel queue-panel">
           <div class="panel-header">
-            <h2 id="test-title">Select a test</h2>
-            <span id="test-status" class="status-chip">-</span>
+            <div>
+              <p class="section-kicker">Queues</p>
+              <h2>Approval-Gated Runs</h2>
+            </div>
+            <div class="subtle-copy">MySQL is the source of truth for approval state.</div>
           </div>
 
-          <div class="meta-row">
-            <div><strong>Test ID:</strong> <span id="test-id">-</span></div>
-            <div><strong>Latest version:</strong> <span id="test-version">-</span></div>
-            <div><strong>Updated:</strong> <span id="test-updated">-</span></div>
-          </div>
+          <section class="queue-section">
+            <div class="section-header-row">
+              <div>
+                <h3>To Be Approved</h3>
+                <div id="approval-count" class="subtle-copy">Loading approval queue...</div>
+              </div>
+            </div>
+            <ul id="approval-list" class="entity-list"></ul>
+          </section>
 
-          <label for="test-objective">Objective</label>
-          <textarea id="test-objective" rows="4"></textarea>
+          <section class="queue-section">
+            <div class="section-header-row">
+              <div>
+                <h3>Currently In Progress</h3>
+                <div id="progress-count" class="subtle-copy">Loading active queue...</div>
+              </div>
+            </div>
+            <ul id="in-progress-list" class="entity-list"></ul>
+          </section>
 
-          <label for="test-notes">Editor notes</label>
-          <textarea id="test-notes" rows="3" placeholder="Describe requested changes"></textarea>
-
-          <div class="button-row">
-            <button id="save-version" type="button">Save New Version</button>
-            <button id="regenerate-test" type="button">Regenerate</button>
-            <button id="refresh-tests" type="button">Refresh</button>
-          </div>
-
-          <h3>Version History</h3>
-          <ul id="version-list" class="version-list"></ul>
+          <section class="queue-section">
+            <div class="section-header-row">
+              <div>
+                <h3 id="runs-title">Project Run History</h3>
+                <div id="runs-meta" class="subtle-copy">Select a project to inspect all runs.</div>
+              </div>
+            </div>
+            <ul id="run-list" class="entity-list"></ul>
+          </section>
         </section>
 
-        <section class="panel panel-runs">
+        <section class="panel detail-panel">
           <div class="panel-header">
-            <h2>Latest Result</h2>
+            <div>
+              <p class="section-kicker">Run Detail</p>
+              <h2 id="detail-title">Select a test run</h2>
+            </div>
+            <span id="detail-status" class="status-chip">-</span>
           </div>
-          <div class="run-meta" id="run-meta">No run selected.</div>
-          <video id="run-video" controls></video>
-          <ul id="artifact-list" class="artifact-list"></ul>
-        </section>
-      </section>
 
-      <section class="panel panel-terminal">
-        <div class="panel-header">
-          <h2>Codex Session</h2>
-          <div class="button-row">
-            <button id="terminal-restart" type="button">New Terminal</button>
-            <button id="terminal-close" type="button">Close Terminal</button>
+          <div id="detail-empty" class="empty-state">
+            Pick a run from the approval queues or project history to review the stored execution
+            state.
           </div>
-        </div>
-        <div id="terminal-meta" class="run-meta">No active codex session.</div>
-        <div id="terminal-host" class="terminal-host"></div>
+
+          <div id="detail-content" class="detail-content hidden">
+            <div class="detail-action-row">
+              <button id="create-variant-run" class="secondary-button" type="button">Create Variant</button>
+              <button id="approve-run" type="button">Approve Run</button>
+              <button id="cancel-run" class="secondary-button" type="button">Cancel Run</button>
+            </div>
+
+            <div class="detail-grid">
+              <div class="detail-card">
+                <span class="detail-label">Project</span>
+                <div id="detail-project-name" class="detail-value">-</div>
+              </div>
+              <div class="detail-card">
+                <span class="detail-label">Execution Time</span>
+                <div id="detail-execution-time" class="detail-value">-</div>
+              </div>
+              <div class="detail-card">
+                <span class="detail-label">Loop Count</span>
+                <div id="detail-loop-count" class="detail-value">-</div>
+              </div>
+            </div>
+
+            <div class="content-block">
+              <h3>3-Point Summary</h3>
+              <ol id="detail-summary" class="summary-list"></ol>
+            </div>
+
+            <div class="content-block">
+              <h3>Testing Instructions</h3>
+              <div id="instructions-edit-wrap" class="instructions-edit-wrap hidden">
+                <textarea id="detail-instructions-editor" class="content-box instructions-editor" spellcheck="false"></textarea>
+                <div class="instructions-actions">
+                  <button id="save-instructions" class="secondary-button" type="button">Save Instructions</button>
+                  <span id="instructions-edit-hint" class="subtle-copy">Edits are persisted before approval.</span>
+                </div>
+              </div>
+              <pre id="detail-instructions" class="content-box">-</pre>
+            </div>
+
+            <div class="content-block hidden" id="error-block">
+              <h3>Last Error</h3>
+              <pre id="detail-error" class="content-box error-box">-</pre>
+            </div>
+
+            <div class="content-block">
+              <h3>Loop Timeline</h3>
+              <ul id="loop-list" class="loop-list"></ul>
+            </div>
+
+            <div class="content-block">
+              <h3>Video</h3>
+              <div id="video-meta" class="subtle-copy">No video linked.</div>
+              <video id="detail-video" controls></video>
+            </div>
+          </div>
+        </section>
       </section>
     </main>
-    <script src="../../../node_modules/xterm/lib/xterm.js"></script>
-    <script src="../../../node_modules/@xterm/addon-fit/lib/addon-fit.js"></script>
     <script src="./renderer.js"></script>
   </body>
 </html>

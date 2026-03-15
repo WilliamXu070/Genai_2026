@@ -1,0 +1,8 @@
+{
+  "name": "airplane-portfolio-demo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  }
+}

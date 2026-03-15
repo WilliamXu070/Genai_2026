@@ -23,6 +23,9 @@ class EnvironmentSnapshot(TypedDict, total=False):
   key_files: Dict[str, str]
   file_inventory: List[str]
   detected_stack: List[str]
+  button_controls: List[Dict[str, str]]
+  required_interactions: List[Dict[str, str]]
+  workflow_notes: Dict[str, str]
 
 
 class ExecutionPlan(TypedDict, total=False):

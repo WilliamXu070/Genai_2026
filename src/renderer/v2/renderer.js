@@ -1,37 +1,71 @@
-const artifactList = document.getElementById("artifact-list");
-const refreshTestsButton = document.getElementById("refresh-tests");
-const regenerateTestButton = document.getElementById("regenerate-test");
-const runMeta = document.getElementById("run-meta");
-const runVideo = document.getElementById("run-video");
-const saveVersionButton = document.getElementById("save-version");
-const searchInput = document.getElementById("search-input");
+const approvalCount = document.getElementById("approval-count");
+const approvalList = document.getElementById("approval-list");
+const approveRunButton = document.getElementById("approve-run");
+const cancelRunButton = document.getElementById("cancel-run");
+const createVariantRunButton = document.getElementById("create-variant-run");
+const detailApprovalRequested = document.getElementById("detail-approval-requested");
+const detailApproved = document.getElementById("detail-approved");
+const detailContent = document.getElementById("detail-content");
+const detailCreated = document.getElementById("detail-created");
+const detailDraftPayload = document.getElementById("detail-draft-payload");
+const detailEmpty = document.getElementById("detail-empty");
+const detailError = document.getElementById("detail-error");
+const detailExecutionTime = document.getElementById("detail-execution-time");
+const detailInstructionsEditor = document.getElementById("detail-instructions-editor");
+const detailInstructions = document.getElementById("detail-instructions");
+const detailLoopCount = document.getElementById("detail-loop-count");
+const detailProjectName = document.getElementById("detail-project-name");
+const detailRunId = document.getElementById("detail-run-id");
+const detailStatus = document.getElementById("detail-status");
+const detailSummary = document.getElementById("detail-summary");
+const detailTitle = document.getElementById("detail-title");
+const detailUpdated = document.getElementById("detail-updated");
+const detailVideo = document.getElementById("detail-video");
+const errorBlock = document.getElementById("error-block");
+const inProgressList = document.getElementById("in-progress-list");
+const loopList = document.getElementById("loop-list");
+const instructionsEditHint = document.getElementById("instructions-edit-hint");
+const instructionsEditWrap = document.getElementById("instructions-edit-wrap");
+const progressCount = document.getElementById("progress-count");
+const projectCount = document.getElementById("project-count");
+const projectList = document.getElementById("project-list");
+const refreshProjectsButton = document.getElementById("refresh-projects");
+const runList = document.getElementById("run-list");
+const runsMeta = document.getElementById("runs-meta");
+const runsTitle = document.getElementById("runs-title");
 const sessionStatus = document.getElementById("session-status");
-const terminalCloseButton = document.getElementById("terminal-close");
-const terminalHost = document.getElementById("terminal-host");
-const terminalMeta = document.getElementById("terminal-meta");
-const terminalRestartButton = document.getElementById("terminal-restart");
-const testId = document.getElementById("test-id");
-const testList = document.getElementById("test-list");
-const testNotes = document.getElementById("test-notes");
-const testObjective = document.getElementById("test-objective");
-const testStatus = document.getElementById("test-status");
-const testTitle = document.getElementById("test-title");
-const testUpdated = document.getElementById("test-updated");
-const testVersion = document.getElementById("test-version");
+const saveInstructionsButton = document.getElementById("save-instructions");
 const versionText = document.getElementById("version-text");
-const versionList = document.getElementById("version-list");
+const videoMeta = document.getElementById("video-meta");
 
-let activeTestId = null;
-let tests = [];
-let activeTerminalSessionId = null;
-let ptyTerminal = null;
-let fitAddon = null;
-let terminalOffData = null;
-let terminalOffExit = null;
-let codexSeedTimer = null;
+const ACTIVE_QUEUE_STATUSES = new Set(["drafting", "approved", "in_progress"]);
+const APPROVABLE_STATUSES = new Set(["to_be_approved"]);
+const CANCELLABLE_STATUSES = new Set(["drafting", "to_be_approved", "approved", "in_progress"]);
+const FAILURE_STATUSES = new Set(["failed", "max_loops_reached", "cancelled"]);
+const EVENT_REFRESH_DEBOUNCE_MS = 250;
+
+let activeProjectId = null;
+let activeRunId = null;
+let approvalRuns = [];
+let inProgressRuns = [];
+let projects = [];
+let runs = [];
+let loadingPromise = null;
+let refreshDebounceHandle = null;
+let removeAgenticEventListener = null;
+let projectsSignature = "";
+let approvalRunsSignature = "";
+let inProgressRunsSignature = "";
+let runsSignature = "";
+let runDetailSignature = "";
+let runVersionMap = new Map();
+let activeRunDetail = null;
+let instructionDraftRunId = null;
+let instructionDraftValue = "";
+let instructionDraftDirty = false;
 
 function setStatus(value) {
-  if (sessionStatus) {
+  if (sessionStatus && sessionStatus.textContent !== value) {
     sessionStatus.textContent = value;
   }
 }
@@ -40,327 +74,1055 @@ function toLocalFileUrl(filePath) {
   if (!filePath) {
     return "";
   }
-  return `file:///${filePath.replace(/\\/g, "/")}`;
+  return `file:///${String(filePath).replace(/\\/g, "/")}`;
 }
 
-function setTerminalMeta(value) {
-  if (terminalMeta) {
-    terminalMeta.textContent = value;
+function formatDate(value) {
+  if (!value) {
+    return "-";
   }
-}
-
-function createTerminalUiIfNeeded() {
-  if (ptyTerminal || !terminalHost || !window.Terminal || !window.FitAddon?.FitAddon) {
-    return;
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
   }
-
-  ptyTerminal = new window.Terminal({
-    allowTransparency: true,
-    convertEol: true,
-    cursorBlink: true,
-    fontFamily: "Cascadia Mono, Consolas, monospace",
-    fontSize: 13,
-    scrollback: 4000,
-    theme: {
-      background: "#05080d",
-      cursor: "#7dd8ff",
-      foreground: "#e6edf5"
-    }
-  });
-  fitAddon = new window.FitAddon.FitAddon();
-  ptyTerminal.loadAddon(fitAddon);
-  ptyTerminal.open(terminalHost);
-  fitAddon.fit();
-
-  ptyTerminal.onData((chunk) => {
-    if (!activeTerminalSessionId || !window.terminalApi) {
-      return;
-    }
-    window.terminalApi.sendInput(activeTerminalSessionId, chunk);
-  });
-
-  ptyTerminal.onResize(({ cols, rows }) => {
-    if (!activeTerminalSessionId || !window.terminalApi) {
-      return;
-    }
-    window.terminalApi.resize(activeTerminalSessionId, cols, rows);
-  });
+  return date.toLocaleString();
 }
 
-function buildCodexSeedPrompt(version, run) {
-  const artifacts = Array.isArray(run?.artifacts) ? run.artifacts : [];
-  const artifactBlock = artifacts.length > 0 ? artifacts.map((item) => `- ${item}`).join("\n") : "- none";
+function formatDuration(ms) {
+  const totalMs = Number(ms);
+  if (!Number.isFinite(totalMs) || totalMs < 0) {
+    return "-";
+  }
+  if (totalMs < 1000) {
+    return `${totalMs} ms`;
+  }
+  const totalSeconds = Math.floor(totalMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes === 0) {
+    return `${seconds}s`;
+  }
+  return `${minutes}m ${seconds}s`;
+}
+
+function normalizeSummary(summary) {
+  if (!Array.isArray(summary)) {
+    return ["No summary recorded.", "No summary recorded.", "No summary recorded."];
+  }
   return [
-    "Langflow test execution results:",
-    `- objective: ${version?.objective || "-"}`,
-    `- status: ${run?.status || "not_run"}`,
-    `- summary: ${run?.summary || "-"}`,
-    `- video_path: ${run?.videoPath || "-"}`,
-    "- artifacts:",
-    artifactBlock,
-    "",
-    "Prompt: Fix these issues."
-  ].join("\n");
+    summary[0] || "No summary recorded.",
+    summary[1] || "No summary recorded.",
+    summary[2] || "No summary recorded."
+  ];
 }
 
-async function closeTerminalSession() {
-  if (!window.terminalApi || !activeTerminalSessionId) {
-    return;
+function compactText(value, maxLength = 180) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (!text) {
+    return "";
   }
-  await window.terminalApi.disposeSession(activeTerminalSessionId);
-  activeTerminalSessionId = null;
-  terminalOffData?.();
-  terminalOffExit?.();
-  terminalOffData = null;
-  terminalOffExit = null;
-  if (codexSeedTimer) {
-    clearTimeout(codexSeedTimer);
-    codexSeedTimer = null;
+  if (text.length <= maxLength) {
+    return text;
   }
-  setTerminalMeta("Terminal closed.");
+  return `${text.slice(0, maxLength - 1).trim()}...`;
 }
 
-function sendTerminalCommand(command) {
-  if (!activeTerminalSessionId || !window.terminalApi) {
-    return;
-  }
-  window.terminalApi.sendInput(activeTerminalSessionId, `${command}\n`);
+function sanitizeErrorText(value) {
+  const raw = String(value || "");
+  return raw
+    .replace(/\u001b\[[0-9;]*m/g, " ")
+    .replace(/\[[0-9;]*m/g, " ")
+    .replace(/\r?\n+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-async function startCodexSessionForVersion(version) {
-  createTerminalUiIfNeeded();
-  if (!window.terminalApi || !ptyTerminal) {
-    setTerminalMeta("Terminal API unavailable.");
-    return;
+function formatReadableFailure(rawError, fallbackSummary = "") {
+  const raw = sanitizeErrorText(rawError);
+  if (!raw) {
+    const fallback = compactText(fallbackSummary, 160);
+    return fallback || "Failure recorded. See run detail for context.";
   }
 
-  if (activeTerminalSessionId) {
-    await closeTerminalSession();
-  }
+  const stepMatch = raw.match(/Failed at step\s+(\d+)/i);
+  const stepText = stepMatch ? `Step ${stepMatch[1]}` : "Run step";
+  const timeoutMatch = raw.match(/Timeout\s+(\d+)ms exceeded/i);
+  const timeoutText = timeoutMatch ? `${timeoutMatch[1]}ms` : "timeout";
+  const locatorMatch = raw.match(/locator\((['"`])(.+?)\1\)/i);
+  const locatorText = locatorMatch ? locatorMatch[2] : "";
 
-  const session = await window.terminalApi.createSession({
-    cols: ptyTerminal.cols || 120,
-    rows: ptyTerminal.rows || 26
-  });
-  activeTerminalSessionId = session.sessionId;
-  setTerminalMeta(`Session ${session.sessionId} - launching codex for v${version.number}`);
-
-  terminalOffData = window.terminalApi.onData((payload) => {
-    if (payload.sessionId === activeTerminalSessionId) {
-      ptyTerminal.write(payload.data);
+  if (/locator\.click/i.test(raw) && /timeout/i.test(raw)) {
+    if (locatorText) {
+      return `${stepText} timeout: could not click ${locatorText} within ${timeoutText}.`;
     }
-  });
+    return `${stepText} timeout: click target was not ready within ${timeoutText}.`;
+  }
 
-  terminalOffExit = window.terminalApi.onExit((payload) => {
-    if (payload.sessionId === activeTerminalSessionId) {
-      ptyTerminal.writeln("\r\n[Jungle] codex terminal session closed.");
-      setTerminalMeta("Terminal offline.");
-      activeTerminalSessionId = null;
-    }
-  });
+  if (/assert|expect/i.test(raw) && /timeout/i.test(raw)) {
+    return `${stepText} timeout: assertion did not pass within ${timeoutText}.`;
+  }
 
-  window.terminalApi.resize(activeTerminalSessionId, ptyTerminal.cols, ptyTerminal.rows);
-  ptyTerminal.focus();
+  const cleaned = compactText(raw.replace(/Call log:.*$/i, "").trim(), 170);
+  return cleaned || "Failure recorded. See run detail for context.";
+}
 
-  const test = tests.find((item) => item.id === activeTestId);
-  const detail = test?.id && window.catalogApi ? await window.catalogApi.getTest(test.id) : null;
-  const run = detail?.runs?.[0] || null;
-  const seedPrompt = buildCodexSeedPrompt(version, run);
-  sendTerminalCommand("clear");
-  sendTerminalCommand(
-    `echo \"Jungle context: test=${test?.id || "-"} version=v${version.number} status=${version.status}\"`
+function buildFailureFixHint(rawError) {
+  const raw = sanitizeErrorText(rawError);
+  if (!raw) {
+    return "Fix: verify selectors and expected UI state before this step.";
+  }
+  if (/locator\.click/i.test(raw) && /timeout/i.test(raw)) {
+    const locatorMatch = raw.match(/locator\((['"`])(.+?)\1\)/i);
+    const locatorText = locatorMatch ? locatorMatch[2] : "the target selector";
+    return `Fix: confirm ${locatorText} exists, is visible/enabled, and the flow reaches that screen before clicking.`;
+  }
+  if (/navigation|goto|net::|ERR_/i.test(raw)) {
+    return "Fix: confirm the app URL/server is reachable and page navigation completes before assertions.";
+  }
+  if (/assert|expect/i.test(raw)) {
+    return "Fix: align assertions with rendered text/state, or add an explicit wait for readiness.";
+  }
+  return "Fix: inspect loop artifacts and adjust selector timing or test steps.";
+}
+
+function summarizeFailure(run) {
+  const primary = formatReadableFailure(run?.lastErrorText || "", normalizeSummary(run?.threePointSummary)[0]);
+  if (primary) {
+    return `Failure: ${primary}`;
+  }
+  const fallback = compactText(normalizeSummary(run?.threePointSummary)[0], 160);
+  return fallback ? `Failure: ${fallback}` : "Failure recorded. See detail for context.";
+}
+
+function getRunSummaryText(run) {
+  if (FAILURE_STATUSES.has(run?.status || "")) {
+    return summarizeFailure(run);
+  }
+  return compactText(normalizeSummary(run?.threePointSummary)[0], 170) || "No summary recorded.";
+}
+
+function abbreviateRunId(runId) {
+  const value = String(runId || "");
+  if (!value) {
+    return "-";
+  }
+  if (value.length <= 24) {
+    return value;
+  }
+  return `${value.slice(0, 10)}...${value.slice(-8)}`;
+}
+
+function createEmptyListItem(text) {
+  const item = document.createElement("li");
+  item.className = "empty-list-item";
+  item.textContent = text;
+  return item;
+}
+
+function toSignature(value) {
+  return JSON.stringify(value);
+}
+
+function buildProjectsSignature(list) {
+  return toSignature(
+    (Array.isArray(list) ? list : []).map((project) => [
+      project.id || "",
+      project.name || "",
+      project.updatedAt || project.updated_at || ""
+    ])
   );
-  sendTerminalCommand(`echo \"Objective: ${(version.objective || "").replace(/"/g, "'")}\"`);
-  sendTerminalCommand("codex");
-  codexSeedTimer = setTimeout(() => {
-    if (activeTerminalSessionId && window.terminalApi) {
-      window.terminalApi.sendInput(activeTerminalSessionId, `${seedPrompt}\n`);
-      setTerminalMeta(`Session ${session.sessionId} seeded with v${version.number} test results.`);
-    }
-    codexSeedTimer = null;
-  }, 1300);
 }
 
-function renderArtifacts(run) {
-  if (!artifactList) {
-    return;
-  }
+function buildQueueSignature(list) {
+  return toSignature(
+    (Array.isArray(list) ? list : []).map((run) => [
+      run.id || "",
+      run.projectId || "",
+      run.projectName || "",
+      run.status || "",
+      Number(run.loopCount || 0),
+      run.updatedAt || "",
+      run.approvalRequestedAt || "",
+      normalizeSummary(run.threePointSummary)
+    ])
+  );
+}
 
-  artifactList.innerHTML = "";
-  if (!run || !Array.isArray(run.artifacts) || run.artifacts.length === 0) {
-    const li = document.createElement("li");
-    li.textContent = "No artifacts available.";
-    artifactList.appendChild(li);
-    return;
-  }
+function buildRunsSignature(list) {
+  return toSignature(
+    (Array.isArray(list) ? list : []).map((run) => [
+      run.id || "",
+      run.projectId || "",
+      run.status || "",
+      Number(run.loopCount || 0),
+      Number(run.executionTimeMs || 0),
+      run.updatedAt || "",
+      run.videoReference || "",
+      normalizeSummary(run.threePointSummary)
+    ])
+  );
+}
 
-  run.artifacts.forEach((item) => {
-    const li = document.createElement("li");
-    li.textContent = item;
-    artifactList.appendChild(li);
+function buildRunDetailSignature(run) {
+  if (!run || typeof run !== "object") {
+    return "";
+  }
+  const loops = Array.isArray(run.loopIterations) ? run.loopIterations : [];
+  return toSignature({
+    id: run.id || "",
+    projectId: run.projectId || "",
+    projectName: run.projectName || "",
+    status: run.status || "",
+    createdAt: run.createdAt || "",
+    updatedAt: run.updatedAt || "",
+    approvalRequestedAt: run.approvalRequestedAt || "",
+    approvedAt: run.approvedAt || "",
+    approvedBy: run.approvedBy || "",
+    executionTimeMs: Number(run.executionTimeMs || 0),
+    loopCount: Number(run.loopCount || 0),
+    testingInstructions: run.testingInstructions || "",
+    threePointSummary: normalizeSummary(run.threePointSummary),
+    lastErrorText: run.lastErrorText || "",
+    videoReference: run.videoReference || "",
+    draftPayload: run.draftPayload || null,
+    loopIterations: loops.map((loop) => ({
+      loopNumber: Number(loop.loopNumber || 0),
+      status: loop.status || "",
+      stepSummary: loop.stepSummary || "",
+      updatedAt: loop.updatedAt || "",
+      artifacts: loop.artifacts || null
+    }))
   });
 }
 
-function renderRuns(test) {
-  const run = test?.runs?.[0] || null;
-  if (runMeta) {
-    runMeta.textContent = run
-      ? `${run.status.toUpperCase()} - ${run.summary || "No summary"}`
-      : "No run selected.";
-  }
-  if (runVideo) {
-    runVideo.src = run?.videoPath ? toLocalFileUrl(run.videoPath) : "";
-  }
-  renderArtifacts(run);
+function toTimestamp(value) {
+  const time = new Date(value || 0).getTime();
+  return Number.isFinite(time) ? time : 0;
 }
 
-function renderVersions(test) {
-  if (!versionList) {
-    return;
+function runOrderKey(run) {
+  const created = toTimestamp(run?.createdAt);
+  if (created > 0) {
+    return created;
   }
 
-  versionList.innerHTML = "";
-  const versions = [...(test?.versions || [])].sort((a, b) => b.number - a.number);
-  versions.forEach((version) => {
-    const li = document.createElement("li");
-    li.className = "version-item";
-    li.innerHTML = `
-      <div>
-        <strong>v${version.number}</strong>
-        <div class="meta">${version.status} - ${version.createdAt}</div>
-      </div>
-      <button type="button">Run This Version</button>
-    `;
-    const button = li.querySelector("button");
-    button?.addEventListener("click", async () => {
-      await startCodexSessionForVersion(version);
+  const id = String(run?.id || "");
+  const idTs = id.match(/(\d{11,})/);
+  if (idTs) {
+    const parsed = Number(idTs[1]);
+    if (Number.isFinite(parsed) && parsed > 0) {
+      return parsed;
+    }
+  }
+
+  const updated = toTimestamp(run?.updatedAt);
+  if (updated > 0) {
+    return updated;
+  }
+
+  return 0;
+}
+
+function computeRunVersionMap(list) {
+  const ordered = [...(Array.isArray(list) ? list : [])].sort((a, b) => {
+    const ta = runOrderKey(a);
+    const tb = runOrderKey(b);
+    return ta - tb;
+  });
+  const map = new Map();
+  ordered.forEach((run, index) => {
+    if (run?.id) {
+      map.set(run.id, `v${index + 1}`);
+    }
+  });
+  return map;
+}
+
+function getRunVersionLabel(run) {
+  if (!run?.id) {
+    return "v?";
+  }
+  return runVersionMap.get(run.id) || "v?";
+}
+
+function getRunDisplayLabel(run) {
+  const version = getRunVersionLabel(run);
+  if (version !== "v?") {
+    return version;
+  }
+  return abbreviateRunId(run?.id);
+}
+
+function queueMeta(run) {
+  if (run.status === "to_be_approved") {
+    return `Requested ${formatDate(run.approvalRequestedAt)} | Loops ${run.loopCount || 0}/3`;
+  }
+  return `Updated ${formatDate(run.updatedAt)} | Loops ${run.loopCount || 0}/3`;
+}
+
+function renderRunButton(run, options = {}) {
+  const item = document.createElement("li");
+  item.className = "run-item";
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "entity-button run-button";
+  button.dataset.active = String(run.id === activeRunId);
+
+  const topRow = document.createElement("div");
+  topRow.className = "run-card-top";
+
+  const title = document.createElement("strong");
+  const displayLabel = getRunDisplayLabel(run);
+  title.textContent = options.showProject ? `${run.projectName || run.projectId} | ${displayLabel}` : displayLabel;
+  title.title = run.id || "";
+
+  const chip = document.createElement("span");
+  chip.className = "status-chip";
+  chip.dataset.status = run.status || "drafting";
+  chip.textContent = run.status || "drafting";
+
+  topRow.appendChild(title);
+  topRow.appendChild(chip);
+
+  const summary = document.createElement("div");
+  summary.className = "run-summary";
+  summary.textContent = getRunSummaryText(run);
+
+  const meta = document.createElement("div");
+  meta.className = "entity-meta";
+  meta.textContent = options.metaText || queueMeta(run);
+
+  button.appendChild(topRow);
+  button.appendChild(summary);
+  button.appendChild(meta);
+  button.addEventListener("click", () => {
+    openRun(run.id, run.projectId || options.projectId || null).catch(() => {
+      // surface errors via status text
     });
-    versionList.appendChild(li);
+  });
+
+  item.appendChild(button);
+  return item;
+}
+
+function renderTimelineRunItem(run, index, projectId) {
+  const item = document.createElement("li");
+  item.className = "timeline-item";
+  item.dataset.side = index % 2 === 0 ? "left" : "right";
+  item.style.setProperty("--timeline-index", String(index));
+
+  const node = document.createElement("span");
+  node.className = "timeline-node";
+  item.appendChild(node);
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "entity-button timeline-card";
+  button.dataset.active = String(run.id === activeRunId);
+
+  const year = document.createElement("div");
+  year.className = "timeline-year";
+  year.textContent = new Date(run.createdAt || run.updatedAt || Date.now()).getFullYear().toString();
+
+  const topRow = document.createElement("div");
+  topRow.className = "run-card-top";
+
+  const title = document.createElement("strong");
+  title.textContent = getRunDisplayLabel(run);
+  title.title = run.id || "";
+
+  const chip = document.createElement("span");
+  chip.className = "status-chip";
+  chip.dataset.status = run.status || "drafting";
+  chip.textContent = run.status || "drafting";
+
+  topRow.appendChild(title);
+  topRow.appendChild(chip);
+
+  const summary = document.createElement("div");
+  summary.className = "run-summary";
+  summary.textContent = getRunSummaryText(run);
+
+  const meta = document.createElement("div");
+  meta.className = "entity-meta";
+  meta.textContent = `ID ${abbreviateRunId(run.id)} | Loops ${run.loopCount || 0}/3 | ${formatDuration(run.executionTimeMs)} | ${formatDate(run.updatedAt)}`;
+
+  button.appendChild(year);
+  button.appendChild(topRow);
+  button.appendChild(summary);
+  button.appendChild(meta);
+  button.addEventListener("click", () => {
+    openRun(run.id, run.projectId || projectId || null).catch(() => {
+      // surface errors via status text
+    });
+  });
+
+  item.appendChild(button);
+  return item;
+}
+
+function renderProjects() {
+  if (!projectList) {
+    return;
+  }
+
+  projectList.innerHTML = "";
+  if (projectCount) {
+    projectCount.textContent =
+      projects.length > 0 ? `${projects.length} persisted project${projects.length === 1 ? "" : "s"}` : "No persisted projects found.";
+  }
+
+  if (projects.length === 0) {
+    projectList.appendChild(createEmptyListItem("No projects yet. Start an agentic run to populate history."));
+    return;
+  }
+
+  projects.forEach((project) => {
+    const item = document.createElement("li");
+    item.className = "project-item";
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "entity-button";
+    button.dataset.active = String(project.id === activeProjectId);
+
+    const title = document.createElement("strong");
+    title.textContent = project.name || project.id;
+
+    const meta = document.createElement("span");
+    meta.className = "entity-meta";
+    meta.textContent = `Updated ${formatDate(project.updatedAt || project.updated_at)}`;
+
+    button.appendChild(title);
+    button.appendChild(meta);
+    button.addEventListener("click", () => {
+      openProject(project.id).catch(() => {
+        // surface errors via status text
+      });
+    });
+
+    item.appendChild(button);
+    projectList.appendChild(item);
   });
 }
 
-function setActiveTest(test) {
-  if (!test) {
-    return;
-  }
-  activeTestId = test.id;
-  if (testTitle) testTitle.textContent = test.title;
-  if (testStatus) testStatus.textContent = test.status;
-  if (testId) testId.textContent = test.id;
-  if (testVersion) testVersion.textContent = String(test.latestVersion || "-");
-  if (testUpdated) testUpdated.textContent = test.updatedAt || "-";
-  if (testObjective) testObjective.value = test.objective || "";
-  if (testNotes) testNotes.value = "";
-  renderVersions(test);
-  renderRuns(test);
-}
-
-async function openTest(id) {
-  if (!window.catalogApi) {
-    return;
-  }
-  const detail = await window.catalogApi.getTest(id);
-  setActiveTest(detail);
-}
-
-function renderList() {
-  if (!testList) {
+function renderQueueList(listElement, countElement, list, emptyText) {
+  if (!listElement) {
     return;
   }
 
-  const term = (searchInput?.value || "").trim().toLowerCase();
-  const filtered = tests.filter((item) => {
-    if (!term) {
-      return true;
-    }
-    return (
-      item.title.toLowerCase().includes(term) ||
-      item.objective.toLowerCase().includes(term) ||
-      item.status.toLowerCase().includes(term)
+  listElement.innerHTML = "";
+  if (countElement) {
+    countElement.textContent = `${list.length} run${list.length === 1 ? "" : "s"}`;
+  }
+
+  if (list.length === 0) {
+    listElement.appendChild(createEmptyListItem(emptyText));
+    return;
+  }
+
+  list.forEach((run) => {
+    listElement.appendChild(
+      renderRunButton(run, {
+        metaText: queueMeta(run),
+        showProject: true
+      })
     );
   });
+}
 
-  testList.innerHTML = "";
-  filtered.forEach((item) => {
-    const li = document.createElement("li");
-    li.className = "test-item";
-    li.innerHTML = `
-      <button type="button" data-id="${item.id}">
-        <strong>${item.title}</strong>
-        <span>${item.status} - v${item.latestVersion}</span>
-      </button>
-    `;
-    const button = li.querySelector("button");
-    button?.addEventListener("click", () => {
-      openTest(item.id);
+function renderProjectRuns() {
+  if (!runList) {
+    return;
+  }
+
+  runList.innerHTML = "";
+  runList.classList.remove("timeline-list");
+
+  const project = projects.find((item) => item.id === activeProjectId);
+  if (runsTitle) {
+    runsTitle.textContent = project ? `${project.name} Timeline` : "Project Run History";
+  }
+  if (runsMeta) {
+    runsMeta.textContent = project
+      ? `${runs.length} run${runs.length === 1 ? "" : "s"} stored`
+      : "Select a project to inspect all persisted runs.";
+  }
+
+  if (!project) {
+    runList.appendChild(createEmptyListItem("Choose a project to load its full run history."));
+    return;
+  }
+
+  if (runs.length === 0) {
+    runList.appendChild(createEmptyListItem("This project has no persisted test runs yet."));
+    return;
+  }
+
+  runList.classList.add("timeline-list");
+  const timelineRuns = [...runs].sort((a, b) => {
+    const ta = runOrderKey(a);
+    const tb = runOrderKey(b);
+    return ta - tb;
+  });
+  timelineRuns.forEach((run, index) => {
+    runList.appendChild(renderTimelineRunItem(run, index, project.id));
+  });
+
+  const tail = document.createElement("li");
+  tail.className = "timeline-tail";
+  tail.setAttribute("aria-hidden", "true");
+  tail.textContent = "↓";
+  runList.appendChild(tail);
+}
+
+function renderLoopArtifacts(artifacts) {
+  const box = document.createElement("div");
+  box.className = "loop-artifacts";
+
+  const data = artifacts && typeof artifacts === "object" ? artifacts : {};
+  const rows = [
+    `Screenshots: ${Array.isArray(data.screenshot_refs) ? data.screenshot_refs.length : 0}`,
+    `Console errors: ${Array.isArray(data.console_errors) ? data.console_errors.length : 0}`,
+    `Video refs: ${Array.isArray(data.video_chunk_refs) ? data.video_chunk_refs.length : 0}`,
+    `Metrics: ${data.structured_metrics ? "available" : "none"}`
+  ];
+  box.textContent = rows.join(" | ");
+  return box;
+}
+
+function isInstructionEditable(run) {
+  return Boolean(run && run.status === "to_be_approved");
+}
+
+function getCurrentInstructionSource(run) {
+  if (!run) {
+    return "";
+  }
+  if (isInstructionEditable(run)) {
+    return String(detailInstructionsEditor?.value || run.testingInstructions || "");
+  }
+  return String(run.testingInstructions || "");
+}
+
+function setInstructionEditHint(value) {
+  if (instructionsEditHint) {
+    instructionsEditHint.textContent = value;
+  }
+}
+
+function resetInstructionDraft() {
+  instructionDraftRunId = null;
+  instructionDraftValue = "";
+  instructionDraftDirty = false;
+}
+
+function setActionButtonState(run) {
+  const approvable = Boolean(run && APPROVABLE_STATUSES.has(run.status));
+  const cancellable = Boolean(run && CANCELLABLE_STATUSES.has(run.status));
+  const variantable = Boolean(run && run.id);
+  const editable = isInstructionEditable(run);
+
+  if (approveRunButton) {
+    approveRunButton.disabled = !approvable;
+    approveRunButton.classList.toggle("hidden", !approvable);
+  }
+  if (cancelRunButton) {
+    cancelRunButton.disabled = !cancellable;
+    cancelRunButton.classList.toggle("hidden", !cancellable);
+  }
+  if (createVariantRunButton) {
+    createVariantRunButton.disabled = !variantable;
+    createVariantRunButton.classList.toggle("hidden", !variantable);
+  }
+  if (saveInstructionsButton) {
+    saveInstructionsButton.disabled = !editable;
+    saveInstructionsButton.classList.toggle("hidden", !editable);
+  }
+}
+
+function renderRunDetail(run) {
+  if (!run) {
+    activeRunId = null;
+    activeRunDetail = null;
+    runDetailSignature = "";
+    resetInstructionDraft();
+    if (detailEmpty) {
+      detailEmpty.classList.remove("hidden");
+    }
+    if (detailContent) {
+      detailContent.classList.add("hidden");
+    }
+    if (detailTitle) {
+      detailTitle.textContent = "Select a test run";
+    }
+    if (detailStatus) {
+      detailStatus.textContent = "-";
+      detailStatus.dataset.status = "";
+    }
+    if (videoMeta) {
+      videoMeta.textContent = "No video linked.";
+    }
+    if (detailVideo) {
+      detailVideo.dataset.videoReference = "";
+      detailVideo.src = "";
+    }
+    if (instructionsEditWrap) {
+      instructionsEditWrap.classList.add("hidden");
+    }
+    if (detailInstructions) {
+      detailInstructions.classList.remove("hidden");
+      detailInstructions.textContent = "-";
+    }
+    setActionButtonState(null);
+    return;
+  }
+
+  activeRunId = run.id;
+  activeRunDetail = run;
+
+  if (detailEmpty) {
+    detailEmpty.classList.add("hidden");
+  }
+  if (detailContent) {
+    detailContent.classList.remove("hidden");
+  }
+  if (detailTitle) {
+    detailTitle.textContent = `Run ${getRunDisplayLabel(run)}`;
+  }
+  if (detailStatus) {
+    detailStatus.textContent = run.status || "-";
+    detailStatus.dataset.status = run.status || "";
+  }
+  if (detailRunId) {
+    detailRunId.textContent = `${getRunDisplayLabel(run)} | ${abbreviateRunId(run.id)}`;
+    detailRunId.title = run.id || "";
+  }
+  if (detailProjectName) {
+    detailProjectName.textContent = run.projectName || run.projectId || "-";
+  }
+  if (detailCreated) {
+    detailCreated.textContent = formatDate(run.createdAt);
+  }
+  if (detailUpdated) {
+    detailUpdated.textContent = formatDate(run.updatedAt);
+  }
+  if (detailApprovalRequested) {
+    detailApprovalRequested.textContent = formatDate(run.approvalRequestedAt);
+  }
+  if (detailApproved) {
+    const approvedText = run.approvedAt
+      ? `${formatDate(run.approvedAt)}${run.approvedBy ? ` by ${run.approvedBy}` : ""}`
+      : "-";
+    detailApproved.textContent = approvedText;
+  }
+  if (detailExecutionTime) {
+    detailExecutionTime.textContent = formatDuration(run.executionTimeMs);
+  }
+  if (detailLoopCount) {
+    detailLoopCount.textContent = `${run.loopCount || 0} / 3`;
+  }
+  const editableInstructions = isInstructionEditable(run);
+  const persistedInstructions = run.testingInstructions || "";
+  if (editableInstructions) {
+    if (instructionDraftRunId !== run.id) {
+      instructionDraftRunId = run.id;
+      instructionDraftValue = persistedInstructions;
+      instructionDraftDirty = false;
+    } else if (!instructionDraftDirty) {
+      instructionDraftValue = persistedInstructions;
+    }
+
+    if (instructionsEditWrap) {
+      instructionsEditWrap.classList.remove("hidden");
+    }
+    if (detailInstructionsEditor && detailInstructionsEditor.value !== instructionDraftValue) {
+      detailInstructionsEditor.value = instructionDraftValue;
+    }
+    if (detailInstructions) {
+      detailInstructions.classList.add("hidden");
+    }
+    setInstructionEditHint("Edits are persisted before approval.");
+  } else {
+    resetInstructionDraft();
+    if (instructionsEditWrap) {
+      instructionsEditWrap.classList.add("hidden");
+    }
+    if (detailInstructions) {
+      detailInstructions.classList.remove("hidden");
+      detailInstructions.textContent = persistedInstructions || "No testing instructions stored.";
+    }
+  }
+  if (detailDraftPayload) {
+    detailDraftPayload.textContent = run.draftPayload ? JSON.stringify(run.draftPayload, null, 2) : "No draft payload stored.";
+  }
+
+  if (detailSummary) {
+    detailSummary.innerHTML = "";
+    normalizeSummary(run.threePointSummary).forEach((point) => {
+      const item = document.createElement("li");
+      item.textContent = compactText(point, 220) || "No summary recorded.";
+      detailSummary.appendChild(item);
     });
-    testList.appendChild(li);
-  });
+  }
+
+  const lastError = run.lastErrorText || "";
+  if (errorBlock) {
+    errorBlock.classList.toggle("hidden", !lastError);
+  }
+  if (detailError) {
+    const readable = formatReadableFailure(lastError, normalizeSummary(run.threePointSummary)[0]);
+    const hint = buildFailureFixHint(lastError);
+    detailError.textContent = readable ? `${readable}\n\n${hint}` : "-";
+    detailError.title = sanitizeErrorText(lastError || "");
+  }
+
+  if (loopList) {
+    loopList.innerHTML = "";
+    const loops = Array.isArray(run.loopIterations) ? run.loopIterations : [];
+    if (loops.length === 0) {
+      loopList.appendChild(createEmptyListItem("No loop iterations stored for this run."));
+    } else {
+      loops.forEach((loop) => {
+        const item = document.createElement("li");
+        item.className = "loop-item";
+
+        const topRow = document.createElement("div");
+        topRow.className = "run-card-top";
+
+        const title = document.createElement("strong");
+        title.textContent = `Loop ${loop.loopNumber}`;
+
+        const chip = document.createElement("span");
+        chip.className = "status-chip";
+        chip.dataset.status = loop.status || "running";
+        chip.textContent = loop.status || "running";
+
+        topRow.appendChild(title);
+        topRow.appendChild(chip);
+
+        const summary = document.createElement("div");
+        summary.className = "run-summary";
+        summary.textContent = loop.stepSummary || "No loop summary stored.";
+
+        const meta = document.createElement("div");
+        meta.className = "entity-meta";
+        meta.textContent = `Updated ${formatDate(loop.updatedAt)}`;
+
+        item.appendChild(topRow);
+        item.appendChild(summary);
+        item.appendChild(meta);
+        item.appendChild(renderLoopArtifacts(loop.artifacts));
+        loopList.appendChild(item);
+      });
+    }
+  }
+
+  if (videoMeta) {
+    videoMeta.textContent = run.videoReference ? run.videoReference : "No video linked.";
+  }
+  if (detailVideo) {
+    const nextReference = run.videoReference || "";
+    if ((detailVideo.dataset.videoReference || "") !== nextReference) {
+      detailVideo.dataset.videoReference = nextReference;
+      detailVideo.src = nextReference ? toLocalFileUrl(nextReference) : "";
+      detailVideo.load();
+    }
+  }
+
+  setActionButtonState(run);
 }
 
-async function loadCatalog() {
-  if (!window.catalogApi) {
-    setStatus("Catalog bridge missing");
-    return;
-  }
-
-  setStatus("Loading");
-  tests = await window.catalogApi.listTests();
-  renderList();
-  if (tests.length > 0) {
-    await openTest(tests[0].id);
-  }
-  setStatus("Catalog ready");
+function renderQueues() {
+  renderQueueList(approvalList, approvalCount, approvalRuns, "No runs are waiting for approval.");
+  renderQueueList(inProgressList, progressCount, inProgressRuns, "No runs are currently in progress.");
 }
 
-saveVersionButton?.addEventListener("click", async () => {
-  if (!window.catalogApi || !activeTestId) {
+async function openRun(runId, projectId = null, options = {}) {
+  if (!window.agenticApi || !runId) {
     return;
   }
-  await window.catalogApi.updateTest({
-    testId: activeTestId,
-    objective: testObjective?.value || "",
-    notes: testNotes?.value || "",
-    status: "pending_approval"
+
+  const silent = options.silent === true;
+  const skipListRenders = options.skipListRenders === true;
+  const previousActiveRunId = activeRunId;
+
+  if (projectId && projectId !== activeProjectId) {
+    activeProjectId = projectId;
+    renderProjects();
+  }
+
+  if (!silent) {
+    setStatus("Loading run detail");
+  }
+
+  const detail = await window.agenticApi.getProjectTestRun(runId);
+  if (detail?.projectId) {
+    activeProjectId = detail.projectId;
+  }
+
+  const nextDetailSignature = buildRunDetailSignature(detail);
+  const runSelectionChanged = previousActiveRunId !== (detail?.id || null);
+  const detailChanged = nextDetailSignature !== runDetailSignature;
+
+  if (!skipListRenders && runSelectionChanged) {
+    renderProjects();
+    renderProjectRuns();
+    renderQueues();
+  }
+
+  if (detailChanged || runSelectionChanged) {
+    runDetailSignature = nextDetailSignature;
+    renderRunDetail(detail);
+  }
+
+  if (!silent) {
+    setStatus("Approval queues ready");
+  }
+}
+
+async function openProject(projectId, preferredRunId = null, options = {}) {
+  if (!window.agenticApi || !projectId) {
+    return;
+  }
+
+  const silent = options.silent === true;
+  const projectChanged = activeProjectId !== projectId;
+  activeProjectId = projectId;
+
+  if (projectChanged) {
+    activeRunId = null;
+    runDetailSignature = "";
+    renderProjects();
+    renderRunDetail(null);
+  }
+
+  if (!silent) {
+    setStatus("Loading project runs");
+  }
+
+  const nextRuns = await window.agenticApi.listProjectTestRuns(projectId);
+  const nextRunsSignature = buildRunsSignature(nextRuns);
+  runs = nextRuns;
+  runVersionMap = computeRunVersionMap(runs);
+
+  const runToOpen = preferredRunId && runs.some((run) => run.id === preferredRunId) ? preferredRunId : runs[0]?.id || null;
+  const runSelectionChanged = activeRunId !== runToOpen;
+  activeRunId = runToOpen;
+
+  if (nextRunsSignature !== runsSignature || projectChanged || runSelectionChanged) {
+    runsSignature = nextRunsSignature;
+    renderProjectRuns();
+  }
+
+  if (runToOpen) {
+    await openRun(runToOpen, projectId, { silent, skipListRenders: true });
+  } else {
+    runVersionMap = computeRunVersionMap([]);
+    renderRunDetail(null);
+    if (!silent) {
+      setStatus("Approval queues ready");
+    }
+  }
+}
+
+async function loadHistory(options = {}) {
+  if (!window.agenticApi) {
+    setStatus("Agentic history bridge missing");
+    return;
+  }
+  if (loadingPromise) {
+    return loadingPromise;
+  }
+
+  const preserveSelection = options.preserveSelection !== false;
+  const quiet = options.quiet === true;
+
+  loadingPromise = (async () => {
+    if (!quiet) {
+      setStatus("Loading approval queues");
+    }
+
+    const [nextProjects, nextApprovalRuns, nextInProgressRuns] = await Promise.all([
+      window.agenticApi.listProjects(),
+      window.agenticApi.listAwaitingApprovalRuns(),
+      window.agenticApi.listInProgressRuns()
+    ]);
+
+    const filteredInProgressRuns = nextInProgressRuns.filter((run) => ACTIVE_QUEUE_STATUSES.has(run.status));
+    const nextProjectsSignature = buildProjectsSignature(nextProjects);
+    const nextApprovalRunsSignature = buildQueueSignature(nextApprovalRuns);
+    const nextInProgressRunsSignature = buildQueueSignature(filteredInProgressRuns);
+
+    projects = nextProjects;
+    approvalRuns = nextApprovalRuns;
+    inProgressRuns = filteredInProgressRuns;
+
+    if (nextProjectsSignature !== projectsSignature) {
+      projectsSignature = nextProjectsSignature;
+      renderProjects();
+    }
+    if (nextApprovalRunsSignature !== approvalRunsSignature) {
+      approvalRunsSignature = nextApprovalRunsSignature;
+      renderQueueList(approvalList, approvalCount, approvalRuns, "No runs are waiting for approval.");
+    }
+    if (nextInProgressRunsSignature !== inProgressRunsSignature) {
+      inProgressRunsSignature = nextInProgressRunsSignature;
+      renderQueueList(inProgressList, progressCount, inProgressRuns, "No runs are currently in progress.");
+    }
+
+    if (projects.length === 0) {
+      activeProjectId = null;
+      activeRunId = null;
+      runs = [];
+      runVersionMap = computeRunVersionMap([]);
+      runsSignature = "";
+      runDetailSignature = "";
+      renderProjects();
+      renderProjectRuns();
+      renderRunDetail(null);
+      setStatus("No persisted history yet");
+      return;
+    }
+
+    const nextProjectId =
+      preserveSelection && projects.some((project) => project.id === activeProjectId) ? activeProjectId : projects[0].id;
+    await openProject(nextProjectId, preserveSelection ? activeRunId : null, { silent: quiet });
+
+    if (!quiet) {
+      setStatus("Approval queues ready");
+    }
+  })()
+    .catch((error) => {
+      setStatus(`History failed: ${error.message}`);
+      throw error;
+    })
+    .finally(() => {
+      loadingPromise = null;
+    });
+
+  return loadingPromise;
+}
+
+function scheduleHistoryRefresh(options = {}) {
+  if (refreshDebounceHandle) {
+    clearTimeout(refreshDebounceHandle);
+    refreshDebounceHandle = null;
+  }
+  refreshDebounceHandle = setTimeout(() => {
+    refreshDebounceHandle = null;
+    loadHistory({
+      preserveSelection: options.preserveSelection !== false,
+      quiet: options.quiet !== false
+    }).catch(() => {
+      // surface errors via status text only
+    });
+  }, EVENT_REFRESH_DEBOUNCE_MS);
+}
+
+refreshProjectsButton?.addEventListener("click", async () => {
+  await loadHistory();
+});
+
+detailInstructionsEditor?.addEventListener("input", () => {
+  if (!activeRunDetail || !isInstructionEditable(activeRunDetail)) {
+    return;
+  }
+  instructionDraftRunId = activeRunDetail.id;
+  instructionDraftValue = detailInstructionsEditor.value;
+  instructionDraftDirty = true;
+  setInstructionEditHint("Unsaved edits. Save or approve to persist changes.");
+});
+
+saveInstructionsButton?.addEventListener("click", async () => {
+  if (!window.agenticApi || !activeRunId || !activeRunDetail || !isInstructionEditable(activeRunDetail)) {
+    return;
+  }
+
+  const nextInstructions = String(detailInstructionsEditor?.value || "");
+  setStatus("Saving instructions");
+  await window.agenticApi.updateRunTestingInstructions({
+    runId: activeRunId,
+    testingInstructions: nextInstructions,
+    editedBy: "ui"
   });
-  await loadCatalog();
+  instructionDraftRunId = activeRunId;
+  instructionDraftValue = nextInstructions;
+  instructionDraftDirty = false;
+  setInstructionEditHint("Saved. Approval will use these instructions.");
+  await loadHistory({ preserveSelection: true, quiet: true });
+  setStatus("Approval queues ready");
 });
 
-regenerateTestButton?.addEventListener("click", async () => {
-  if (!window.catalogApi || !activeTestId) {
+createVariantRunButton?.addEventListener("click", async () => {
+  if (!window.agenticApi || !activeRunId || !activeRunDetail) {
     return;
   }
-  await window.catalogApi.regenerateTest({
-    testId: activeTestId,
-    instruction: testNotes?.value || "Regenerated from UI controls."
+
+  setStatus("Creating variant run");
+  const createdRun = await window.agenticApi.createVariantRun({
+    sourceRunId: activeRunId,
+    testingInstructions: getCurrentInstructionSource(activeRunDetail)
   });
-  await loadCatalog();
+  await loadHistory({ preserveSelection: true, quiet: true });
+  if (createdRun?.projectId && createdRun?.id) {
+    await openProject(createdRun.projectId, createdRun.id, { silent: true });
+  }
+  setStatus("Approval queues ready");
 });
 
-refreshTestsButton?.addEventListener("click", async () => {
-  await loadCatalog();
-});
-
-terminalRestartButton?.addEventListener("click", async () => {
-  const detail = activeTestId && window.catalogApi ? await window.catalogApi.getTest(activeTestId) : null;
-  const latest = detail?.versions?.[detail.versions.length - 1];
-  if (!latest) {
-    setTerminalMeta("Select a test first.");
+approveRunButton?.addEventListener("click", async () => {
+  if (!window.agenticApi || !activeRunId) {
     return;
   }
-  await startCodexSessionForVersion(latest);
+  setStatus("Approving run");
+  const nextInstructions =
+    activeRunDetail && isInstructionEditable(activeRunDetail)
+      ? String(detailInstructionsEditor?.value || "")
+      : undefined;
+  await window.agenticApi.approveRun({
+    runId: activeRunId,
+    approvedBy: "ui",
+    testingInstructions: nextInstructions
+  });
+  instructionDraftDirty = false;
+  await loadHistory();
 });
 
-terminalCloseButton?.addEventListener("click", async () => {
-  await closeTerminalSession();
-});
-
-searchInput?.addEventListener("input", () => {
-  renderList();
+cancelRunButton?.addEventListener("click", async () => {
+  if (!window.agenticApi || !activeRunId) {
+    return;
+  }
+  setStatus("Cancelling run");
+  await window.agenticApi.cancelRun({
+    runId: activeRunId,
+    reason: "Cancelled from the approval queue UI."
+  });
+  await loadHistory();
 });
 
 if (versionText && window.appInfo) {
   versionText.textContent = `${window.appInfo.name} v${window.appInfo.version}`;
 }
-setStatus("Connecting");
-loadCatalog();
+
+if (window.agenticApi && typeof window.agenticApi.onEvent === "function") {
+  removeAgenticEventListener = window.agenticApi.onEvent(() => {
+    scheduleHistoryRefresh({ quiet: true, preserveSelection: true });
+  });
+}
+
+window.addEventListener("beforeunload", () => {
+  if (refreshDebounceHandle) {
+    clearTimeout(refreshDebounceHandle);
+    refreshDebounceHandle = null;
+  }
+  if (typeof removeAgenticEventListener === "function") {
+    removeAgenticEventListener();
+    removeAgenticEventListener = null;
+  }
+});
+
+loadHistory().catch(() => {
+  // initial load error is already reflected in session status
+});

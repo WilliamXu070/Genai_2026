@@ -1,0 +1,13 @@
+{
+  "requestId": "orchestrate_testing_1773529012984_1",
+  "type": "jungle:start-run",
+  "payload": {
+    "objective": "Validate the airplane portfolio scroll experience and overall polish.",
+    "projectRoot": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\Testing\\airplane-portfolio",
+    "environmentContext": "Local static portfolio demo served from Testing/airplane-portfolio.",
+    "constraints": "Focus on airplane motion during scroll, section readability, CTA visibility, and exit early if consecutive retries produce the same failure signals.",
+    "severityThreshold": 8,
+    "maxRetries": 2,
+    "url": "http://127.0.0.1:3095"
+  }
+}

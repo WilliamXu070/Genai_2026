@@ -1,0 +1,18 @@
+{
+  "verdict": "pass",
+  "confidence": 0.9,
+  "summary": "Critic found no blocking semantic regressions.",
+  "expectedVsObserved": {
+    "expected": "Validate Atlas Airfolio flow and core interactions for objective: UI Approval Hold Test for Atlas Airfolio",
+    "observed": "Run completed with evidence artifacts."
+  },
+  "strengths": [
+    "Execution completed with pass status.",
+    "Semantic checks were satisfied.",
+    "Observed timeline includes an explicit wait window."
+  ],
+  "issues": [],
+  "readinessScore": 100,
+  "generatedAt": "2026-03-14T23:50:43.914Z",
+  "source": "deterministic"
+}
