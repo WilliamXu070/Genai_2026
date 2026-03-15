@@ -31,9 +31,11 @@ function sortByNewest(items, field) {
 }
 
 class CatalogService {
-  constructor(projectRoot) {
-    this.projectRoot = projectRoot;
-    this.dbDir = path.join(projectRoot, "db");
+  constructor(input) {
+    const candidate = typeof input === "string" ? { workspaceRoot: input } : input || {};
+    this.projectRoot = path.resolve(candidate.workspaceRoot || candidate.projectRoot || process.cwd());
+    this.storageRoot = path.resolve(candidate.storageRoot || process.env.JUNGLE_STORAGE_ROOT || this.projectRoot);
+    this.dbDir = path.join(this.storageRoot, "db");
     this.catalogPath = path.join(this.dbDir, "test_catalog.json");
     this.langflowRunsDir = path.join(this.dbDir, "langflow_agentic_runs");
     this.state = null;
@@ -113,7 +115,8 @@ class CatalogService {
         generatedAt,
         source: "file",
         langflowRunsDir: this.langflowRunsDir,
-        projectRoot: this.projectRoot
+        projectRoot: this.projectRoot,
+        storageRoot: this.storageRoot
       },
       tests: sortByNewest(tests, "updatedAt")
     };
@@ -278,4 +281,3 @@ class CatalogService {
 module.exports = {
   CatalogService
 };
-

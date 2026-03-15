@@ -180,6 +180,17 @@ function withPreservedApprovalMetadata(run, nextDraftPayload) {
   return base;
 }
 
+function isDisposableVariantDraftRun(run) {
+  const payload = run?.draftPayload && typeof run.draftPayload === "object" ? run.draftPayload : null;
+  return Boolean(
+    run &&
+    payload?.sourceRunId &&
+    ["drafting", "to_be_approved", "approved"].includes(run.status) &&
+    Number(run.loopCount || 0) === 0 &&
+    !run.executionTimeMs
+  );
+}
+
 class AgenticMySqlPersistenceService {
   constructor() {
     this.status = getClientStatus();
@@ -396,6 +407,16 @@ class AgenticMySqlPersistenceService {
       const run = await fetchRunRecord(conn, input.runId, { forUpdate: true });
       if (!run) {
         return null;
+      }
+      if (isDisposableVariantDraftRun(run)) {
+        await conn.query("DELETE FROM loop_iterations WHERE test_run_id = ?", [input.runId]);
+        await conn.query("DELETE FROM test_runs WHERE id = ?", [input.runId]);
+        await touchProject(conn, run.projectId);
+        return {
+          ...run,
+          deleted: true,
+          status: "deleted"
+        };
       }
       if (run.status === "cancelled") {
         return run;

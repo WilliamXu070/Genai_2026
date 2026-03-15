@@ -40,12 +40,13 @@ video {
 }
 
 .app-shell {
-  height: 108vh;
+  min-height: 100vh;
+  height: auto;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
   gap: 14px;
   padding: 16px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .topbar,
@@ -140,8 +141,8 @@ video {
   grid-template-columns: minmax(240px, 0.85fr) minmax(340px, 1fr) minmax(460px, 1.2fr);
   gap: 14px;
   min-height: 0;
-  height: 100%;
-  align-items: stretch;
+  height: auto;
+  align-items: start;
 }
 
 .panel {
@@ -170,7 +171,6 @@ video {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  max-height: 100%;
 }
 
 .queue-section {
@@ -184,11 +184,6 @@ video {
 .queue-section:last-of-type {
   flex: 1;
   overflow: hidden;
-}
-
-#approval-list,
-#in-progress-list {
-  max-height: 220px;
 }
 
 .section-header-row {
@@ -425,13 +420,12 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  overflow: auto;
+  overflow: visible;
   min-height: 0;
-  padding-right: 4px;
 }
 
 .detail-panel {
-  overflow: hidden;
+  overflow: visible;
   min-height: 0;
 }
 
@@ -490,7 +484,6 @@ button:hover {
 
 .instructions-editor {
   width: 100%;
-  min-height: 190px;
   resize: vertical;
   border: 1px solid var(--line);
 }
@@ -545,7 +538,6 @@ button:hover {
 
 #detail-video {
   width: 100%;
-  min-height: 250px;
   border-radius: 14px;
   background: #000;
 }

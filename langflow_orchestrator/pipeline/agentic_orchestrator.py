@@ -10,11 +10,12 @@ from .env_bootstrap import load_project_env
 from .gemini_critic_agent import GeminiCriticAgent
 from .openai_environment_agent import OpenAIEnvironmentAgent
 from .openai_execution_agent import OpenAIExecutionAgent
+from .runtime_paths import resolve_langflow_runs_dir, resolve_project_root
 
 
 class AgenticLangflowOrchestrator:
   def __init__(self, project_root: str):
-    self.project_root = str(Path(project_root).resolve())
+    self.project_root = str(resolve_project_root(project_root))
     self.loaded_env = load_project_env(self.project_root)
     self.environment_agent = OpenAIEnvironmentAgent()
     self.openai_agent = OpenAIExecutionAgent()
@@ -94,7 +95,7 @@ class AgenticLangflowOrchestrator:
     return output
 
   def _persist(self, output: Dict[str, Any]) -> None:
-    db_dir = Path(self.project_root) / "db" / "langflow_agentic_runs"
+    db_dir = resolve_langflow_runs_dir(self.project_root)
     db_dir.mkdir(parents=True, exist_ok=True)
     out_path = db_dir / f"orchestration_{__import__('time').time_ns()}.json"
     out_path.write_text(json.dumps(output, indent=2), encoding="utf-8")

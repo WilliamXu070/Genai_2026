@@ -4,6 +4,9 @@
   "description": "Jungle desktop workspace for visible agent verification.",
   "main": "src/main.js",
   "private": true,
+  "bin": {
+    "jungle-agentic": "./bin/jungle-agentic.js"
+  },
   "scripts": {
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f db",
@@ -19,6 +22,9 @@
     "db:mysql:verify": "node tools/verify_agentic_mysql.js",
     "start": "electron .",
     "dev": "electron .",
+    "playwright:install": "playwright install chromium",
+    "rebuild:native": "electron-builder install-app-deps",
+    "dist:mac": "electron-builder --mac",
     "test": "node tests/run_all.js",
     "simulate:ops": "node src/runtime/operational_example.js",
     "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
@@ -27,6 +33,7 @@
     "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
   },
   "devDependencies": {
+    "electron-builder": "^26.0.12",
     "electron": "^35.0.0",
     "playwright": "^1.58.2"
   },
@@ -35,5 +42,36 @@
     "mysql2": "^3.19.1",
     "node-pty": "^1.1.0",
     "xterm": "^5.3.0"
+  },
+  "build": {
+    "appId": "com.jungle.desktop",
+    "productName": "Jungle",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "bin/**/*",
+      "src/**/*",
+      "Testing/tools/**/*",
+      "tools/**/*",
+      "langflow_orchestrator/**/*",
+      "db/init/**/*",
+      "package.json",
+      "!**/__pycache__/**",
+      "!**/*.pyc"
+    ],
+    "asarUnpack": [
+      "langflow_orchestrator/**/*",
+      "Testing/tools/**/*",
+      "tools/**/*",
+      "bin/**/*"
+    ],
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.developer-tools"
+    }
   }
 }

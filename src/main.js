@@ -23,7 +23,11 @@ function writeJsonFile(filePath, value) {
 }
 
 function getProjectRoot() {
-  return app.getAppPath();
+  return process.env.JUNGLE_PROJECT_ROOT || app.getAppPath();
+}
+
+function getStorageRoot() {
+  return process.env.JUNGLE_STORAGE_ROOT || path.join(app.getPath("userData"), "runtime");
 }
 
 function disposeTerminalSession() {
@@ -44,6 +48,7 @@ function createTerminalSession(webContents, options = {}) {
       : process.env.SHELL || "/bin/zsh";
   const sessionId = `terminal-${Date.now()}`;
   const projectRoot = getProjectRoot();
+  const storageRoot = getStorageRoot();
   const shellName = path.basename(shellPath);
   const cols = Number.isInteger(options.cols) ? Math.max(20, options.cols) : 120;
   const rows = Number.isInteger(options.rows) ? Math.max(8, options.rows) : 34;
@@ -65,6 +70,7 @@ function createTerminalSession(webContents, options = {}) {
       COLORTERM: "truecolor",
       HISTFILE: path.join(os.tmpdir(), "jungle_shell_history"),
       JUNGLE_PROJECT_ROOT: projectRoot,
+      JUNGLE_STORAGE_ROOT: storageRoot,
       LANG: process.env.LANG || "en_US.UTF-8",
       TERM: "xterm-256color"
     }
@@ -214,9 +220,13 @@ async function runToolBridgeIfConfigured() {
 
 app.whenReady().then(() => {
   app.setName("Jungle");
-  jungleManager = new JungleManager(getProjectRoot());
-  agenticLoopManager = new AgenticLoopManager(getProjectRoot());
-  catalogService = new CatalogService(getProjectRoot());
+  const workspaceRoot = getProjectRoot();
+  const storageRoot = getStorageRoot();
+  process.env.JUNGLE_PROJECT_ROOT = workspaceRoot;
+  process.env.JUNGLE_STORAGE_ROOT = storageRoot;
+  jungleManager = new JungleManager({ workspaceRoot, storageRoot });
+  agenticLoopManager = new AgenticLoopManager({ workspaceRoot, storageRoot });
+  catalogService = new CatalogService({ workspaceRoot, storageRoot });
   createWindow();
   runToolBridgeIfConfigured();
 

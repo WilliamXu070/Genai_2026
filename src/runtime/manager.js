@@ -1,11 +1,14 @@
 const path = require("node:path");
 const { RunStore } = require("./store");
 const { executeScenario } = require("./runner");
+const { normalizeRuntimeRoots } = require("./runtime_paths");
 
 class JungleManager {
-  constructor(projectRoot) {
-    this.projectRoot = projectRoot;
-    this.store = new RunStore(projectRoot);
+  constructor(input) {
+    const { workspaceRoot, storageRoot } = normalizeRuntimeRoots(input);
+    this.projectRoot = workspaceRoot;
+    this.storageRoot = storageRoot;
+    this.store = new RunStore(storageRoot);
     this.activeRuns = new Map();
   }
 

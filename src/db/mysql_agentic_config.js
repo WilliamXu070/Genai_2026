@@ -8,13 +8,9 @@ function toBool(value, fallback = false) {
   return ["1", "true", "yes", "on"].includes(String(value).toLowerCase());
 }
 
-function parseDotEnvFile() {
-  const projectRoot = process.env.JUNGLE_PROJECT_ROOT || process.cwd();
-  const envPath = path.join(projectRoot, ".env");
-  const out = {};
-
+function loadEnvFile(envPath, target) {
   if (!fs.existsSync(envPath)) {
-    return out;
+    return;
   }
 
   for (const line of fs.readFileSync(envPath, "utf8").split(/\r?\n/)) {
@@ -28,7 +24,18 @@ function parseDotEnvFile() {
     }
     const key = trimmed.slice(0, index).trim();
     const value = trimmed.slice(index + 1).trim().replace(/^['"]|['"]$/g, "");
-    out[key] = value;
+    target[key] = value;
+  }
+}
+
+function parseDotEnvFile() {
+  const projectRoot = process.env.JUNGLE_PROJECT_ROOT || process.cwd();
+  const storageRoot = process.env.JUNGLE_STORAGE_ROOT || "";
+  const out = {};
+
+  loadEnvFile(path.join(projectRoot, ".env"), out);
+  if (storageRoot) {
+    loadEnvFile(path.join(storageRoot, ".env"), out);
   }
 
   return out;

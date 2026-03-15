@@ -6,6 +6,7 @@ const { analyzeRunSemantics } = require("./semantics");
 const { RunCriticAgent } = require("./critic_agent");
 const { AgenticMySqlPersistenceService, ensureSummaryArray } = require("./agentic_mysql_persistence");
 const { ensureExecutionEnvironment, planExecutionEnvironment } = require("./environment_planner");
+const { normalizeRuntimeRoots } = require("./runtime_paths");
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -22,21 +23,28 @@ function sleep(ms) {
 const MAX_AGENTIC_LOOPS = 3;
 
 function parseDotEnv(projectRoot) {
-  const envPath = path.join(projectRoot, ".env");
   const out = {};
-  if (!fs.existsSync(envPath)) {
-    return out;
+  const envPaths = [path.join(projectRoot, ".env")];
+  const storageRoot = process.env.JUNGLE_STORAGE_ROOT || "";
+  if (storageRoot) {
+    envPaths.push(path.join(storageRoot, ".env"));
   }
-  for (const line of fs.readFileSync(envPath, "utf8").split(/\r?\n/)) {
-    const t = line.trim();
-    if (!t || t.startsWith("#")) continue;
-    const idx = t.indexOf("=");
-    if (idx < 0) continue;
-    out[t.slice(0, idx).trim()] = t.slice(idx + 1).trim().replace(/^['\"]|['\"]$/g, "");
-  }
+
+  envPaths.forEach((envPath) => {
+    if (!fs.existsSync(envPath)) {
+      return;
+    }
+    for (const line of fs.readFileSync(envPath, "utf8").split(/\r?\n/)) {
+      const t = line.trim();
+      if (!t || t.startsWith("#")) continue;
+      const idx = t.indexOf("=");
+      if (idx < 0) continue;
+      out[t.slice(0, idx).trim()] = t.slice(idx + 1).trim().replace(/^['\"]|['\"]$/g, "");
+    }
+  });
+
   return out;
 }
-
 function buildThreePointSummary(run) {
   const points = [];
   if (run?.summary) {
@@ -168,6 +176,13 @@ function readTestingInstructionField(testingInstructions, label) {
   return match?.[1]?.trim() || "";
 }
 
+function readTestingInstructionTarget(testingInstructions) {
+  return (
+    readTestingInstructionField(testingInstructions, "Target") ||
+    readTestingInstructionField(testingInstructions, "Target URL")
+  );
+}
+
 function buildPersistentRunSeed(run, overrides = {}) {
   const payload = run?.draftPayload && typeof run.draftPayload === "object" ? run.draftPayload : {};
   const testingInstructions = typeof overrides.testingInstructions === "string"
@@ -187,7 +202,7 @@ function buildPersistentRunSeed(run, overrides = {}) {
   const url =
     overrides.url ||
     payload.url ||
-    (targetType === "web_frontend" ? readTestingInstructionField(testingInstructions, "Target") : "") ||
+    (targetType === "web_frontend" ? readTestingInstructionTarget(testingInstructions) : "") ||
     (targetType === "web_frontend" ? "http://127.0.0.1:3000" : "");
   const projectName = overrides.projectName || payload.projectName || run?.projectName || "Jungle";
   const notes = [
@@ -242,9 +257,9 @@ function buildDraftPayload({ input, objective, draft, maxAttempts, attempt = 1 }
 }
 
 class AgenticStore {
-  constructor(projectRoot) {
-    this.projectRoot = projectRoot;
-    this.dbDir = path.join(projectRoot, "db");
+  constructor(storageRoot) {
+    this.storageRoot = storageRoot;
+    this.dbDir = path.join(storageRoot, "db");
     this.dbPath = path.join(this.dbDir, "agentic.json");
     ensureDir(this.dbDir);
     ensureDir(path.join(this.dbDir, "agentic_artifacts"));
@@ -464,7 +479,8 @@ async function inspectWebFrontend(url) {
   const page = await browser.newPage();
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
-    return collectInspectionContext(page);
+    const inspection = await collectInspectionContext(page);
+    return inspection;
   } finally {
     await browser.close();
   }
@@ -977,11 +993,14 @@ async function executeProcedure(executionPlan, parser, artifactsDir, actionDelay
 }
 
 class AgenticLoopManager {
-  constructor(projectRoot) {
-    this.projectRoot = projectRoot;
-    this.store = new AgenticStore(projectRoot);
-    this.criticAgent = new RunCriticAgent(projectRoot);
-    process.env.JUNGLE_PROJECT_ROOT = projectRoot;
+  constructor(input) {
+    const { workspaceRoot, storageRoot } = normalizeRuntimeRoots(input);
+    this.projectRoot = workspaceRoot;
+    this.storageRoot = storageRoot;
+    this.store = new AgenticStore(storageRoot);
+    this.criticAgent = new RunCriticAgent(workspaceRoot);
+    process.env.JUNGLE_PROJECT_ROOT = workspaceRoot;
+    process.env.JUNGLE_STORAGE_ROOT = storageRoot;
     this.persistence = new AgenticMySqlPersistenceService();
     this.activePersistentRunIds = new Set();
     this.approvalPollIntervalMs = Number(process.env.JUNGLE_APPROVAL_POLL_INTERVAL_MS || APPROVAL_POLL_INTERVAL_MS);
@@ -1838,7 +1857,7 @@ class AgenticLoopManager {
 
       const normalizedParser = buildRequestParser(finalProcedure);
       const artifactsDir = path.join(
-        this.projectRoot,
+        this.storageRoot,
         "db",
         "agentic_artifacts",
         `${input.forestId}_${input.treeId}_${Date.now()}`

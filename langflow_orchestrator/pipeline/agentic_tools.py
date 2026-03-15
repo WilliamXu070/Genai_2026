@@ -10,6 +10,7 @@ from typing import Any, Dict, List
 from urllib import error, request
 
 from .agentic_contracts import EnvironmentSnapshot, ExecutionPlan, ExecutionResult
+from .runtime_paths import resolve_langflow_runs_dir
 
 
 def _read_text(path: Path, max_chars: int = 4000) -> str:
@@ -471,7 +472,7 @@ def ensure_target_app(
     effective_target = "http://127.0.0.1:3000"
     candidates = _candidate_urls(effective_target, env_plan)
 
-  runs_dir = root / "db" / "langflow_agentic_runs"
+  runs_dir = resolve_langflow_runs_dir(str(root))
   runs_dir.mkdir(parents=True, exist_ok=True)
   log_path = runs_dir / f"server_bootstrap_{int(time.time() * 1000)}.log"
   with log_path.open("w", encoding="utf-8") as _:
@@ -614,7 +615,7 @@ def _plan_to_executor_code(plan: ExecutionPlan) -> str:
 
 def execute_playwright_plan(project_root: str, plan: ExecutionPlan, target_url: str) -> ExecutionResult:
   root = Path(project_root).resolve()
-  artifacts_dir = root / "db" / "langflow_agentic_runs" / f"run_{os.getpid()}_{int(__import__('time').time()*1000)}"
+  artifacts_dir = resolve_langflow_runs_dir(str(root)) / f"run_{os.getpid()}_{int(__import__('time').time()*1000)}"
   artifacts_dir.mkdir(parents=True, exist_ok=True)
   parser_path = artifacts_dir / "request_parser.json"
   code_path = artifacts_dir / "playwright_executor.generated.js"

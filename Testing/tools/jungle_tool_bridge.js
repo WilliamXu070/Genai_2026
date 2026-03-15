@@ -1,4 +1,5 @@
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
 const { JungleManager } = require("../../src/runtime/manager");
@@ -7,6 +8,20 @@ const {
   validateBridgeRequest,
   validateOrchestratorResponse
 } = require("../cli_agentic_loop/tool_contract");
+
+function resolvePythonCommand() {
+  if (process.env.PYTHON_BIN) {
+    return process.env.PYTHON_BIN;
+  }
+  return process.platform === "win32" ? "py" : "python3";
+}
+
+function defaultStorageRoot() {
+  if (process.env.JUNGLE_STORAGE_ROOT) {
+    return path.resolve(process.env.JUNGLE_STORAGE_ROOT);
+  }
+  return path.join(os.homedir(), ".jungle", "runtime");
+}
 
 function parseStepToken(token) {
   if (!token) {
@@ -187,7 +202,7 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function runLangflowAgentic(request, repoRoot, timeoutMs) {
+function runLangflowAgentic(request, repoRoot, timeoutMs, storageRoot) {
   return new Promise((resolve, reject) => {
     const check = validateBridgeRequest(request);
     if (!check.valid) {
@@ -199,13 +214,18 @@ function runLangflowAgentic(request, repoRoot, timeoutMs) {
     fs.mkdirSync(tmpDir, { recursive: true });
     const payloadPath = path.join(tmpDir, `langflow_payload_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.json`);
     fs.writeFileSync(payloadPath, JSON.stringify(payload, null, 2), "utf8");
+    const pythonBinary = resolvePythonCommand();
     const child = spawn(
-      "py",
+      pythonBinary,
       ["-m", "langflow_orchestrator.pipeline.agentic_cli", "--input-file", payloadPath],
       {
         cwd: repoRoot,
-        env: process.env,
-        shell: true
+        env: {
+          ...process.env,
+          JUNGLE_PROJECT_ROOT: repoRoot,
+          JUNGLE_STORAGE_ROOT: storageRoot
+        },
+        shell: false
       }
     );
 
@@ -282,12 +302,9 @@ async function main() {
   const request = readInput(parsed);
 
   const repoRoot = path.resolve(__dirname, "..", "..");
-  const testingRoot = path.resolve(__dirname, "..");
   const effectiveStorageRoot = parsed.storageRoot
     ? path.resolve(parsed.storageRoot)
-    : process.cwd().toLowerCase().includes(`${path.sep}testing`)
-      ? testingRoot
-      : repoRoot;
+    : defaultStorageRoot();
   let response;
 
   if (parsed.mode === "electron") {
@@ -304,6 +321,8 @@ async function main() {
       cwd: repoRoot,
       env: {
         ...process.env,
+        JUNGLE_PROJECT_ROOT: repoRoot,
+        JUNGLE_STORAGE_ROOT: effectiveStorageRoot,
         JUNGLE_TOOL_EXIT_ON_COMPLETE: parsed.keepOpen ? "0" : "1",
         JUNGLE_TOOL_REQUEST_PATH: requestPath,
         JUNGLE_TOOL_RESPONSE_PATH: responsePath
@@ -330,14 +349,17 @@ async function main() {
       completedAt: new Date().toISOString(),
       ok: true,
       requestId: request?.requestId || `req_${Date.now()}`,
-      result: await runLangflowAgentic(request, repoRoot, parsed.timeoutMs)
+      result: await runLangflowAgentic(request, repoRoot, parsed.timeoutMs, effectiveStorageRoot)
     };
   } else {
     if ((request?.type || "jungle:start-run") !== "jungle:start-run") {
       throw new Error(`Unsupported tool request type: ${request?.type}`);
     }
 
-    const manager = new JungleManager(effectiveStorageRoot);
+    const manager = new JungleManager({
+      workspaceRoot: repoRoot,
+      storageRoot: effectiveStorageRoot
+    });
     const result = await manager.startRun(
       {
         command: "",

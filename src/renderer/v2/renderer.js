@@ -478,21 +478,36 @@ function syncTimelineHeightLimit() {
     return;
   }
 
-  const limitElement = detailVideo?.closest(".content-block") || detailPanel;
-  if (!limitElement || !runsSection) {
+  if (!runsSection) {
     runList.style.height = "";
     runList.style.maxHeight = "";
-    if (runsSection) {
-      runsSection.style.height = "";
-      runsSection.style.maxHeight = "";
-    }
     return;
   }
 
-  const limitRect = limitElement.getBoundingClientRect();
+  // Hard limit is derived from the natural visible size of the Run Detail panel in the viewport.
+  const detailRect = detailPanel?.getBoundingClientRect();
+  if (!detailRect) {
+    runsSection.style.height = "";
+    runsSection.style.maxHeight = "";
+    runList.style.height = "";
+    runList.style.maxHeight = "";
+    return;
+  }
   const sectionRect = runsSection.getBoundingClientRect();
+  const listRect = runList.getBoundingClientRect();
 
-  if (limitRect.top > sectionRect.top + 8) {
+  const sectionOffset = Math.max(0, Math.floor(sectionRect.top - detailRect.top));
+  const availableSectionHeight = Math.floor(detailRect.height - sectionOffset);
+  if (!Number.isFinite(availableSectionHeight) || availableSectionHeight <= 0) {
+    runsSection.style.height = "";
+    runsSection.style.maxHeight = "";
+    runList.style.height = "";
+    runList.style.maxHeight = "";
+    return;
+  }
+  const listTopOffset = Math.max(0, Math.floor(listRect.top - sectionRect.top));
+  const availableListHeight = Math.floor(availableSectionHeight - listTopOffset);
+  if (!Number.isFinite(availableListHeight) || availableListHeight <= 0) {
     runsSection.style.height = "";
     runsSection.style.maxHeight = "";
     runList.style.height = "";
@@ -500,24 +515,12 @@ function syncTimelineHeightLimit() {
     return;
   }
 
-  const availableSectionHeight = Math.floor(limitRect.bottom - sectionRect.top);
-  if (availableSectionHeight > 220) {
-    const sectionHeight = `${availableSectionHeight}px`;
-    runsSection.style.height = sectionHeight;
-    runsSection.style.maxHeight = sectionHeight;
-
-    const listTopOffset = Math.max(0, Math.floor(runList.getBoundingClientRect().top - sectionRect.top));
-    const availableListHeight = Math.max(160, availableSectionHeight - listTopOffset);
-    const listHeight = `${availableListHeight}px`;
-    runList.style.height = listHeight;
-    runList.style.maxHeight = listHeight;
-    return;
-  }
-
-  runsSection.style.height = "";
-  runsSection.style.maxHeight = "";
-  runList.style.height = "";
-  runList.style.maxHeight = "";
+  const sectionHeight = `${availableSectionHeight}px`;
+  const listHeight = `${availableListHeight}px`;
+  runsSection.style.height = sectionHeight;
+  runsSection.style.maxHeight = sectionHeight;
+  runList.style.height = listHeight;
+  runList.style.maxHeight = listHeight;
 }
 
 function bindTimelineHeightLimit() {
@@ -662,7 +665,7 @@ function renderProjectRuns() {
   const tail = document.createElement("li");
   tail.className = "timeline-tail";
   tail.setAttribute("aria-hidden", "true");
-  tail.textContent = "↓";
+  tail.textContent = "\u2193";
   runList.appendChild(tail);
   bindTimelineHeightLimit();
 }
@@ -1225,3 +1228,4 @@ window.addEventListener("beforeunload", () => {
 loadHistory().catch(() => {
   // initial load error is already reflected in session status
 });
+

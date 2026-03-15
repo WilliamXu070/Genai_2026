@@ -145,6 +145,16 @@ class FakePersistence {
     if (!run) {
       return null;
     }
+    if (run.draftPayload?.sourceRunId && ["drafting", "to_be_approved", "approved"].includes(run.status) && Number(run.loopCount || 0) === 0) {
+      this.runs.delete(input.runId);
+      this.loopIterations.delete(input.runId);
+      this.project.updatedAt = nowIso();
+      return {
+        ...clone(run),
+        deleted: true,
+        status: "deleted"
+      };
+    }
     run.status = "cancelled";
     run.cancelledAt = run.cancelledAt || nowIso();
     run.lastErrorText = input.reason || "cancelled";
@@ -509,10 +519,81 @@ async function runVariantFromHistoricalRunTest() {
   );
 }
 
+async function runCancelledVariantDeletionTest() {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jungle-approval-variant-cancel-"));
+  const manager = new AgenticLoopManager(tmp);
+  const persistence = new FakePersistence();
+  manager.persistence = persistence;
+
+  const project = await persistence.getOrCreateProjectByName("Approval Test Project");
+  const sourceInstructions = [
+    "Objective: Validate historical portfolio flow",
+    "Target Type: web_frontend",
+    "Target: http://127.0.0.1/test",
+    "Planned Steps:",
+    "1. goto http://127.0.0.1/test",
+    "2. click text=Launch",
+    "3. assertVisible text=Ready"
+  ].join("\n\n");
+  const sourceRun = await persistence.createDraftingRun({
+    projectId: project.id,
+    testingInstructions: sourceInstructions,
+    threePointSummary: ensureSummaryArray([
+      "Historical source run persisted.",
+      "This run has no draft payload.",
+      "Use it to seed a variant."
+    ]),
+    draftPayload: null
+  });
+  await persistence.finalizeRun({
+    testRunId: sourceRun.id,
+    executionTimeMs: 25,
+    loopCount: 1,
+    status: "passed",
+    testingInstructions: sourceInstructions,
+    videoReference: null,
+    threePointSummary: ensureSummaryArray([
+      "Historical source run passed.",
+      "Stored for variant cloning.",
+      "Execution complete."
+    ]),
+    lastErrorText: null
+  });
+
+  const variantRun = await manager.createVariantRun({
+    sourceRunId: sourceRun.id
+  });
+  assert.equal(variantRun.status, "to_be_approved");
+
+  const cancelled = await manager.cancelRun({
+    runId: variantRun.id,
+    reason: "User abandoned variant draft."
+  });
+  assert.equal(cancelled.deleted, true, "Expected cancelled variant draft to be deleted");
+
+  const detail = await manager.getProjectTestRun(variantRun.id);
+  assert.equal(detail, null, "Deleted variant should not be retrievable");
+
+  const projectRuns = await manager.listProjectTestRuns(project.id);
+  assert.equal(
+    projectRuns.some((run) => run.id === variantRun.id),
+    false,
+    "Deleted variant should not appear in project history"
+  );
+
+  const approvalRuns = await manager.listAwaitingApprovalRuns(project.id);
+  assert.equal(
+    approvalRuns.some((run) => run.id === variantRun.id),
+    false,
+    "Deleted variant should not appear in approval queue"
+  );
+}
+
 async function run() {
   await runApprovalResumeTest();
   await runMaxLoopCapTest();
   await runVariantFromHistoricalRunTest();
+  await runCancelledVariantDeletionTest();
   console.log("agentic_approval_gating.test.js passed");
 }
 

@@ -10,9 +10,9 @@ function nowIso() {
 }
 
 class RunStore {
-  constructor(projectRoot) {
-    this.projectRoot = projectRoot;
-    this.dbDir = path.join(projectRoot, "db");
+  constructor(storageRoot) {
+    this.storageRoot = storageRoot;
+    this.dbDir = path.join(storageRoot, "db");
     this.runsDir = path.join(this.dbDir, "runs");
     this.dbPath = path.join(this.dbDir, "runs.json");
     ensureDir(this.runsDir);

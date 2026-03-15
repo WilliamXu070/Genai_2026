@@ -1,4 +1,5 @@
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const { AgenticLoopManager } = require("../src/runtime/agentic_loop");
 const { closePool } = require("../src/db/mysql_agentic_client");
@@ -55,6 +56,7 @@ function parseArgs(argv) {
   let codexTimeoutMs = "";
   let actionDelayMs = "";
   let skipCodex = false;
+  let storageRoot = "";
 
   while (args.length > 0) {
     const token = args.shift();
@@ -118,6 +120,10 @@ function parseArgs(argv) {
       skipCodex = true;
       continue;
     }
+    if (token === "--storage-root") {
+      storageRoot = args.shift() || "";
+      continue;
+    }
     throw new Error(`Unknown argument: ${token}`);
   }
 
@@ -174,7 +180,8 @@ function parseArgs(argv) {
     inlineRequest,
     inputFile,
     inputJson,
-    inputStdin
+    inputStdin,
+    storageRoot
   };
 }
 
@@ -194,6 +201,16 @@ function readInput({ inputFile, inputJson, inputStdin, inlineRequest }) {
 function toFiniteNumber(value) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : null;
+}
+
+function resolveStorageRoot(explicitStorageRoot) {
+  if (explicitStorageRoot) {
+    return path.resolve(explicitStorageRoot);
+  }
+  if (process.env.JUNGLE_STORAGE_ROOT) {
+    return path.resolve(process.env.JUNGLE_STORAGE_ROOT);
+  }
+  return path.join(os.homedir(), ".jungle", "runtime");
 }
 
 function normalizeRequest(request) {
@@ -254,15 +271,27 @@ function normalizeRequest(request) {
   };
 }
 
-async function runAgenticRequest(request) {
+async function runAgenticRequest(request, options = {}) {
   const normalized = normalizeRequest(request);
+  const storageRoot = resolveStorageRoot(options.storageRoot || "");
   const jungleEnv = parseEnvFile(path.join(JUNGLE_REPO_ROOT, ".env"));
+  const storageEnv = parseEnvFile(path.join(storageRoot, ".env"));
   Object.entries(jungleEnv).forEach(([key, value]) => {
     if (!(key in process.env)) {
       process.env[key] = value;
     }
   });
-  const manager = new AgenticLoopManager(normalized.projectRoot);
+  Object.entries(storageEnv).forEach(([key, value]) => {
+    if (!(key in process.env)) {
+      process.env[key] = value;
+    }
+  });
+  process.env.JUNGLE_PROJECT_ROOT = normalized.projectRoot;
+  process.env.JUNGLE_STORAGE_ROOT = storageRoot;
+  const manager = new AgenticLoopManager({
+    workspaceRoot: normalized.projectRoot,
+    storageRoot
+  });
   if (!manager.persistence.isEnabled()) {
     throw new Error(
       `MySQL-backed agentic persistence is disabled for ${normalized.projectRoot}. Set MYSQL_AGENTIC_ENABLED=1 and MYSQL_* connection vars.`
@@ -289,7 +318,7 @@ async function main(argv = process.argv.slice(2)) {
   try {
     const parsed = parseArgs(argv);
     const request = readInput(parsed);
-    const response = await runAgenticRequest(request);
+    const response = await runAgenticRequest(request, { storageRoot: parsed.storageRoot });
     process.stdout.write(`${JSON.stringify(response, null, 2)}\n`);
   } finally {
     await closePool();
