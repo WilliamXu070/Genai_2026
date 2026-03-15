@@ -1,0 +1,277 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "goto",
+      "originalAction": "goto",
+      "target": "http://127.0.0.1:5173/",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "click",
+      "originalAction": "click",
+      "target": "#themeToggle",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "assertChanged",
+      "originalAction": "assertChanged",
+      "target": "body",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "click",
+      "originalAction": "click",
+      "target": "#themeToggle",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 4,
+      "action": "assertChanged",
+      "originalAction": "assertChanged",
+      "target": "body",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 5,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Frontend",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 6,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#skillsGrid",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 7,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Backend",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 8,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#skillsGrid",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 9,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=DevOps",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 10,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#skillsGrid",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 11,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=All",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 12,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#skillsGrid",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 13,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Send Message",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 14,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#nameError",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 15,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#emailError",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 16,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#messageError",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 17,
+      "action": "fill",
+      "originalAction": "fill",
+      "target": "input[name=\"name\"]",
+      "value": "Test Name",
+      "assert": null
+    },
+    {
+      "index": 18,
+      "action": "fill",
+      "originalAction": "fill",
+      "target": "input[name=\"email\"]",
+      "value": "test@example.com",
+      "assert": null
+    },
+    {
+      "index": 19,
+      "action": "fill",
+      "originalAction": "fill",
+      "target": "input[name=\"message\"]",
+      "value": "Test Message",
+      "assert": null
+    },
+    {
+      "index": 20,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Send Message",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 21,
+      "action": "assertNotVisible",
+      "originalAction": "assertNotVisible",
+      "target": "#nameError",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 22,
+      "action": "assertNotVisible",
+      "originalAction": "assertNotVisible",
+      "target": "#emailError",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 23,
+      "action": "assertNotVisible",
+      "originalAction": "assertNotVisible",
+      "target": "#messageError",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 24,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=About",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 25,
+      "action": "scrollPage",
+      "originalAction": "scrollPage",
+      "target": "body",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 26,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Skills",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 27,
+      "action": "scrollPage",
+      "originalAction": "scrollPage",
+      "target": "body",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 28,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Projects",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 29,
+      "action": "scrollPage",
+      "originalAction": "scrollPage",
+      "target": "body",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 30,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Experience",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 31,
+      "action": "scrollPage",
+      "originalAction": "scrollPage",
+      "target": "body",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 32,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Contact",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 33,
+      "action": "scrollPage",
+      "originalAction": "scrollPage",
+      "target": "body",
+      "value": null,
+      "assert": null
+    }
+  ]
+}

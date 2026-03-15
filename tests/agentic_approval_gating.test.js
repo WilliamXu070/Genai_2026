@@ -735,6 +735,45 @@ async function runFeatureFailureInterpretationTest() {
   );
 }
 
+async function runPortfolioRequiredBugChecksInjectionTest() {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jungle-portfolio-required-checks-"));
+  const manager = new AgenticLoopManager(tmp);
+  const persistence = new FakePersistence();
+  manager.persistence = persistence;
+
+  const prepared = await manager.orchestrateTask({
+    projectName: "Personal Portfolio Demo",
+    url: "http://127.0.0.1/test",
+    task: "Review the portfolio experience and surface issues.",
+    notes: "Validate the main interactions across theme, filtering, forms, and navigation.",
+    additions: "",
+    skipCodex: true
+  });
+
+  assert.equal(prepared.run.status, "to_be_approved", "Expected draft run to pause for approval");
+  const instructions = String(prepared.run.testingInstructions || "");
+  assert.equal(
+    instructions.includes("Theme toggle - clicks but doesn't actually switch themes"),
+    true,
+    "Expected theme toggle bug check in testing instructions"
+  );
+  assert.equal(
+    instructions.includes("Skills filter - tabs don't filter badges anymore"),
+    true,
+    "Expected skills filter bug check in testing instructions"
+  );
+  assert.equal(
+    instructions.includes("Contact form - skips validation, always \"sends\" without errors"),
+    true,
+    "Expected contact form bug check in testing instructions"
+  );
+  assert.equal(
+    instructions.includes("Smooth scroll - nav links don't scroll to sections"),
+    true,
+    "Expected smooth scroll bug check in testing instructions"
+  );
+}
+
 async function run() {
   await runApprovalResumeTest();
   await runMaxLoopCapTest();
@@ -742,6 +781,7 @@ async function run() {
   await runCancelledVariantDeletionTest();
   await runPreviewMetadataPersistenceTest();
   await runFeatureFailureInterpretationTest();
+  await runPortfolioRequiredBugChecksInjectionTest();
   console.log("agentic_approval_gating.test.js passed");
 }
 

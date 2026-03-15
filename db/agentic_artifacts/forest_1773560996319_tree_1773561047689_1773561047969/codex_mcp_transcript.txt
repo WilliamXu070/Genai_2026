@@ -1,0 +1,10 @@
+status=error
+reason=codex exited with code 2
+
+
+
+error: unexpected argument 'MCP' found
+
+Usage: codex exec [OPTIONS] [PROMPT] [COMMAND]
+
+For more information, try '--help'.

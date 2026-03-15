@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-03-14T03:36:09.585Z",
+  "scenario": "Hardcoded website builder + semantic validation",
+  "url": "http://127.0.0.1:51090",
+  "parsedState": {
+    "hasAppTitle": true,
+    "hasScenarioPanel": true,
+    "hasResultPanel": true,
+    "hasExecuteButton": true,
+    "hasRunState": true
+  },
+  "semantic": {
+    "pass": false,
+    "reason": "Gemini API error: 400",
+    "raw": "{\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"API key expired. Please renew the API key.\",\n    \"status\": \"INVALID_ARGUMENT\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.ErrorInfo\",\n        \"reason\": \"API_KEY_INVALID\",\n        \"domain\": \"googleapis.com\",\n        \"metadata\": {\n          \"service\": \"generativelanguage.googleapis.com\"\n        }\n      },\n      {\n        \"@type\": \"type.googleapis.com/google.rpc.LocalizedMessage\",\n        \"locale\": \"en-US\",\n        \"message\": \"API key expired. Please renew the API key.\"\n      }\n    ]\n  }\n}\n",
+    "status": "error"
+  },
+  "overallPass": false
+}

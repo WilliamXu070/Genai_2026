@@ -21,6 +21,49 @@ def _extract_json(text: str) -> Dict[str, Any]:
   return json.loads(text.strip())
 
 
+def _summarize_plan_and_execution(plan: ExecutionPlan, execution: ExecutionResult) -> str:
+  plan_steps = plan.get("steps") or []
+  execution_steps = execution.get("steps") or []
+  assertions = plan.get("assertions") or []
+  success_criteria = plan.get("success_criteria") or []
+
+  serialized_plan_steps = []
+  for index, step in enumerate(plan_steps, start=1):
+    action = str(step.get("action", "step"))
+    target = str(step.get("target", ""))
+    value = step.get("value")
+    detail = f"{index}. {action} {target}".strip()
+    if value not in (None, ""):
+      detail += f" value={value}"
+    serialized_plan_steps.append(detail)
+
+  serialized_execution_steps = []
+  for index, step in enumerate(execution_steps, start=1):
+    action = str(step.get("action", "step"))
+    target = str(step.get("target", ""))
+    status = str(step.get("status", "unknown"))
+    note = str(step.get("note", "")).strip()
+    detail = f"{index}. {action} {target} => status={status}".strip()
+    if note:
+      detail += f" note={note}"
+    serialized_execution_steps.append(detail)
+
+  sections = [
+    f"Objective: {plan.get('objective', '')}",
+    "Planned feature steps:",
+    "\n".join(serialized_plan_steps) if serialized_plan_steps else "none recorded",
+    "Assertions to evaluate:",
+    "\n".join(f"- {item}" for item in assertions) if assertions else "- none recorded",
+    "Success criteria:",
+    "\n".join(f"- {item}" for item in success_criteria) if success_criteria else "- none recorded",
+    "Observed execution steps:",
+    "\n".join(serialized_execution_steps) if serialized_execution_steps else "none recorded",
+    f"Execution summary: {execution.get('summary', '')}",
+    "Critic scope rule: only flag issues that relate to the requested objective, planned steps, assertions, or success criteria. Do not invent unrelated defects outside this feature scope."
+  ]
+  return "\n\n".join(sections)
+
+
 def deterministic_critique(plan: ExecutionPlan, execution: ExecutionResult) -> CritiqueResult:
   defects = []
   strengths = []
@@ -186,6 +229,7 @@ class GeminiCriticAgent:
   def critique(self, plan: ExecutionPlan, execution: ExecutionResult) -> CritiqueResult:
     baseline = deterministic_critique(plan, execution)
     video_part, video_meta = self._build_video_part(execution)
+    context_summary = _summarize_plan_and_execution(plan, execution)
     stage_outputs: Dict[str, Any] = {
       "stage1_text": None,
       "stage2_text": None,
@@ -198,14 +242,18 @@ class GeminiCriticAgent:
     }
 
     stage1_prompt = (
-      "You are a strict animation/physics QA critic.\n"
-      "Take this video of my website and tell me what is wrong with my UI/UX, specifically the animation behavior.\n"
+      "You are a strict UI/UX test critic.\n"
+      "Review this execution video only in the context of the requested feature scope.\n"
+      "Your job is to identify which requested feature behaviors worked, which failed, and which were not actually exercised.\n"
+      "Do not invent defects outside the planned feature scope.\n"
       "Be comprehensive and technical. Use numbered sections exactly like:\n"
       "1) Problem Name\n"
       "What happens\n"
       "Why it looks wrong\n"
       "Fix\n\n"
-      "Focus on issues such as: energy volatility, missing tangential transfer, frame-rate clipping/tunneling, motion readability, corner glitching.\n"
+      "If the video does not show a requested feature being exercised, say that the result is inconclusive for that feature rather than inventing a failure.\n"
+      "Tie every critique item back to a planned step, assertion, success criterion, or observed execution step.\n"
+      f"FEATURE CONTEXT:\n{context_summary}\n\n"
       f"PLAN:\n{json.dumps(plan, indent=2)}\n\n"
       f"EXECUTION:\n{json.dumps(execution, indent=2)}\n\n"
       f"BASELINE:\n{json.dumps(baseline, indent=2)}"
@@ -249,6 +297,8 @@ class GeminiCriticAgent:
       '  "top_risks": ["string"],\n'
       '  "verdict": "pass|fail"\n'
       "}\n\n"
+      "Only score risks that are supported by the requested feature scope and observed execution.\n\n"
+      f"FEATURE CONTEXT:\n{context_summary}\n\n"
       f"CRITIQUE_TEXT:\n{detailed_text}"
     )
     stage2_text = None
@@ -278,7 +328,10 @@ class GeminiCriticAgent:
       "Requirements:\n"
       "- Be comprehensive.\n"
       "- Include specific fixing semantics.\n"
-      "- If serious issues exist, do not under-report severity.\n\n"
+      "- If serious issues exist, do not under-report severity.\n"
+      "- Only report defects that are grounded in the planned feature scope and observed execution.\n"
+      "- If a requested feature was not actually exercised, represent that as an evidence gap or inconclusive coverage rather than a false defect.\n\n"
+      f"FEATURE CONTEXT:\n{context_summary}\n\n"
       f"DETAILED_CRITIQUE:\n{detailed_text}\n\n"
       f"SEVERITY_JSON:\n{json.dumps(severity_payload, indent=2)}\n\n"
       f"BASELINE:\n{json.dumps(baseline, indent=2)}"

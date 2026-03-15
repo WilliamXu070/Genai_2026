@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jungle Example Builder</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 24px; background: #0e1711; color: #e9f4e5; }
+      .panel { border: 1px solid #2b3d30; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+      button { background: #b7f279; color: #10210f; border: 0; padding: 10px 14px; border-radius: 8px; }
+      .badge { display: inline-block; margin-left: 8px; padding: 4px 8px; border-radius: 8px; background: #1f2e25; }
+    </style>
+  </head>
+  <body>
+    <h1 id="app-title">Jungle Operational Example</h1>
+    <div class="panel" id="scenario-panel">
+      <h2>Scenario</h2>
+      <p id="scenario-description">Hardcoded website builder scenario for MVP runtime validation.</p>
+      <button id="execute-btn">Execute test</button><span class="badge" id="run-state">idle</span>
+    </div>
+
+    <div class="panel" id="result-panel">
+      <h2>Result</h2>
+      <p id="result-summary">Pending execution</p>
+    </div>
+
+    <script>
+      const state = {
+        mission: "Validate Jungle runtime semantics",
+        currentStep: "idle",
+        steps: ["build", "render", "verify", "report"],
+        status: "idle"
+      };
+
+      const stateEl = document.getElementById("run-state");
+      const summaryEl = document.getElementById("result-summary");
+      document.getElementById("execute-btn").addEventListener("click", () => {
+        state.currentStep = "verify";
+        state.status = "pass";
+        stateEl.textContent = state.status;
+        summaryEl.textContent = "UI render and state parsing simulation successful.";
+      });
+    </script>
+  </body>
+</html>

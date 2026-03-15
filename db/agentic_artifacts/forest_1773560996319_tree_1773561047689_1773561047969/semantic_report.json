@@ -1,0 +1,55 @@
+{
+  "overallPass": false,
+  "verdict": "fail",
+  "checks": [
+    {
+      "key": "steps_present",
+      "pass": true,
+      "detail": "steps=20"
+    },
+    {
+      "key": "artifacts_present",
+      "pass": true,
+      "detail": "artifacts=7"
+    },
+    {
+      "key": "parser_artifact",
+      "pass": true,
+      "detail": "parserArtifacts=1"
+    },
+    {
+      "key": "executor_artifact",
+      "pass": true,
+      "detail": "executorArtifacts=1"
+    },
+    {
+      "key": "video_valid_webm",
+      "pass": true,
+      "detail": "exists=true size=1863266 headerValid=true"
+    },
+    {
+      "key": "run_status_consistent",
+      "pass": true,
+      "detail": "status=fail failedSteps=1"
+    }
+  ],
+  "right": [
+    "steps_present: steps=20",
+    "artifacts_present: artifacts=7",
+    "parser_artifact: parserArtifacts=1",
+    "executor_artifact: executorArtifacts=1",
+    "video_valid_webm: exists=true size=1863266 headerValid=true",
+    "run_status_consistent: status=fail failedSteps=1"
+  ],
+  "wrong": [
+    "run_summary: Failed at step 20: locator.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[name=\"message\"]').first()\u001b[22m\n",
+    "failed_step_note: locator.fill: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[name=\"message\"]').first()\u001b[22m\n"
+  ],
+  "video": {
+    "exists": true,
+    "headerValid": true,
+    "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773560996319_tree_1773561047689_1773561047969\\519df73cdd5344c907cb3db7f9741886.webm",
+    "sizeBytes": 1863266,
+    "valid": true
+  }
+}

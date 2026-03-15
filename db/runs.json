@@ -1,0 +1,583 @@
+{
+  "schemaVersion": "0.1.0",
+  "runs": [
+    {
+      "runId": "run_1773534788796",
+      "projectName": "Testing",
+      "scenarioName": "ui_open",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-15T00:33:08.796Z",
+      "updatedAt": "2026-03-15T00:33:09.159Z",
+      "startedAt": "2026-03-15T00:33:08.805Z",
+      "endedAt": "2026-03-15T00:33:09.159Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773534788796\\1773534789158_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773534788796\\1773534789158_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "ok",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773511559795",
+      "projectName": "Jungle",
+      "scenarioName": "Closed loop bridge test",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T18:05:59.795Z",
+      "updatedAt": "2026-03-14T18:06:00.156Z",
+      "startedAt": "2026-03-14T18:05:59.797Z",
+      "endedAt": "2026-03-14T18:06:00.155Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773511559795\\1773511560154_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773511559795\\1773511560155_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "closed-loop",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773509019357",
+      "projectName": "Testing",
+      "scenarioName": "ui_open",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T17:23:39.357Z",
+      "updatedAt": "2026-03-14T17:23:39.720Z",
+      "startedAt": "2026-03-14T17:23:39.368Z",
+      "endedAt": "2026-03-14T17:23:39.719Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773509019357\\1773509019719_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773509019357\\1773509019719_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "ok",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773509009955",
+      "projectName": "Testing",
+      "scenarioName": "ui_open",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T17:23:29.955Z",
+      "updatedAt": "2026-03-14T17:23:30.331Z",
+      "startedAt": "2026-03-14T17:23:29.966Z",
+      "endedAt": "2026-03-14T17:23:30.330Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773509009955\\1773509010330_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773509009955\\1773509010330_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "ok",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773508978213",
+      "projectName": "Testing",
+      "scenarioName": "ui_open",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T17:22:58.214Z",
+      "updatedAt": "2026-03-14T17:22:58.580Z",
+      "startedAt": "2026-03-14T17:22:58.225Z",
+      "endedAt": "2026-03-14T17:22:58.580Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773508978213\\1773508978579_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773508978213\\1773508978579_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "ok",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773508966734",
+      "projectName": "Testing",
+      "scenarioName": "ui_open",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T17:22:46.734Z",
+      "updatedAt": "2026-03-14T17:22:47.108Z",
+      "startedAt": "2026-03-14T17:22:46.743Z",
+      "endedAt": "2026-03-14T17:22:47.107Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773508966734\\1773508967107_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773508966734\\1773508967107_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "ok",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773504318671",
+      "projectName": "Testing",
+      "scenarioName": "ui_open",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T16:05:18.671Z",
+      "updatedAt": "2026-03-14T16:05:19.038Z",
+      "startedAt": "2026-03-14T16:05:18.682Z",
+      "endedAt": "2026-03-14T16:05:19.037Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773504318671\\1773504319037_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773504318671\\1773504319037_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "ok",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773504310063",
+      "projectName": "Testing",
+      "scenarioName": "ui_open",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T16:05:10.064Z",
+      "updatedAt": "2026-03-14T16:05:10.427Z",
+      "startedAt": "2026-03-14T16:05:10.075Z",
+      "endedAt": "2026-03-14T16:05:10.427Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773504310063\\1773504310426_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773504310063\\1773504310426_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "ok",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773504244434",
+      "projectName": "Jungle",
+      "scenarioName": "Closed loop bridge test",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T16:04:04.434Z",
+      "updatedAt": "2026-03-14T16:04:04.788Z",
+      "startedAt": "2026-03-14T16:04:04.436Z",
+      "endedAt": "2026-03-14T16:04:04.788Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773504244434\\1773504244787_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773504244434\\1773504244787_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "closed-loop",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773504139813",
+      "projectName": "Testing",
+      "scenarioName": "ui_open",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T16:02:19.813Z",
+      "updatedAt": "2026-03-14T16:02:20.180Z",
+      "startedAt": "2026-03-14T16:02:19.822Z",
+      "endedAt": "2026-03-14T16:02:20.180Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773504139813\\1773504140179_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773504139813\\1773504140179_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "ok",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773504095841",
+      "projectName": "Testing",
+      "scenarioName": "ui_open",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T16:01:35.841Z",
+      "updatedAt": "2026-03-14T16:01:36.208Z",
+      "startedAt": "2026-03-14T16:01:35.849Z",
+      "endedAt": "2026-03-14T16:01:36.208Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773504095841\\1773504096207_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773504095841\\1773504096207_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "ok",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773502999158",
+      "projectName": "Jungle",
+      "scenarioName": "Closed loop bridge test",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T15:43:19.158Z",
+      "updatedAt": "2026-03-14T15:43:19.515Z",
+      "startedAt": "2026-03-14T15:43:19.160Z",
+      "endedAt": "2026-03-14T15:43:19.515Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773502999158\\1773502999514_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773502999158\\1773502999514_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "closed-loop",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773502223755",
+      "projectName": "Jungle",
+      "scenarioName": "Codex-triggered bridge test",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T15:30:23.755Z",
+      "updatedAt": "2026-03-14T15:30:24.109Z",
+      "startedAt": "2026-03-14T15:30:23.756Z",
+      "endedAt": "2026-03-14T15:30:24.109Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773502223755\\1773502224108_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773502223755\\1773502224108_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "codex->jungle",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773501799608",
+      "projectName": "Testing",
+      "scenarioName": "codex_bridge_smoke",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T15:23:19.608Z",
+      "updatedAt": "2026-03-14T15:23:19.976Z",
+      "startedAt": "2026-03-14T15:23:19.610Z",
+      "endedAt": "2026-03-14T15:23:19.976Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773501799608\\1773501799975_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773501799608\\1773501799975_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "codex-to-jungle",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773500769908",
+      "projectName": "Jungle",
+      "scenarioName": "Closed loop bridge test",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T15:06:09.908Z",
+      "updatedAt": "2026-03-14T15:06:10.282Z",
+      "startedAt": "2026-03-14T15:06:09.919Z",
+      "endedAt": "2026-03-14T15:06:10.282Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773500769908\\1773500770281_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773500769908\\1773500770281_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "closed-loop",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773500183451",
+      "projectName": "Jungle",
+      "scenarioName": "Closed loop bridge test",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T14:56:23.451Z",
+      "updatedAt": "2026-03-14T14:56:23.816Z",
+      "startedAt": "2026-03-14T14:56:23.461Z",
+      "endedAt": "2026-03-14T14:56:23.815Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773500183451\\1773500183815_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773500183451\\1773500183815_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "closed-loop",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    },
+    {
+      "runId": "run_1773500152822",
+      "projectName": "Jungle",
+      "scenarioName": "Closed loop bridge test",
+      "status": "pass",
+      "command": "npm start",
+      "url": "http://127.0.0.1:3000",
+      "perturbationProfile": "none",
+      "createdAt": "2026-03-14T14:55:52.822Z",
+      "updatedAt": "2026-03-14T14:55:53.195Z",
+      "startedAt": "2026-03-14T14:55:52.830Z",
+      "endedAt": "2026-03-14T14:55:53.195Z",
+      "resultSummary": "Run completed. App ready and scenario steps executed.",
+      "failedStep": null,
+      "artifacts": [
+        {
+          "type": "command_log",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773500152822\\1773500153194_command_log.txt"
+        },
+        {
+          "type": "result_summary",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\runs\\run_1773500152822\\1773500153194_summary.txt"
+        }
+      ],
+      "steps": [
+        {
+          "index": 0,
+          "action": "assert",
+          "target": "closed-loop",
+          "status": "pass",
+          "note": "Executed by MVP runner"
+        }
+      ]
+    }
+  ]
+}

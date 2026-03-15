@@ -1,0 +1,55 @@
+{
+  "overallPass": false,
+  "verdict": "fail",
+  "checks": [
+    {
+      "key": "steps_present",
+      "pass": true,
+      "detail": "steps=3"
+    },
+    {
+      "key": "artifacts_present",
+      "pass": true,
+      "detail": "artifacts=7"
+    },
+    {
+      "key": "parser_artifact",
+      "pass": true,
+      "detail": "parserArtifacts=1"
+    },
+    {
+      "key": "executor_artifact",
+      "pass": true,
+      "detail": "executorArtifacts=1"
+    },
+    {
+      "key": "video_valid_webm",
+      "pass": true,
+      "detail": "exists=true size=149121 headerValid=true"
+    },
+    {
+      "key": "run_status_consistent",
+      "pass": true,
+      "detail": "status=fail failedSteps=1"
+    }
+  ],
+  "right": [
+    "steps_present: steps=3",
+    "artifacts_present: artifacts=7",
+    "parser_artifact: parserArtifacts=1",
+    "executor_artifact: executorArtifacts=1",
+    "video_valid_webm: exists=true size=149121 headerValid=true",
+    "run_status_consistent: status=fail failedSteps=1"
+  ],
+  "wrong": [
+    "run_summary: Failed at step 3: expect is not defined",
+    "failed_step_note: expect is not defined"
+  ],
+  "video": {
+    "exists": true,
+    "headerValid": true,
+    "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773559113102_tree_1773559155897_1773559156155\\a8c649eb16a89088e9c826c3f3f10a06.webm",
+    "sizeBytes": 149121,
+    "valid": true
+  }
+}

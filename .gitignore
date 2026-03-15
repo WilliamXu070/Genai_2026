@@ -3,6 +3,3 @@ dist
 out
 .env
 .env.local
-db/runs.json
-db/runs/
-db/operational_example_site/

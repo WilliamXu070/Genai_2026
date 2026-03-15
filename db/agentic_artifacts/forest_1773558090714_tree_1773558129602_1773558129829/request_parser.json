@@ -1,0 +1,216 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "goto",
+      "originalAction": "goto",
+      "target": "http://127.0.0.1:5173/",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=About",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Skills",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Projects",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 4,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Experience",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 5,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Contact",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 6,
+      "action": "click",
+      "originalAction": "click",
+      "target": "#themeToggle",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 7,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "body",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 8,
+      "action": "click",
+      "originalAction": "click",
+      "target": "#themeToggle",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 9,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "body",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 10,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Frontend",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 11,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "#skillsGrid",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 12,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Backend",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 13,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "#skillsGrid",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 14,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=DevOps",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 15,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "#skillsGrid",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 16,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=All",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 17,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "#skillsGrid",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 18,
+      "action": "scrollPage",
+      "originalAction": "scrollPage",
+      "target": "document bottom",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 19,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Send Message",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 20,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#nameError",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 21,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#emailError",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 22,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#messageError",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 23,
+      "action": "scrollPage",
+      "originalAction": "scrollPage",
+      "target": "document top",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 24,
+      "action": "scrollPage",
+      "originalAction": "scrollPage",
+      "target": {
+        "x": 0,
+        "y": 300
+      },
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 25,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "body",
+      "value": null,
+      "assert": null
+    }
+  ]
+}

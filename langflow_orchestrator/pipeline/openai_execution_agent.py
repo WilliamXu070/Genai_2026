@@ -145,6 +145,7 @@ class OpenAIExecutionAgent:
       f"SNAPSHOT:\n{json.dumps(snapshot, indent=2)}\n\n"
       "Requirements:\n"
       "- include app_bootstrap instructions when app creation/startup might be needed\n"
+      "- look through the directory of the codebase to see what to test and how to test\n"
       "- include at least one visibility assertion\n"
       "- include observation wait for animation-heavy pages (>=10000ms)\n"
       "- default to broad coverage when user scope is not narrow: click all discovered controls, then scroll the full page\n"
