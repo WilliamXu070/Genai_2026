@@ -10,6 +10,7 @@ const detailCreated = document.getElementById("detail-created");
 const detailDraftPayload = document.getElementById("detail-draft-payload");
 const detailEmpty = document.getElementById("detail-empty");
 const detailError = document.getElementById("detail-error");
+const detailExecutionStatus = document.getElementById("detail-execution-status");
 const detailExecutionTime = document.getElementById("detail-execution-time");
 const detailInstructionsEditor = document.getElementById("detail-instructions-editor");
 const detailInstructions = document.getElementById("detail-instructions");
@@ -17,6 +18,8 @@ const detailLoopCount = document.getElementById("detail-loop-count");
 const detailPanel = document.querySelector(".detail-panel");
 const detailProjectName = document.getElementById("detail-project-name");
 const detailRunId = document.getElementById("detail-run-id");
+const detailSemanticSummary = document.getElementById("detail-semantic-summary");
+const detailSemanticVerdict = document.getElementById("detail-semantic-verdict");
 const detailStatus = document.getElementById("detail-status");
 const detailSummary = document.getElementById("detail-summary");
 const detailTitle = document.getElementById("detail-title");
@@ -30,20 +33,30 @@ const instructionsEditWrap = document.getElementById("instructions-edit-wrap");
 const progressCount = document.getElementById("progress-count");
 const projectCount = document.getElementById("project-count");
 const projectList = document.getElementById("project-list");
+const previewMeta = document.getElementById("preview-meta");
+const previewPathInput = document.getElementById("preview-path-input");
+const previewTitleInput = document.getElementById("preview-title-input");
+const previewTypeInput = document.getElementById("preview-type-input");
 const refreshProjectsButton = document.getElementById("refresh-projects");
 const runList = document.getElementById("run-list");
 const runsMeta = document.getElementById("runs-meta");
 const runsTitle = document.getElementById("runs-title");
 const runsSection = runsTitle?.closest(".queue-section") || null;
 const sessionStatus = document.getElementById("session-status");
+const semanticFailureList = document.getElementById("semantic-failure-list");
+const semanticInterpretationBlock = document.getElementById("semantic-interpretation-block");
+const semanticRecommendationsList = document.getElementById("semantic-recommendations-list");
+const semanticSuccessList = document.getElementById("semantic-success-list");
 const saveInstructionsButton = document.getElementById("save-instructions");
+const savePreviewButton = document.getElementById("save-preview");
+const openPreviewButton = document.getElementById("open-preview");
 const versionText = document.getElementById("version-text");
 const videoMeta = document.getElementById("video-meta");
 
 const ACTIVE_QUEUE_STATUSES = new Set(["drafting", "approved", "in_progress"]);
 const APPROVABLE_STATUSES = new Set(["to_be_approved"]);
 const CANCELLABLE_STATUSES = new Set(["drafting", "to_be_approved", "approved", "in_progress"]);
-const FAILURE_STATUSES = new Set(["failed", "max_loops_reached", "cancelled"]);
+const FAILURE_STATUSES = new Set(["failed_execution", "cancelled"]);
 const EVENT_REFRESH_DEBOUNCE_MS = 250;
 
 let activeProjectId = null;
@@ -55,6 +68,7 @@ let runs = [];
 let loadingPromise = null;
 let refreshDebounceHandle = null;
 let removeAgenticEventListener = null;
+let removeAgenticHistoryListener = null;
 let projectsSignature = "";
 let approvalRunsSignature = "";
 let inProgressRunsSignature = "";
@@ -77,7 +91,29 @@ function toLocalFileUrl(filePath) {
   if (!filePath) {
     return "";
   }
-  return `file:///${String(filePath).replace(/\\/g, "/")}`;
+  const normalized = String(filePath).replace(/\\/g, "/").replace(/^\/+/, "");
+  return encodeURI(`file:///${normalized}`);
+}
+
+function resolveRunVideoReference(run) {
+  if (run?.videoReference) {
+    return run.videoReference;
+  }
+  const loops = Array.isArray(run?.loopIterations) ? run.loopIterations : [];
+  for (const loop of loops) {
+    const artifacts = loop?.artifacts && typeof loop.artifacts === "object" ? loop.artifacts : {};
+    const directVideo = Array.isArray(artifacts.video_chunk_refs) ? artifacts.video_chunk_refs.find(Boolean) : "";
+    if (directVideo) {
+      return directVideo;
+    }
+    const artifactVideo = Array.isArray(artifacts.artifact_refs)
+      ? artifacts.artifact_refs.find((entry) => String(entry?.path || "").toLowerCase().endsWith(".webm"))
+      : null;
+    if (artifactVideo?.path) {
+      return artifactVideo.path;
+    }
+  }
+  return "";
 }
 
 function formatDate(value) {
@@ -128,6 +164,38 @@ function compactText(value, maxLength = 180) {
     return text;
   }
   return `${text.slice(0, maxLength - 1).trim()}...`;
+}
+
+function getSemanticInterpretation(run) {
+  if (!run || typeof run !== "object") {
+    return null;
+  }
+  return run.semanticInterpretation || run.draftPayload?.semanticInterpretation || null;
+}
+
+function getSemanticVerdict(run) {
+  const verdict = String(run?.semanticVerdict || getSemanticInterpretation(run)?.verdict || "")
+    .trim()
+    .toLowerCase();
+  return verdict || "";
+}
+
+function formatSemanticVerdict(run) {
+  const verdict = getSemanticVerdict(run);
+  return verdict ? verdict.replace(/_/g, " ") : "pending";
+}
+
+function getDisplayStatus(run) {
+  if (!run) {
+    return "-";
+  }
+  if (run.status === "completed") {
+    return formatSemanticVerdict(run);
+  }
+  if (run.status === "failed_execution") {
+    return "execution failed";
+  }
+  return run.status || "-";
 }
 
 function sanitizeErrorText(value) {
@@ -198,6 +266,10 @@ function summarizeFailure(run) {
 }
 
 function getRunSummaryText(run) {
+  const semanticInterpretation = getSemanticInterpretation(run);
+  if (run?.status === "completed" && semanticInterpretation?.summary) {
+    return compactText(semanticInterpretation.summary, 170);
+  }
   if (FAILURE_STATUSES.has(run?.status || "")) {
     return summarizeFailure(run);
   }
@@ -243,6 +315,7 @@ function buildQueueSignature(list) {
       run.projectId || "",
       run.projectName || "",
       run.status || "",
+      run.semanticVerdict || "",
       Number(run.loopCount || 0),
       run.updatedAt || "",
       run.approvalRequestedAt || "",
@@ -257,6 +330,7 @@ function buildRunsSignature(list) {
       run.id || "",
       run.projectId || "",
       run.status || "",
+      run.semanticVerdict || "",
       Number(run.loopCount || 0),
       Number(run.executionTimeMs || 0),
       run.updatedAt || "",
@@ -287,7 +361,13 @@ function buildRunDetailSignature(run) {
     threePointSummary: normalizeSummary(run.threePointSummary),
     lastErrorText: run.lastErrorText || "",
     videoReference: run.videoReference || "",
+    previewType: run.previewType || "",
+    previewPath: run.previewPath || "",
+    previewTitle: run.previewTitle || "",
     draftPayload: run.draftPayload || null,
+    semanticVerdict: run.semanticVerdict || "",
+    semanticInterpretation: getSemanticInterpretation(run),
+    failureInterpretation: run.draftPayload?.failureInterpretation || null,
     loopIterations: loops.map((loop) => ({
       loopNumber: Number(loop.loopNumber || 0),
       status: loop.status || "",
@@ -360,6 +440,12 @@ function queueMeta(run) {
   if (run.status === "to_be_approved") {
     return `Requested ${formatDate(run.approvalRequestedAt)} | Loops ${run.loopCount || 0}/3`;
   }
+  if (run.status === "completed") {
+    return `Execution completed | Verdict ${formatSemanticVerdict(run)} | Loops ${run.loopCount || 0}/3`;
+  }
+  if (run.status === "failed_execution") {
+    return `Execution failed | Loops ${run.loopCount || 0}/3 | ${formatDate(run.updatedAt)}`;
+  }
   return `Updated ${formatDate(run.updatedAt)} | Loops ${run.loopCount || 0}/3`;
 }
 
@@ -382,8 +468,8 @@ function renderRunButton(run, options = {}) {
 
   const chip = document.createElement("span");
   chip.className = "status-chip";
-  chip.dataset.status = run.status || "drafting";
-  chip.textContent = run.status || "drafting";
+  chip.dataset.status = getSemanticVerdict(run) || run.status || "drafting";
+  chip.textContent = getDisplayStatus(run);
 
   topRow.appendChild(title);
   topRow.appendChild(chip);
@@ -437,8 +523,8 @@ function renderTimelineRunItem(run, index, projectId) {
 
   const chip = document.createElement("span");
   chip.className = "status-chip";
-  chip.dataset.status = run.status || "drafting";
-  chip.textContent = run.status || "drafting";
+  chip.dataset.status = getSemanticVerdict(run) || run.status || "drafting";
+  chip.textContent = getDisplayStatus(run);
 
   topRow.appendChild(title);
   topRow.appendChild(chip);
@@ -711,6 +797,21 @@ function resetInstructionDraft() {
   instructionDraftDirty = false;
 }
 
+function renderPreviewMeta(run, message = "") {
+  if (!previewMeta) {
+    return;
+  }
+
+  if (!run?.previewPath) {
+    previewMeta.textContent = message || "No preview linked.";
+    return;
+  }
+
+  const label = run.previewTitle ? `${run.previewTitle} | ` : "";
+  const type = run.previewType ? `${run.previewType} | ` : "";
+  previewMeta.textContent = message || `${label}${type}${run.previewPath}`;
+}
+
 function setActionButtonState(run) {
   const approvable = Boolean(run && APPROVABLE_STATUSES.has(run.status));
   const cancellable = Boolean(run && CANCELLABLE_STATUSES.has(run.status));
@@ -733,6 +834,12 @@ function setActionButtonState(run) {
     saveInstructionsButton.disabled = !editable;
     saveInstructionsButton.classList.toggle("hidden", !editable);
   }
+  if (savePreviewButton) {
+    savePreviewButton.disabled = !Boolean(run && run.id);
+  }
+  if (openPreviewButton) {
+    openPreviewButton.disabled = !Boolean(run?.previewPath);
+  }
 }
 
 function renderRunDetail(run) {
@@ -754,6 +861,15 @@ function renderRunDetail(run) {
       detailStatus.textContent = "-";
       detailStatus.dataset.status = "";
     }
+    if (detailExecutionStatus) {
+      detailExecutionStatus.textContent = "-";
+    }
+    if (detailSemanticVerdict) {
+      detailSemanticVerdict.textContent = "-";
+    }
+    if (detailSemanticSummary) {
+      detailSemanticSummary.textContent = "-";
+    }
     if (videoMeta) {
       videoMeta.textContent = "No video linked.";
     }
@@ -761,12 +877,34 @@ function renderRunDetail(run) {
       detailVideo.dataset.videoReference = "";
       detailVideo.src = "";
     }
+    if (previewTitleInput) {
+      previewTitleInput.value = "";
+    }
+    if (previewTypeInput) {
+      previewTypeInput.value = "static_html";
+    }
+    if (previewPathInput) {
+      previewPathInput.value = "";
+    }
+    renderPreviewMeta(null);
     if (instructionsEditWrap) {
       instructionsEditWrap.classList.add("hidden");
     }
     if (detailInstructions) {
       detailInstructions.classList.remove("hidden");
       detailInstructions.textContent = "-";
+    }
+    if (semanticInterpretationBlock) {
+      semanticInterpretationBlock.classList.add("hidden");
+    }
+    if (semanticSuccessList) {
+      semanticSuccessList.innerHTML = "";
+    }
+    if (semanticFailureList) {
+      semanticFailureList.innerHTML = "";
+    }
+    if (semanticRecommendationsList) {
+      semanticRecommendationsList.innerHTML = "";
     }
     setActionButtonState(null);
     return;
@@ -785,8 +923,14 @@ function renderRunDetail(run) {
     detailTitle.textContent = `Run ${getRunDisplayLabel(run)}`;
   }
   if (detailStatus) {
-    detailStatus.textContent = run.status || "-";
-    detailStatus.dataset.status = run.status || "";
+    detailStatus.textContent = getDisplayStatus(run);
+    detailStatus.dataset.status = getSemanticVerdict(run) || run.status || "";
+  }
+  if (detailExecutionStatus) {
+    detailExecutionStatus.textContent = run.status || "-";
+  }
+  if (detailSemanticVerdict) {
+    detailSemanticVerdict.textContent = formatSemanticVerdict(run);
   }
   if (detailRunId) {
     detailRunId.textContent = `${getRunDisplayLabel(run)} | ${abbreviateRunId(run.id)}`;
@@ -816,6 +960,16 @@ function renderRunDetail(run) {
   if (detailLoopCount) {
     detailLoopCount.textContent = `${run.loopCount || 0} / 3`;
   }
+  if (previewTitleInput) {
+    previewTitleInput.value = run.previewTitle || "";
+  }
+  if (previewTypeInput) {
+    previewTypeInput.value = run.previewType || "static_html";
+  }
+  if (previewPathInput) {
+    previewPathInput.value = run.previewPath || "";
+  }
+  renderPreviewMeta(run);
   const editableInstructions = isInstructionEditable(run);
   const persistedInstructions = run.testingInstructions || "";
   if (editableInstructions) {
@@ -861,8 +1015,12 @@ function renderRunDetail(run) {
   }
 
   const lastError = run.lastErrorText || "";
+  const semanticInterpretation = getSemanticInterpretation(run);
+  if (detailSemanticSummary) {
+    detailSemanticSummary.textContent = semanticInterpretation?.summary || "No semantic assessment stored.";
+  }
   if (errorBlock) {
-    errorBlock.classList.toggle("hidden", !lastError);
+    errorBlock.classList.toggle("hidden", !lastError || run.status === "completed");
   }
   if (detailError) {
     const readable = formatReadableFailure(lastError, normalizeSummary(run.threePointSummary)[0]);
@@ -870,6 +1028,35 @@ function renderRunDetail(run) {
     detailError.textContent = readable ? `${readable}\n\n${hint}` : "-";
     detailError.title = sanitizeErrorText(lastError || "");
   }
+  const successfulItems = Array.isArray(semanticInterpretation?.successfulItems) ? semanticInterpretation.successfulItems : [];
+  const failedItems = Array.isArray(semanticInterpretation?.failedItems) ? semanticInterpretation.failedItems : [];
+  const recommendations = Array.isArray(semanticInterpretation?.recommendations) ? semanticInterpretation.recommendations : [];
+  if (semanticInterpretationBlock) {
+    semanticInterpretationBlock.classList.toggle(
+      "hidden",
+      successfulItems.length === 0 && failedItems.length === 0 && recommendations.length === 0 && !semanticInterpretation?.summary
+    );
+  }
+  const populateSemanticList = (element, entries, emptyText) => {
+    if (!element) {
+      return;
+    }
+    element.innerHTML = "";
+    if (entries.length === 0) {
+      const item = document.createElement("li");
+      item.textContent = emptyText;
+      element.appendChild(item);
+      return;
+    }
+    entries.forEach((point) => {
+      const item = document.createElement("li");
+      item.textContent = compactText(point, 320) || emptyText;
+      element.appendChild(item);
+    });
+  };
+  populateSemanticList(semanticSuccessList, successfulItems, "No successful UX items recorded.");
+  populateSemanticList(semanticFailureList, failedItems, "No failing UX items recorded.");
+  populateSemanticList(semanticRecommendationsList, recommendations, "No recommendations recorded.");
 
   if (loopList) {
     loopList.innerHTML = "";
@@ -913,10 +1100,11 @@ function renderRunDetail(run) {
   }
 
   if (videoMeta) {
-    videoMeta.textContent = run.videoReference ? run.videoReference : "No video linked.";
+    const resolvedVideoReference = resolveRunVideoReference(run);
+    videoMeta.textContent = resolvedVideoReference || "No video linked.";
   }
   if (detailVideo) {
-    const nextReference = run.videoReference || "";
+    const nextReference = resolveRunVideoReference(run);
     if ((detailVideo.dataset.videoReference || "") !== nextReference) {
       detailVideo.dataset.videoReference = nextReference;
       detailVideo.src = nextReference ? toLocalFileUrl(nextReference) : "";
@@ -926,6 +1114,46 @@ function renderRunDetail(run) {
 
   setActionButtonState(run);
   bindTimelineHeightLimit();
+}
+
+async function savePreviewMetadata() {
+  if (!window.agenticApi || !activeRunDetail?.id) {
+    return;
+  }
+
+  setStatus("Saving preview metadata");
+  const updated = await window.agenticApi.updateRunPreview({
+    runId: activeRunDetail.id,
+    previewPath: previewPathInput?.value || "",
+    previewTitle: previewTitleInput?.value || "",
+    previewType: previewTypeInput?.value || "static_html"
+  });
+  if (updated) {
+    runDetailSignature = "";
+    renderRunDetail(updated);
+    await loadHistory({ preserveSelection: true, quiet: true });
+    setStatus("Preview metadata saved");
+    return;
+  }
+  setStatus("Preview metadata save failed");
+}
+
+async function openPreview() {
+  if (!window.agenticApi || !activeRunDetail?.previewPath) {
+    return;
+  }
+
+  setStatus("Opening preview");
+  const result = await window.agenticApi.openRunPreview({
+    previewPath: activeRunDetail.previewPath
+  });
+  if (result?.ok) {
+    renderPreviewMeta(activeRunDetail, `Opened preview: ${activeRunDetail.previewPath}`);
+    setStatus("Preview opened");
+    return;
+  }
+  renderPreviewMeta(activeRunDetail, result?.error || "Failed to open preview.");
+  setStatus("Preview open failed");
 }
 
 function renderQueues() {
@@ -1149,6 +1377,14 @@ saveInstructionsButton?.addEventListener("click", async () => {
   setStatus("Approval queues ready");
 });
 
+savePreviewButton?.addEventListener("click", async () => {
+  await savePreviewMetadata();
+});
+
+openPreviewButton?.addEventListener("click", async () => {
+  await openPreview();
+});
+
 createVariantRunButton?.addEventListener("click", async () => {
   if (!window.agenticApi || !activeRunId || !activeRunDetail) {
     return;
@@ -1206,6 +1442,12 @@ if (window.agenticApi && typeof window.agenticApi.onEvent === "function") {
   });
 }
 
+if (window.agenticApi && typeof window.agenticApi.onHistoryChanged === "function") {
+  removeAgenticHistoryListener = window.agenticApi.onHistoryChanged(() => {
+    scheduleHistoryRefresh({ quiet: true, preserveSelection: true });
+  });
+}
+
 window.addEventListener("resize", () => {
   syncTimelineHeightLimit();
 });
@@ -1222,6 +1464,10 @@ window.addEventListener("beforeunload", () => {
   if (typeof removeAgenticEventListener === "function") {
     removeAgenticEventListener();
     removeAgenticEventListener = null;
+  }
+  if (typeof removeAgenticHistoryListener === "function") {
+    removeAgenticHistoryListener();
+    removeAgenticHistoryListener = null;
   }
 });
 

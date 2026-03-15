@@ -7,6 +7,7 @@ const path = require("node:path");
 const {
   buildEnvironmentPlanningPrompt,
   deterministicEnvironmentPlan,
+  ensureEnvironmentDataSeeded,
   ensureExecutionEnvironment,
   getProjectSignals,
   planExecutionEnvironment,
@@ -95,6 +96,37 @@ async function run() {
   assert.equal(electronPlan.playwrightMode, "electron");
   assert.equal(electronPlan.launchTarget.kind, "electron_app");
   assert.equal(electronPlan.launchTarget.value, electronRoot);
+  assert.equal(typeof electronPlan.launchEnv, "object");
+  assert.equal(electronPlan.seeding.mode, "none");
+
+  const jungleRoot = path.join(tmp, "jungle");
+  makeProject(
+    jungleRoot,
+    {
+      name: "jungle",
+      main: "src/main.js",
+      scripts: {
+        start: "electron ."
+      },
+      devDependencies: {
+        electron: "^35.0.0"
+      }
+    },
+    {
+      "src/main.js": "module.exports = {};\n",
+      "src/runtime/agentic_loop.js": "module.exports = {};\n"
+    }
+  );
+  const jungleSignals = getProjectSignals(jungleRoot);
+  const jungleElectronPlan = deterministicEnvironmentPlan({
+    projectRoot: jungleRoot,
+    input: {
+      task: "Check Jungle desktop app",
+      targetType: "electron_app"
+    },
+    signals: jungleSignals
+  });
+  assert.equal(jungleElectronPlan.seeding.mode, "jungle_shared_or_sample");
 
   const prompt = buildEnvironmentPlanningPrompt({
     projectRoot: electronRoot,
@@ -147,6 +179,16 @@ async function run() {
       session.child.kill("SIGTERM");
     }
   }
+
+  const seedStorageRoot = path.join(tmp, "seed-runtime");
+  const seedResult = await ensureEnvironmentDataSeeded(jungleElectronPlan, {
+    env: {
+      JUNGLE_STORAGE_ROOT: seedStorageRoot,
+      MYSQL_AGENTIC_ENABLED: "0"
+    }
+  });
+  assert.equal(seedResult.mode, "catalog_only");
+  assert.equal(fs.existsSync(path.join(seedStorageRoot, "db", "test_catalog.json")), true);
 
   const noBootSession = await ensureExecutionEnvironment(electronPlan);
   assert.equal(noBootSession.started, false);

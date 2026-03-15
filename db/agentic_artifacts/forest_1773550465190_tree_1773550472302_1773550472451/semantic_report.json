@@ -1,0 +1,55 @@
+{
+  "overallPass": false,
+  "verdict": "fail",
+  "checks": [
+    {
+      "key": "steps_present",
+      "pass": true,
+      "detail": "steps=8"
+    },
+    {
+      "key": "artifacts_present",
+      "pass": true,
+      "detail": "artifacts=7"
+    },
+    {
+      "key": "parser_artifact",
+      "pass": true,
+      "detail": "parserArtifacts=1"
+    },
+    {
+      "key": "executor_artifact",
+      "pass": true,
+      "detail": "executorArtifacts=1"
+    },
+    {
+      "key": "video_valid_webm",
+      "pass": true,
+      "detail": "exists=true size=202376 headerValid=true"
+    },
+    {
+      "key": "run_status_consistent",
+      "pass": true,
+      "detail": "status=fail failedSteps=1"
+    }
+  ],
+  "right": [
+    "steps_present: steps=8",
+    "artifacts_present: artifacts=7",
+    "parser_artifact: parserArtifacts=1",
+    "executor_artifact: executorArtifacts=1",
+    "video_valid_webm: exists=true size=202376 headerValid=true",
+    "run_status_consistent: status=fail failedSteps=1"
+  ],
+  "wrong": [
+    "run_summary: Failed at step 8: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'",
+    "failed_step_note: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'"
+  ],
+  "video": {
+    "exists": true,
+    "headerValid": true,
+    "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\650772cb9a91c76226ec28fe8225b214.webm",
+    "sizeBytes": 202376,
+    "valid": true
+  }
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jungle Preview Test</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(180deg, #0b1512, #13211b);
+        color: #e8f1ef;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      main {
+        width: min(680px, 92vw);
+        padding: 40px;
+        border: 1px solid rgba(201, 224, 218, 0.2);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.04);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      }
+
+      .eyebrow {
+        margin: 0 0 12px;
+        font-size: 0.82rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #9dcad1;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 1.05;
+      }
+
+      p {
+        margin: 0;
+        font-size: 1.05rem;
+        line-height: 1.65;
+        color: #d0dfdc;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Stored Run Preview</p>
+      <h1>Jungle Preview Test</h1>
+      <p>This static page is attached to a test run as its preview reference.</p>
+    </main>
+  </body>
+</html>

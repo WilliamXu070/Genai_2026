@@ -5,20 +5,18 @@ const RUN_STATUSES = [
   "to_be_approved",
   "approved",
   "in_progress",
-  "passed",
-  "failed",
-  "max_loops_reached",
+  "completed",
+  "failed_execution",
   "cancelled"
 ];
 const LOOP_STATUSES = ["running", "passed", "failed"];
 const VALID_STATUS_TRANSITIONS = {
-  drafting: new Set(["to_be_approved", "failed", "cancelled"]),
-  to_be_approved: new Set(["approved", "failed", "cancelled"]),
+  drafting: new Set(["to_be_approved", "failed_execution", "cancelled"]),
+  to_be_approved: new Set(["approved", "failed_execution", "cancelled"]),
   approved: new Set(["in_progress", "cancelled"]),
-  in_progress: new Set(["in_progress", "passed", "failed", "max_loops_reached", "cancelled"]),
-  passed: new Set(),
-  failed: new Set(),
-  max_loops_reached: new Set(),
+  in_progress: new Set(["in_progress", "completed", "failed_execution", "cancelled"]),
+  completed: new Set(),
+  failed_execution: new Set(),
   cancelled: new Set(["cancelled"])
 };
 const RUN_SELECT = `SELECT
@@ -30,6 +28,9 @@ const RUN_SELECT = `SELECT
   tr.status,
   tr.testing_instructions AS testingInstructions,
   tr.video_reference AS videoReference,
+  tr.preview_type AS previewType,
+  tr.preview_path AS previewPath,
+  tr.preview_title AS previewTitle,
   tr.three_point_summary_json AS threePointSummary,
   tr.last_error_text AS lastErrorText,
   tr.approval_requested_at AS approvalRequestedAt,
@@ -37,6 +38,8 @@ const RUN_SELECT = `SELECT
   tr.approved_by AS approvedBy,
   tr.cancelled_at AS cancelledAt,
   tr.draft_payload_json AS draftPayload,
+  tr.semantic_verdict AS semanticVerdict,
+  tr.semantic_interpretation_json AS semanticInterpretation,
   tr.created_at AS createdAt,
   tr.updated_at AS updatedAt
 FROM test_runs tr
@@ -81,7 +84,7 @@ function parseJsonValue(input, fallback) {
   return input;
 }
 
-function ensureRunStatus(status, fallback = "failed") {
+function ensureRunStatus(status, fallback = "failed_execution") {
   return RUN_STATUSES.includes(status) ? status : fallback;
 }
 
@@ -114,7 +117,8 @@ function mapRunRow(row) {
     executionTimeMs: row.executionTimeMs === null || row.executionTimeMs === undefined ? null : Number(row.executionTimeMs),
     loopCount: Number(row.loopCount || 0),
     threePointSummary: ensureSummaryArray(parseJsonValue(row.threePointSummary, [])),
-    draftPayload: parseJsonValue(row.draftPayload, null)
+    draftPayload: parseJsonValue(row.draftPayload, null),
+    semanticInterpretation: parseJsonValue(row.semanticInterpretation, null)
   };
 }
 
@@ -306,17 +310,27 @@ class AgenticMySqlPersistenceService {
       if (run.status === "cancelled") {
         return run;
       }
-      ensureTransition(run.status, "failed");
+      ensureTransition(run.status, "failed_execution");
+      const nextDraftPayload = withPreservedApprovalMetadata(
+        run,
+        input.draftPayload ? { ...input.draftPayload } : run.draftPayload
+      );
       await conn.query(
         `UPDATE test_runs
-         SET status = 'failed',
+         SET status = 'failed_execution',
              three_point_summary_json = ?,
              last_error_text = ?,
+             draft_payload_json = ?,
+             semantic_verdict = ?,
+             semantic_interpretation_json = ?,
              updated_at = NOW()
          WHERE id = ?`,
         [
           JSON.stringify(ensureSummaryArray(input.threePointSummary)),
           input.lastErrorText || "Draft creation failed",
+          nextDraftPayload ? JSON.stringify(nextDraftPayload) : null,
+          input.semanticVerdict || null,
+          input.semanticInterpretation ? JSON.stringify(input.semanticInterpretation) : null,
           input.testRunId
         ]
       );
@@ -392,6 +406,35 @@ class AgenticMySqlPersistenceService {
              updated_at = NOW()
          WHERE id = ?`,
         [nextTestingInstructions, JSON.stringify(nextDraftPayload), input.runId]
+      );
+      await touchProject(conn, run.projectId);
+      return fetchRunRecord(conn, input.runId);
+    });
+  }
+
+  async updateRunPreview(input) {
+    if (!this.isEnabled() || !input?.runId) {
+      return null;
+    }
+
+    return withTransaction(async (conn) => {
+      const run = await fetchRunRecord(conn, input.runId, { forUpdate: true });
+      if (!run) {
+        return null;
+      }
+
+      const nextPreviewType = typeof input.previewType === "string" ? input.previewType.trim() : "";
+      const nextPreviewPath = typeof input.previewPath === "string" ? input.previewPath.trim() : "";
+      const nextPreviewTitle = typeof input.previewTitle === "string" ? input.previewTitle.trim() : "";
+
+      await conn.query(
+        `UPDATE test_runs
+         SET preview_type = ?,
+             preview_path = ?,
+             preview_title = ?,
+             updated_at = NOW()
+         WHERE id = ?`,
+        [nextPreviewType || null, nextPreviewPath || null, nextPreviewTitle || null, input.runId]
       );
       await touchProject(conn, run.projectId);
       return fetchRunRecord(conn, input.runId);
@@ -627,7 +670,7 @@ class AgenticMySqlPersistenceService {
       return null;
     }
 
-    const targetStatus = ensureRunStatus(input.status);
+      const targetStatus = ensureRunStatus(input.status);
     return withTransaction(async (conn) => {
       const run = await fetchRunRecord(conn, input.testRunId, { forUpdate: true });
       if (!run) {
@@ -637,6 +680,10 @@ class AgenticMySqlPersistenceService {
         return run;
       }
       ensureTransition(run.status, targetStatus);
+      const nextDraftPayload = withPreservedApprovalMetadata(
+        run,
+        input.draftPayload ? { ...input.draftPayload } : run.draftPayload
+      );
       await conn.query(
         `UPDATE test_runs
          SET execution_time_ms = ?,
@@ -644,8 +691,14 @@ class AgenticMySqlPersistenceService {
              status = ?,
              testing_instructions = ?,
              video_reference = ?,
+             preview_type = COALESCE(preview_type, ?),
+             preview_path = COALESCE(preview_path, ?),
+             preview_title = COALESCE(preview_title, ?),
              three_point_summary_json = ?,
              last_error_text = ?,
+             draft_payload_json = ?,
+             semantic_verdict = ?,
+             semantic_interpretation_json = ?,
              cancelled_at = CASE WHEN ? = 'cancelled' THEN COALESCE(cancelled_at, NOW()) ELSE cancelled_at END,
              updated_at = NOW()
          WHERE id = ?`,
@@ -655,8 +708,18 @@ class AgenticMySqlPersistenceService {
           targetStatus,
           input.testingInstructions || run.testingInstructions || "",
           input.videoReference || null,
+          input.previewType || null,
+          input.previewPath || null,
+          input.previewTitle || null,
           JSON.stringify(ensureSummaryArray(input.threePointSummary)),
           input.lastErrorText || null,
+          nextDraftPayload ? JSON.stringify(nextDraftPayload) : null,
+          input.semanticVerdict || run.semanticVerdict || null,
+          input.semanticInterpretation
+            ? JSON.stringify(input.semanticInterpretation)
+            : run.semanticInterpretation
+              ? JSON.stringify(run.semanticInterpretation)
+              : null,
           targetStatus,
           input.testRunId
         ]

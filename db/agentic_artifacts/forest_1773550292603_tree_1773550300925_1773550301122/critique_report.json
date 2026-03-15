@@ -1,0 +1,38 @@
+{
+  "verdict": "fail",
+  "confidence": 0.7,
+  "summary": "Critic detected 3 issue(s) requiring attention.",
+  "expectedVsObserved": {
+    "expected": "Verify the plant growth sequence progresses through all five stages (seed, sprout, stem, leaves, full bloom) in the correct visual order.",
+    "observed": "Run failed; evidence indicates unmet expectations."
+  },
+  "strengths": [
+    "Observed timeline includes an explicit wait window."
+  ],
+  "issues": [
+    {
+      "id": "run_failed",
+      "severity": "critical",
+      "description": "Failed at step 6: Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'",
+      "evidence": "Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'",
+      "fix": "Fix failing selector/assertion and re-run with stronger deterministic checks."
+    },
+    {
+      "id": "semantic_checks_failed",
+      "severity": "high",
+      "description": "One or more semantic checks failed.",
+      "evidence": "run_summary: Failed at step 6: Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom' | failed_step_note: Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'",
+      "fix": "Inspect semantic_report and harden assertions around expected motion/state changes."
+    },
+    {
+      "id": "execution_instability",
+      "severity": "high",
+      "description": "Execution output indicates instability or selector mismatch.",
+      "evidence": "Failed at step 6: Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'",
+      "fix": "Use resilient selectors and fallback observation-only plan when controls are absent."
+    }
+  ],
+  "readinessScore": 20,
+  "generatedAt": "2026-03-15T04:51:54.534Z",
+  "source": "deterministic"
+}

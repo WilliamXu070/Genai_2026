@@ -103,6 +103,14 @@
                 <div id="detail-project-name" class="detail-value">-</div>
               </div>
               <div class="detail-card">
+                <span class="detail-label">Execution Status</span>
+                <div id="detail-execution-status" class="detail-value">-</div>
+              </div>
+              <div class="detail-card">
+                <span class="detail-label">UX Verdict</span>
+                <div id="detail-semantic-verdict" class="detail-value">-</div>
+              </div>
+              <div class="detail-card">
                 <span class="detail-label">Execution Time</span>
                 <div id="detail-execution-time" class="detail-value">-</div>
               </div>
@@ -132,6 +140,42 @@
             <div class="content-block hidden" id="error-block">
               <h3>Last Error</h3>
               <pre id="detail-error" class="content-box error-box">-</pre>
+            </div>
+
+            <div class="content-block hidden" id="semantic-interpretation-block">
+              <h3>UX Assessment</h3>
+              <p id="detail-semantic-summary" class="subtle-copy">-</p>
+              <div class="semantic-grid">
+                <div>
+                  <h4>What Worked</h4>
+                  <ul id="semantic-success-list" class="summary-list"></ul>
+                </div>
+                <div>
+                  <h4>What Failed</h4>
+                  <ul id="semantic-failure-list" class="summary-list"></ul>
+                </div>
+                <div>
+                  <h4>Recommended Fixes</h4>
+                  <ul id="semantic-recommendations-list" class="summary-list"></ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="content-block">
+              <h3>Preview</h3>
+              <div class="preview-form">
+                <input id="preview-title-input" class="preview-input" type="text" placeholder="Preview title (optional)" />
+                <select id="preview-type-input" class="preview-input">
+                  <option value="static_html">Static HTML</option>
+                  <option value="static_app">Static App</option>
+                </select>
+                <input id="preview-path-input" class="preview-input" type="text" placeholder="C:\\path\\to\\index.html" />
+                <div class="preview-actions">
+                  <button id="save-preview" class="secondary-button" type="button">Save Preview</button>
+                  <button id="open-preview" type="button">Open Preview</button>
+                </div>
+                <div id="preview-meta" class="subtle-copy">No preview linked.</div>
+              </div>
             </div>
 
             <div class="content-block">

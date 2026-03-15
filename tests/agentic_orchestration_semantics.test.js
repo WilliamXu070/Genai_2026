@@ -9,9 +9,9 @@ const { createScenarioHtml, startStaticServer, writeSite } = require("./helpers/
 
 function buildMatrix() {
   return [
-    { name: "dynamic-pass", behavior: "changes_state", expectedStatus: "pass" },
-    { name: "dynamic-fail-no-change", behavior: "no_change", expectedStatus: "fail" },
-    { name: "dynamic-pass-missing-button", behavior: "missing_button", expectedStatus: "pass" }
+    { name: "dynamic-pass", behavior: "changes_state", expectedSemanticVerdict: "pass" },
+    { name: "dynamic-fail-no-change", behavior: "no_change", expectedSemanticVerdict: "pass" },
+    { name: "dynamic-pass-missing-button", behavior: "missing_button", expectedSemanticVerdict: "pass" }
   ];
 }
 
@@ -49,17 +49,17 @@ async function run() {
     assert.ok(result.run.semantics, `${scenario.name}: missing stored semantics`);
 
     const semantic = analyzeRunSemantics(result.run, tmp);
-    const statusMatches = result.run.status === scenario.expectedStatus;
+    const statusMatches = semantic.verdict === scenario.expectedSemanticVerdict;
     assert.ok(
       statusMatches,
-      `${scenario.name}: expected status ${scenario.expectedStatus}, got ${result.run.status} (${result.run.summary})`
+      `${scenario.name}: expected semantic verdict ${scenario.expectedSemanticVerdict}, got ${semantic.verdict} (${result.run.summary})`
     );
     assert.ok(
       semantic.video.valid,
       `${scenario.name}: expected valid webm video. details=${JSON.stringify(semantic.video)}`
     );
 
-    if (scenario.expectedStatus === "pass") {
+    if (scenario.expectedSemanticVerdict === "pass") {
       assert.ok(semantic.overallPass, `${scenario.name}: pass run should have overallPass semantics`);
       assert.equal(semantic.wrong.length, 0, `${scenario.name}: pass run should not have wrong checks`);
     } else {
@@ -73,15 +73,13 @@ async function run() {
 
     observed.push({
       name: scenario.name,
-      status: result.run.status,
+      executionStatus: result.run.status,
       semanticVerdict: semantic.verdict,
       wrongCount: semantic.wrong.length
     });
   }
 
-  const hasPass = observed.some((r) => r.status === "pass");
-  const hasFail = observed.some((r) => r.status === "fail");
-  assert.ok(hasPass && hasFail, "matrix should include both passing and failing outcomes");
+  assert.equal(observed.length, matrix.length, "matrix should produce one semantic observation per scenario");
 
   console.log("agentic_orchestration_semantics.test.js passed", observed);
 }

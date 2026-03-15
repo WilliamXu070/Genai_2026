@@ -32,6 +32,14 @@ const { normalizeRequest, parseArgs, readInput } = require("../tools/jungle_agen
   assert.equal(parsed.inlineRequest.payload.targetType, "electron_app");
   assert.equal(parsed.inlineRequest.payload.maxAttempts, 2);
   assert.equal(parsed.inlineRequest.payload.skipCodex, true);
+  assert.equal(parsed.waitForFinal, false);
+})();
+
+(() => {
+  const parsed = parseArgs(["--input-json", "{\"type\":\"agentic:orchestrate-task\",\"payload\":{\"task\":\"Demo\"}}", "--wait-for-final", "--wait-timeout-ms", "45000", "--wait-poll-ms", "800"]);
+  assert.equal(parsed.waitForFinal, true);
+  assert.equal(parsed.waitTimeoutMs, "45000");
+  assert.equal(parsed.waitPollMs, "800");
 })();
 
 (() => {

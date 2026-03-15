@@ -78,12 +78,25 @@ function buildLoopArtifacts(run) {
 
   const screenshotRefs = asTypePath.filter((a) => a.path.endsWith(".png")).map((a) => a.path);
   const videoChunkRefs = asTypePath.filter((a) => a.path.endsWith(".webm")).map((a) => a.path);
+  if (run?.videoPath && !videoChunkRefs.includes(run.videoPath)) {
+    videoChunkRefs.unshift(run.videoPath);
+  }
   const criticOutput = run?.critique || null;
 
   const structuredMetrics = {
     semantics: run?.semantics || null,
     critiqueSeverity: Number(run?.critique?.overall_severity || run?.critique?.readinessScore || 0)
   };
+  if (run?.status !== "pass") {
+    structuredMetrics.failureInterpretation = deriveFailureInterpretation({
+      run,
+      objective: "",
+      procedure: null,
+      testingInstructions: "",
+      lastErrorText: run?.summary || "",
+      status: "failed"
+    });
+  }
 
   return {
     screenshot_refs: screenshotRefs,
@@ -93,6 +106,32 @@ function buildLoopArtifacts(run) {
     structured_metrics: structuredMetrics,
     artifact_refs: asTypePath
   };
+}
+
+function resolveRunVideoPath(runLike, artifactsDir = "") {
+  if (runLike?.videoPath) {
+    return runLike.videoPath;
+  }
+
+  const artifactPaths = Array.isArray(runLike?.artifacts)
+    ? runLike.artifacts.map((artifact) => (typeof artifact === "string" ? artifact : artifact?.path || ""))
+    : [];
+  const artifactVideo = artifactPaths.find((entry) => String(entry || "").toLowerCase().endsWith(".webm"));
+  if (artifactVideo) {
+    return artifactVideo;
+  }
+
+  if (artifactsDir && fs.existsSync(artifactsDir)) {
+    const diskVideo = fs
+      .readdirSync(artifactsDir)
+      .filter((name) => name.toLowerCase().endsWith(".webm"))
+      .map((name) => path.join(artifactsDir, name))[0];
+    if (diskVideo) {
+      return diskVideo;
+    }
+  }
+
+  return null;
 }
 
 const APPROVAL_POLL_INTERVAL_MS = 3000;
@@ -111,6 +150,321 @@ function buildFailureSummary(message) {
     `Run failed: ${message || "unknown error"}`,
     "Execution did not complete successfully.",
     "Review the stored error message and loop artifacts for details."
+  ]);
+}
+
+function sanitizeInterpretationText(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function compactInterpretationText(value, maxLength = 200) {
+  const text = sanitizeInterpretationText(value);
+  if (!text) {
+    return "";
+  }
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return `${text.slice(0, maxLength - 1).trim()}...`;
+}
+
+function normalizeFeatureArea(objective, procedure, testingInstructions) {
+  const candidate =
+    objective ||
+    procedure?.summary ||
+    readTestingInstructionField(testingInstructions, "Objective") ||
+    "Validate critical user flow";
+  return compactInterpretationText(candidate, 140) || "Validate critical user flow";
+}
+
+function collectFailedStepNotes(run) {
+  const failedSteps = Array.isArray(run?.steps)
+    ? run.steps.filter((step) => String(step?.status || "").toLowerCase() === "fail")
+    : [];
+  const notes = failedSteps
+    .map((step) => compactInterpretationText(step?.note || step?.summary || "", 180))
+    .filter(Boolean);
+  const semanticNotes = Array.isArray(run?.semantics?.wrong)
+    ? run.semantics.wrong
+        .filter((entry) => /^failed_step_note:/i.test(String(entry || "")))
+        .map((entry) => compactInterpretationText(String(entry).replace(/^failed_step_note:\s*/i, ""), 180))
+        .filter(Boolean)
+    : [];
+  return [...new Set(notes.concat(semanticNotes))];
+}
+
+function toSemanticFailureBullets(wrongChecks) {
+  return wrongChecks
+    .slice(0, 2)
+    .map((entry) => String(entry || ""))
+    .map((entry) => {
+      const [rawKey, ...detailParts] = entry.split(":");
+      const key = sanitizeInterpretationText(rawKey).replace(/_/g, " ");
+      const detail = compactInterpretationText(detailParts.join(":").trim(), 150);
+      if (!key) {
+        return "";
+      }
+      if (!detail) {
+        return `Semantic mismatch: ${key}.`;
+      }
+      return `Semantic mismatch: ${key} failed with ${detail}.`;
+    })
+    .filter(Boolean);
+}
+
+function toCritiqueFailureBullets(issues) {
+  return issues
+    .slice(0, 2)
+    .map((issue) => {
+      const description = compactInterpretationText(issue?.description || "", 150);
+      const evidence = compactInterpretationText(issue?.evidence || "", 120);
+      const fix = compactInterpretationText(issue?.fix || "", 120);
+      if (!description && !fix) {
+        return "";
+      }
+      const parts = [`Development focus: ${description || "Address the failing behavior."}`];
+      if (evidence) {
+        parts.push(`Evidence: ${evidence}.`);
+      }
+      if (fix) {
+        parts.push(`Suggested fix: ${fix}.`);
+      }
+      return parts.join(" ");
+    })
+    .filter(Boolean);
+}
+
+function deriveFailureInterpretation({ run, objective, procedure, testingInstructions, lastErrorText, status }) {
+  const semanticFailures = Array.isArray(run?.semantics?.wrong)
+    ? run.semantics.wrong.map((entry) => sanitizeInterpretationText(entry)).filter(Boolean)
+    : [];
+  const critiqueIssues = Array.isArray(run?.critique?.issues)
+    ? run.critique.issues
+    : Array.isArray(run?.critique?.defects)
+      ? run.critique.defects
+      : [];
+  const failedStepNotes = collectFailedStepNotes(run);
+  const bullets = [];
+  const featureArea = normalizeFeatureArea(objective, procedure, testingInstructions);
+  const summaryText = compactInterpretationText(run?.summary || lastErrorText || "", 180);
+  const readableLastError = compactInterpretationText(lastErrorText || "", 180);
+
+  if (summaryText) {
+    bullets.push(`Feature impact: ${featureArea} failed because ${summaryText}.`);
+  } else {
+    bullets.push(`Feature impact: ${featureArea} did not complete successfully.`);
+  }
+
+  failedStepNotes.slice(0, 1).forEach((note) => {
+    bullets.push(`Observed failure point: ${note}.`);
+  });
+
+  toSemanticFailureBullets(semanticFailures).forEach((bullet) => bullets.push(bullet));
+  toCritiqueFailureBullets(critiqueIssues).forEach((bullet) => bullets.push(bullet));
+
+  if (bullets.length < 3 && readableLastError) {
+    bullets.push(`Execution evidence: ${readableLastError}.`);
+  }
+
+  if (status === "max_loops_reached") {
+    bullets.push("Loop limit reached: the same feature path remained unresolved after the maximum 3 iterations.");
+  }
+
+  return {
+    source: "feature_failure_interpretation_v1",
+    generatedAt: nowIso(),
+    status: status || "failed",
+    featureArea,
+    bullets: [...new Set(bullets.map((entry) => compactInterpretationText(entry, 260)).filter(Boolean))].slice(0, 5),
+    evidence: {
+      semanticFailures: semanticFailures.slice(0, 6),
+      critiqueIssues: critiqueIssues.slice(0, 4).map((issue) => ({
+        severity: issue?.severity || "",
+        description: sanitizeInterpretationText(issue?.description || ""),
+        evidence: sanitizeInterpretationText(issue?.evidence || ""),
+        fix: sanitizeInterpretationText(issue?.fix || "")
+      })),
+      failedStepNotes: failedStepNotes.slice(0, 4),
+      lastErrorText: sanitizeInterpretationText(lastErrorText || run?.summary || "")
+    }
+  };
+}
+
+function withFailureInterpretationDraftPayload(existingDraftPayload, failureInterpretation) {
+  const base = existingDraftPayload && typeof existingDraftPayload === "object" ? { ...existingDraftPayload } : {};
+  return {
+    ...base,
+    failureInterpretation
+  };
+}
+
+function normalizeSemanticVerdict(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (["strong", "mixed", "poor", "inconclusive"].includes(normalized)) {
+    return normalized;
+  }
+  return "inconclusive";
+}
+
+function deriveSemanticVerdictFromCritique(critique) {
+  const issues = Array.isArray(critique?.issues) ? critique.issues : [];
+  const hasCritical = issues.some((issue) => String(issue?.severity || "").toLowerCase() === "critical");
+  const hasHigh = issues.some((issue) => String(issue?.severity || "").toLowerCase() === "high");
+  if (hasCritical) {
+    return "poor";
+  }
+  if (hasHigh || issues.length > 0) {
+    return "mixed";
+  }
+  return "strong";
+}
+
+function buildDeterministicSemanticInterpretation(input) {
+  const critique = input?.critique || {};
+  const run = input?.run || {};
+  const semantics = run?.semantics || {};
+  const steps = Array.isArray(run?.steps) ? run.steps : [];
+  const successfulItems = Array.isArray(critique?.strengths)
+    ? critique.strengths.map((entry) => compactInterpretationText(entry, 180)).filter(Boolean)
+    : [];
+  const failedItems = [];
+
+  const issues = Array.isArray(critique?.issues) ? critique.issues : [];
+  issues.forEach((issue) => {
+    const description = compactInterpretationText(issue?.description || "", 180);
+    if (description) {
+      failedItems.push(description);
+    }
+  });
+  if (failedItems.length === 0 && Array.isArray(semantics?.wrong)) {
+    semantics.wrong.slice(0, 3).forEach((entry) => {
+      const clean = compactInterpretationText(String(entry).replace(/^[^:]+:\s*/i, ""), 180);
+      if (clean) {
+        failedItems.push(clean);
+      }
+    });
+  }
+
+  const recommendations = issues
+    .map((issue) => compactInterpretationText(issue?.fix || "", 180))
+    .filter(Boolean)
+    .slice(0, 4);
+
+  if (successfulItems.length === 0 && Array.isArray(semantics?.right)) {
+    semantics.right.slice(0, 3).forEach((entry) => {
+      const clean = compactInterpretationText(String(entry).replace(/^[^:]+:\s*/i, ""), 180);
+      if (clean) {
+        successfulItems.push(clean);
+      }
+    });
+  }
+
+  const hasMeaningfulInteraction = steps.some((step) =>
+    ["click", "fill", "scrollpage", "capturetext", "assertchanged"].includes(String(step?.action || "").toLowerCase())
+  );
+  if (!hasMeaningfulInteraction) {
+    failedItems.push("The run only captured smoke-level evidence and did not exercise the requested feature interaction path.");
+    recommendations.push("Add at least one feature-specific interaction step before relying on the UX verdict.");
+  }
+
+  let verdict = deriveSemanticVerdictFromCritique(critique);
+  if (!hasMeaningfulInteraction && verdict === "strong") {
+    verdict = "inconclusive";
+  }
+
+  return {
+    source: "deterministic_semantic_interpretation_v1",
+    generatedAt: nowIso(),
+    verdict,
+    summary:
+      compactInterpretationText(critique?.summary || run?.summary || "", 200) ||
+      "Execution completed, but no semantic summary was produced.",
+    successfulItems: [...new Set(successfulItems)].slice(0, 5),
+    failedItems: [...new Set(failedItems)].slice(0, 5),
+    recommendations: [...new Set(recommendations)].slice(0, 5),
+    confidence: typeof critique?.confidence === "number" ? critique.confidence : 0.65
+  };
+}
+
+async function generateSemanticInterpretationWithGemini(apiKey, payload) {
+  if (!apiKey) {
+    return buildDeterministicSemanticInterpretation(payload);
+  }
+
+  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  const prompt = [
+    "Interpret this completed UI/UX test run for product development.",
+    "Return strict JSON only with keys: verdict, summary, successfulItems(array), failedItems(array), recommendations(array), confidence(number), source.",
+    "Do not judge whether the automated test itself succeeded or failed.",
+    "Assume the execution completed and focus on what the observed UI/UX behavior did well and poorly.",
+    "Use verdict values only: strong, mixed, poor, inconclusive.",
+    "",
+    `Objective: ${payload?.objective || ""}`,
+    `Procedure Summary: ${payload?.procedure?.summary || ""}`,
+    `Loop Count: ${Number(payload?.loopCount || 0)}`,
+    "",
+    "Run:",
+    JSON.stringify(payload?.run || {}, null, 2),
+    "",
+    "Critique:",
+    JSON.stringify(payload?.critique || {}, null, 2),
+    "",
+    "Deterministic Baseline:",
+    JSON.stringify(buildDeterministicSemanticInterpretation(payload), null, 2)
+  ].join("\n");
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.1 }
+        })
+      }
+    );
+    if (!response.ok) {
+      return buildDeterministicSemanticInterpretation(payload);
+    }
+    const data = await response.json();
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const body = text.match(/```json\s*([\s\S]*?)```/i)?.[1] || text;
+    const parsed = JSON.parse(String(body || "").trim());
+    return {
+      source: parsed?.source || "gemini_semantic_interpretation_v1",
+      generatedAt: nowIso(),
+      verdict: normalizeSemanticVerdict(parsed?.verdict),
+      summary:
+        compactInterpretationText(parsed?.summary || "", 200) ||
+        buildDeterministicSemanticInterpretation(payload).summary,
+      successfulItems: Array.isArray(parsed?.successfulItems)
+        ? parsed.successfulItems.map((entry) => compactInterpretationText(entry, 180)).filter(Boolean).slice(0, 5)
+        : buildDeterministicSemanticInterpretation(payload).successfulItems,
+      failedItems: Array.isArray(parsed?.failedItems)
+        ? parsed.failedItems.map((entry) => compactInterpretationText(entry, 180)).filter(Boolean).slice(0, 5)
+        : buildDeterministicSemanticInterpretation(payload).failedItems,
+      recommendations: Array.isArray(parsed?.recommendations)
+        ? parsed.recommendations.map((entry) => compactInterpretationText(entry, 180)).filter(Boolean).slice(0, 5)
+        : buildDeterministicSemanticInterpretation(payload).recommendations,
+      confidence: typeof parsed?.confidence === "number"
+        ? parsed.confidence
+        : buildDeterministicSemanticInterpretation(payload).confidence
+    };
+  } catch (_) {
+    return buildDeterministicSemanticInterpretation(payload);
+  }
+}
+
+function buildSemanticSummary(semanticInterpretation, fallbackSummary = "") {
+  const interpretation = semanticInterpretation && typeof semanticInterpretation === "object" ? semanticInterpretation : null;
+  return ensureSummaryArray([
+    interpretation?.summary || fallbackSummary || "Execution completed for semantic review.",
+    interpretation?.successfulItems?.[0] ? `Worked: ${interpretation.successfulItems[0]}` : "Worked: no positive UX signal recorded.",
+    interpretation?.failedItems?.[0] ? `Needs work: ${interpretation.failedItems[0]}` : "Needs work: no blocking UX issue recorded."
   ]);
 }
 
@@ -225,6 +579,30 @@ function buildPersistentRunSeed(run, overrides = {}) {
     testingInstructions,
     url
   };
+}
+
+function buildRetryNotes(baseNotes, lastRun) {
+  const sections = [baseNotes || ""];
+  sections.push(
+    "Retry guidance: keep the approved feature scope. Repair only the failing selector or assertion. Do not replace the scenario with a generic smoke test."
+  );
+  sections.push(
+    "Retry guidance: use canonical actions only (goto, click, fill, assertVisible, assertText, captureText, assertChanged, assertNotVisible, screenshot, scrollPage, wait)."
+  );
+  sections.push(
+    "Retry guidance: for counters or totals, prefer captureText plus assertChanged over guessed numeric values, and reuse the exact visible UI copy for status/button assertions."
+  );
+
+  if (lastRun?.summary) {
+    sections.push(`Previous run summary: ${lastRun.summary}`);
+  }
+
+  const failedStepNote = collectFailedStepNotes(lastRun)[0];
+  if (failedStepNote) {
+    sections.push(`Previous failed step: ${failedStepNote}`);
+  }
+
+  return sections.filter(Boolean).join("\n");
 }
 
 function buildVariantRunSummary(sourceRunId) {
@@ -487,9 +865,15 @@ async function inspectWebFrontend(url) {
 }
 
 async function inspectElectronApp(projectRoot) {
+  const launchEnv = {
+    ...process.env,
+    JUNGLE_PROJECT_ROOT: projectRoot,
+    ...(process.env.JUNGLE_STORAGE_ROOT ? { JUNGLE_STORAGE_ROOT: process.env.JUNGLE_STORAGE_ROOT } : {})
+  };
   const app = await electron.launch({
     args: [projectRoot],
-    cwd: projectRoot
+    cwd: projectRoot,
+    env: launchEnv
   });
   try {
     const page = await app.firstWindow();
@@ -558,12 +942,21 @@ function shouldFallbackToDeterministicProcedure(procedure, inspection, environme
 
 function fallbackProcedure(inspection, objective, notes, environmentPlan = null) {
   const firstHeading = inspection.headings?.[0] || inspection.title || "main page";
-  const buttonTarget = inspection.buttonSelectors?.[0] || null;
-  const dynamicSignals = /(state|status|result|output|message|count|step|speed|angle|energy|progress|value)/i;
-  const stateTarget =
-    inspection.textTargets?.find((selector) => dynamicSignals.test(selector)) ||
-    inspection.textTargets?.[0] ||
-    "body";
+  const objectiveText = `${objective || ""} ${notes || ""}`.toLowerCase();
+  const candidateButtons = Array.isArray(inspection.buttonSelectors) ? inspection.buttonSelectors : [];
+  const matchedRule = [
+    { objective: /(complete|undo|task|board)/i, selector: /(complete|undo|task)/i },
+    { objective: /(filter|active|completed|all)/i, selector: /(filter|active|completed|all)/i },
+    { objective: /(add|create|form)/i, selector: /(add|create)/i },
+    { objective: /(theme|night|daylight)/i, selector: /(theme|night|daylight)/i },
+    { objective: /(settings|modal|dialog|close)/i, selector: /(settings|modal|dialog|close)/i }
+  ].find((rule) => rule.objective.test(objectiveText));
+  const buttonTarget =
+    (matchedRule ? candidateButtons.find((selector) => matchedRule.selector.test(selector)) : null) ||
+    candidateButtons[0] ||
+    null;
+  const likelyModalTarget =
+    inspection.textTargets?.find((selector) => /modal|dialog|settings/i.test(selector)) || null;
   const hasInteractiveControl = Boolean(buttonTarget);
   const isElectron = environmentPlan?.playwrightMode === "electron";
 
@@ -579,14 +972,14 @@ function fallbackProcedure(inspection, objective, notes, environmentPlan = null)
       steps = steps.concat([
         { action: "click", target: buttonTarget },
         { action: "wait", target: "post_click_stabilize", value: 1500 },
-        ...(stateTarget && stateTarget !== "body" ? [{ action: "assertVisible", target: stateTarget }] : []),
+        ...(likelyModalTarget ? [{ action: "assertVisible", target: likelyModalTarget }] : []),
         { action: "screenshot", target: "fullPage" }
       ]);
     } else {
       steps = steps.concat([
-        { action: "captureText", target: stateTarget, value: "beforeState" },
         { action: "click", target: buttonTarget },
-        { action: "assertChanged", target: stateTarget, value: "beforeState" },
+        { action: "wait", target: "post_click_stabilize", value: 1500 },
+        ...(likelyModalTarget ? [{ action: "assertVisible", target: likelyModalTarget }] : []),
         { action: "screenshot", target: "fullPage" }
       ]);
     }
@@ -614,12 +1007,18 @@ async function generateProcedureWithGemini(apiKey, inspection, objective, notes,
     return fallbackProcedure(inspection, objective, notes, environmentPlan);
   }
 
-  const prompt = `Generate a target-specific Playwright testing procedure as strict JSON with keys: summary, confirmMessage, steps(array), notes.
+const prompt = `Generate a target-specific Playwright testing procedure as strict JSON with keys: summary, confirmMessage, steps(array), notes.
 Each step must include: action and target; optional value/assert.
-Allowed actions only: goto, click, fill, assertVisible, assertText, captureText, assertChanged, screenshot, scrollPage, wait.
+Allowed actions only: goto, click, fill, assertVisible, assertText, captureText, assertChanged, assertNotVisible, screenshot, scrollPage, wait.
 Use robust selectors (role/text/ids/data-testid when present) and avoid hardcoded business values.
 Never use dynamic timestamps, dates, relative times, or "Updated ..." text as selectors.
 If an interactive control exists, include at least one supported interaction step such as click, fill, or scrollPage.
+Prefer data-testid selectors over raw text when the inspection context exposes them.
+When a feature depends on filtering or removal from a view, prefer assertNotVisible over a vague changed-state assertion.
+For counters or totals that may start non-zero, prefer captureText plus assertChanged over hardcoded numeric expectations.
+Use the exact visible copy from the inspected UI for status pills and button labels; do not invent synonyms.
+If a flow undoes a change, compare against the previously captured baseline instead of guessing new totals.
+Keep retries within the same feature scope; do not replace the requested scenario with a generic smoke test.
 Target type: ${environmentPlan?.targetType || "web_frontend"}
 Playwright mode: ${environmentPlan?.playwrightMode || "web"}
 If target type is electron_app, do not emit browser navigation assumptions unless the app itself exposes an in-window web navigation control.
@@ -738,12 +1137,29 @@ function buildRequestParser(procedure) {
     const raw = String(action || "").trim();
     const key = raw.toLowerCase();
     if (!key) return null;
-    if (["goto", "click", "fill", "assertvisible", "asserttext", "capturetext", "assertchanged", "screenshot", "scrollpage", "wait"].includes(key)) {
+    if (
+      [
+        "goto",
+        "click",
+        "fill",
+        "assertvisible",
+        "asserttext",
+        "capturetext",
+        "assertchanged",
+        "assertnotvisible",
+        "screenshot",
+        "scrollpage",
+        "wait"
+      ].includes(key)
+    ) {
       return key;
     }
     if (key.includes("goto") || key.includes("navigate")) return "goto";
     if (key.includes("click") || key.includes("press")) return "click";
     if (key.includes("fill") || key.includes("type") || key.includes("enter")) return "fill";
+    if (key.includes("assert") && (key.includes("notvisible") || key.includes("hidden") || key.includes("not_visible"))) {
+      return "assertnotvisible";
+    }
     if (key.includes("assert") && key.includes("visible")) return "assertvisible";
     if (key.includes("assert") && (key.includes("text") || key.includes("content"))) return "asserttext";
     if (key.includes("capture") && key.includes("text")) return "capturetext";
@@ -759,6 +1175,7 @@ function buildRequestParser(procedure) {
     if (normalized === "asserttext") return "assertText";
     if (normalized === "capturetext") return "captureText";
     if (normalized === "assertchanged") return "assertChanged";
+    if (normalized === "assertnotvisible") return "assertNotVisible";
     if (normalized === "scrollpage") return "scrollPage";
     return normalized;
   };
@@ -770,7 +1187,7 @@ function buildRequestParser(procedure) {
       action: toRuntimeAction(normalizeAction(s.action)),
       originalAction: s.action,
       target: s.target,
-      value: s.value || null,
+      value: s.value ?? s.assert ?? null,
       assert: s.assert || null
     }))
   };
@@ -783,11 +1200,20 @@ function getStepDelayMs(step, actionDelayMs = 500) {
   if (action === "wait") return Math.max(200, Math.min(baseDelay, 400));
   if (action === "scrollPage") return Math.max(baseDelay, 900);
   if (action === "click" || action === "fill") return Math.max(baseDelay, 500);
-  if (action === "assertVisible" || action === "assertText" || action === "assertChanged") {
+  if (action === "assertVisible" || action === "assertText" || action === "assertChanged" || action === "assertNotVisible") {
     return Math.max(350, Math.min(baseDelay, 650));
   }
   if (action === "captureText") return Math.max(350, Math.min(baseDelay, 600));
   return Math.max(250, Math.min(baseDelay, 500));
+}
+
+function resolveStepValue(stepValue, stateStore) {
+  const raw = String(stepValue ?? "");
+  const storedMatch = raw.match(/^\{([^}]+)\}$/);
+  if (storedMatch) {
+    return String(stateStore?.[storedMatch[1]] ?? "");
+  }
+  return raw;
 }
 
 function stepToCode(step, actionDelayMs = 500, executionPlan = { playwrightMode: "web" }) {
@@ -812,11 +1238,13 @@ function stepToCode(step, actionDelayMs = 500, executionPlan = { playwrightMode:
     case "assertVisible":
       return `await expect(page.locator(${target}).first()).toBeVisible();\n  await page.waitForTimeout(${delay});`;
     case "assertText":
-      return `await expect(page.locator(${target}).first()).toContainText(${value});\n  await page.waitForTimeout(${delay});`;
+      return `const expectedText = ((raw) => { const match = String(raw || '').match(/^\\{([^}]+)\\}$/); return match ? String(stateStore[match[1]] || '') : String(raw || ''); })(${value});\n  await expect(page.locator(${target}).first()).toContainText(expectedText);\n  await page.waitForTimeout(${delay});`;
     case "captureText":
       return `stateStore[${value}] = await page.locator(${target}).first().innerText();\n  await page.waitForTimeout(${delay});`;
     case "assertChanged":
       return `await page.waitForFunction(({ sel, prev }) => { const el = document.querySelector(sel); return !!el && (el.innerText || el.textContent || '').trim() !== prev; }, { sel: ${target}, prev: (stateStore[${value}] || '') }, { timeout: 5000 });\n  await page.waitForTimeout(${delay});`;
+    case "assertNotVisible":
+      return `await expect(page.locator(${target}).first()).toBeHidden();\n  await page.waitForTimeout(${delay});`;
     case "screenshot":
       return `await page.screenshot({ path: path.join(artifactsDir, 'step_${Date.now()}.png'), fullPage: true });\n  await page.waitForTimeout(${delay});`;
     case "scrollPage":
@@ -865,9 +1293,10 @@ async function executePageSteps(page, parser, artifactsDir, actionDelayMs = 500,
         await page.locator(step.target).first().waitFor({ state: "visible", timeout: 10000 });
         await sleep(stepDelayMs);
       } else if (step.action === "assertText") {
+        const expectedText = resolveStepValue(step.value, stateStore);
         const txt = await page.locator(step.target).first().innerText({ timeout: 10000 });
-        if (!txt.includes(step.value || "")) {
-          throw new Error(`Text assertion failed: expected includes '${step.value}' got '${txt}'`);
+        if (!txt.includes(expectedText)) {
+          throw new Error(`Text assertion failed: expected includes '${expectedText}' got '${txt}'`);
         }
         await sleep(stepDelayMs);
       } else if (step.action === "captureText") {
@@ -891,6 +1320,9 @@ async function executePageSteps(page, parser, artifactsDir, actionDelayMs = 500,
           { selector: step.target, before: prev },
           { timeout: 5000 }
         );
+        await sleep(stepDelayMs);
+      } else if (step.action === "assertNotVisible") {
+        await expect(page.locator(step.target).first()).toBeHidden({ timeout: 10000 });
         await sleep(stepDelayMs);
       } else if (step.action === "screenshot") {
         await page.screenshot({ path: path.join(artifactsDir, `step_${Date.now()}.png`), fullPage: true });
@@ -937,9 +1369,16 @@ async function executeProcedure(executionPlan, parser, artifactsDir, actionDelay
   ensureDir(artifactsDir);
 
   if (executionPlan?.playwrightMode === "electron") {
+    const electronProjectRoot = executionPlan.launchTarget.value;
+    const electronEnv = {
+      ...process.env,
+      ...(executionPlan.launchEnv || {}),
+      JUNGLE_PROJECT_ROOT: electronProjectRoot
+    };
     const app = await electron.launch({
-      args: [executionPlan.launchTarget.value],
-      cwd: executionPlan.launchTarget.value,
+      args: [electronProjectRoot],
+      cwd: electronProjectRoot,
+      env: electronEnv,
       recordVideo: {
         dir: artifactsDir,
         size: { width: 1280, height: 720 }
@@ -955,10 +1394,11 @@ async function executeProcedure(executionPlan, parser, artifactsDir, actionDelay
       await app.close();
       appClosed = true;
       const videoPath = pageVideo ? await pageVideo.path().catch(() => null) : null;
+      const artifactPaths = fs.readdirSync(artifactsDir).map((n) => path.join(artifactsDir, n));
       return {
         ...pageResult,
-        videoPath,
-        artifacts: fs.readdirSync(artifactsDir).map((n) => path.join(artifactsDir, n))
+        videoPath: resolveRunVideoPath({ videoPath, artifacts: artifactPaths }, artifactsDir),
+        artifacts: artifactPaths
       };
     } finally {
       if (!appClosed) {
@@ -1148,6 +1588,15 @@ class AgenticLoopManager {
       runId: input?.runId,
       testingInstructions: typeof input?.testingInstructions === "string" ? input.testingInstructions : "",
       editedBy: input?.editedBy || "ui"
+    });
+  }
+
+  async updateRunPreview(input) {
+    return this.persistence.updateRunPreview({
+      runId: input?.runId,
+      previewPath: typeof input?.previewPath === "string" ? input.previewPath : "",
+      previewTitle: typeof input?.previewTitle === "string" ? input.previewTitle : "",
+      previewType: typeof input?.previewType === "string" ? input.previewType : ""
     });
   }
 
@@ -1373,7 +1822,7 @@ class AgenticLoopManager {
       loopCount: await this.persistence.getLoopCount(runId),
       status: "cancelled",
       testingInstructions: latestRun.testingInstructions || "",
-      videoReference: last?.run?.videoPath || null,
+      videoReference: resolveRunVideoPath(last?.run),
       threePointSummary: buildCancelledSummary(reason || latestRun.lastErrorText || last?.run?.summary),
       lastErrorText: reason || latestRun.lastErrorText || "Run cancelled by user."
     });
@@ -1390,14 +1839,7 @@ class AgenticLoopManager {
       const draft = await this.createDraft({
         additions: workingInput.additions,
         forestId: workingInput.forestId,
-        notes: [
-          workingInput.notes || "",
-          attempt > 1
-            ? "Retry: use canonical actions only (goto, click, fill, assertVisible, assertText, captureText, assertChanged, screenshot)."
-            : ""
-        ]
-          .filter(Boolean)
-          .join("\n"),
+        notes: attempt > 1 ? buildRetryNotes(workingInput.notes || "", last?.run) : workingInput.notes || "",
         objective,
         projectName: workingInput.projectName || "Jungle",
         targetType: workingInput.targetType,
@@ -1414,7 +1856,6 @@ class AgenticLoopManager {
           additions: workingInput.additions || "",
           codexTimeoutMs: workingInput.codexTimeoutMs,
           forestId: draft.forestId,
-          forceFallback: attempt > 1,
           skipCodex: workingInput.skipCodex,
           targetType: workingInput.targetType,
           treeId: draft.tree.treeId,
@@ -1438,7 +1879,7 @@ class AgenticLoopManager {
 
       emitEvent?.({
         type: "agentic_status",
-        value: `Quality gate failed on attempt ${attempt}. Retrying with hardened fallback procedure...`
+        value: `Quality gate failed on attempt ${attempt}. Retrying within the approved feature scope...`
       });
       workingInput.forestId = draft.forestId;
     }
@@ -1499,10 +1940,59 @@ class AgenticLoopManager {
         run: approvalRun
       };
     } catch (error) {
+      const semanticInterpretation = buildDeterministicSemanticInterpretation({
+        objective,
+        loopCount: 0,
+        procedure: null,
+        run: {
+          summary: error.message,
+          semantics: { wrong: ["Draft generation failed before execution completed."] }
+        },
+        critique: {
+          summary: "Draft generation failed before execution could start.",
+          confidence: 0.5,
+          strengths: [],
+          issues: [
+            {
+              severity: "critical",
+              description: "Execution could not start because the approval draft was not generated.",
+              evidence: error.message,
+              fix: "Inspect planner inputs, startup commands, and target environment readiness."
+            }
+          ]
+        }
+      });
+      const failureInterpretation = deriveFailureInterpretation({
+        run: {
+          summary: error.message,
+          semantics: {
+            verdict: "fail",
+            wrong: ["draft_generation: could not produce an executable approval draft"]
+          },
+          critique: {
+            issues: [
+              {
+                severity: "critical",
+                description: "Draft generation failed before execution could start.",
+                evidence: error.message,
+                fix: "Inspect the planning prompt, target environment, and available startup commands."
+              }
+            ]
+          }
+        },
+        objective,
+        procedure: null,
+        testingInstructions: draftingRun?.testingInstructions || "",
+        lastErrorText: error.message,
+        status: "failed"
+      });
       await this.persistence.markRunFailedDuringDraft({
         testRunId: draftingRun.id,
         lastErrorText: error.message,
-        threePointSummary: buildFailureSummary(error.message)
+        threePointSummary: buildFailureSummary(error.message),
+        draftPayload: withFailureInterpretationDraftPayload(null, failureInterpretation),
+        semanticVerdict: semanticInterpretation.verdict,
+        semanticInterpretation
       });
       throw error;
     }
@@ -1531,17 +2021,31 @@ class AgenticLoopManager {
       const persistedLoopCount = await this.persistence.getLoopCount(persistentRun.id);
       if (attempt > MAX_AGENTIC_LOOPS || persistedLoopCount >= MAX_AGENTIC_LOOPS) {
         const latestRun = await this.persistence.getRunRecord(persistentRun.id);
+        const semanticInterpretation = await generateSemanticInterpretationWithGemini(process.env.GEMINI_API_KEY, {
+          objective,
+          loopCount: Math.min(MAX_AGENTIC_LOOPS, persistedLoopCount),
+          procedure: last?.procedure || latestRun?.draftPayload?.procedure || null,
+          run: last?.run || {
+            summary: "Maximum loop count reached before a passing run.",
+            semantics: { wrong: [] },
+            critique: { issues: [] }
+          },
+          critique: last?.run?.critique || { issues: [], strengths: [] }
+        });
         const finalizedRun = await this.persistence.finalizeRun({
           testRunId: persistentRun.id,
           executionTimeMs: Date.now() - startedAtMs,
           loopCount: Math.min(MAX_AGENTIC_LOOPS, persistedLoopCount),
-          status: "max_loops_reached",
+          status: "completed",
           testingInstructions: latestRun?.testingInstructions || "",
-          videoReference: last?.run?.videoPath || null,
-          threePointSummary: last?.run
-            ? buildThreePointSummary(last.run)
-            : buildFailureSummary("Maximum loop count reached before a passing run."),
-          lastErrorText: last?.run?.summary || "Maximum agentic loops reached"
+          videoReference: resolveRunVideoPath(last?.run),
+          threePointSummary: buildSemanticSummary(
+            semanticInterpretation,
+            last?.run?.summary || "Execution completed after the maximum three iterations."
+          ),
+          lastErrorText: null,
+          semanticVerdict: semanticInterpretation.verdict,
+          semanticInterpretation
         });
         return {
           ...last,
@@ -1558,12 +2062,7 @@ class AgenticLoopManager {
           draft = await this.createDraft({
             additions: workingInput.additions,
             forestId: workingInput.forestId,
-            notes: [
-              workingInput.notes || "",
-              "Retry: use canonical actions only (goto, click, fill, assertVisible, assertText, captureText, assertChanged, screenshot)."
-            ]
-              .filter(Boolean)
-              .join("\n"),
+            notes: buildRetryNotes(workingInput.notes || "", last?.run),
             objective,
             projectName: workingInput.projectName || "Jungle",
             targetType: workingInput.targetType,
@@ -1597,7 +2096,6 @@ class AgenticLoopManager {
             additions: workingInput.additions || "",
             codexTimeoutMs: workingInput.codexTimeoutMs,
             forestId: draft.forestId,
-            forceFallback: attempt > 1,
             skipCodex: workingInput.skipCodex,
             targetType: workingInput.targetType,
             treeId: draft.tree.treeId,
@@ -1642,15 +2140,27 @@ class AgenticLoopManager {
 
         if (runPassedQualityGate) {
           const latestRun = await this.persistence.getRunRecord(persistentRun.id);
+          const semanticInterpretation = await generateSemanticInterpretationWithGemini(process.env.GEMINI_API_KEY, {
+            objective,
+            loopCount: attempt,
+            procedure: draft.tree.procedure,
+            run: runResult.run,
+            critique: runResult.run?.critique || { issues: [], strengths: [] }
+          });
           const finalizedRun = await this.persistence.finalizeRun({
             testRunId: persistentRun.id,
             executionTimeMs: Date.now() - startedAtMs,
             loopCount: attempt,
-            status: "passed",
+            status: "completed",
             testingInstructions: latestRun?.testingInstructions || "",
-            videoReference: runResult.run.videoPath || null,
-            threePointSummary: buildThreePointSummary(runResult.run),
-            lastErrorText: null
+            videoReference: resolveRunVideoPath(runResult.run),
+            threePointSummary: buildSemanticSummary(
+              semanticInterpretation,
+              runResult.run?.summary || "Execution completed with sufficient evidence."
+            ),
+            lastErrorText: null,
+            semanticVerdict: semanticInterpretation.verdict,
+            semanticInterpretation
           });
           return {
             ...last,
@@ -1660,7 +2170,7 @@ class AgenticLoopManager {
 
         emitEvent?.({
           type: "agentic_status",
-          value: `Quality gate failed on attempt ${attempt}. Retrying with a new hardened draft...`
+          value: `Quality gate failed on attempt ${attempt}. Retrying with a tighter feature-scoped draft...`
         });
         workingInput.forestId = draft.forestId;
       } catch (error) {
@@ -1696,15 +2206,66 @@ class AgenticLoopManager {
         });
 
         const latestRun = await this.persistence.getRunRecord(persistentRun.id);
+        const semanticInterpretation = buildDeterministicSemanticInterpretation({
+          objective,
+          loopCount: attempt,
+          procedure: last?.procedure || latestRun?.draftPayload?.procedure || null,
+          run: {
+            summary: error.message,
+            semantics: {
+              wrong: ["Execution stopped before a full semantic observation could be completed."]
+            }
+          },
+          critique: {
+            summary: "Execution failed before semantic interpretation could complete.",
+            confidence: 0.5,
+            strengths: [],
+            issues: [
+              {
+                severity: "critical",
+                description: "The automation session terminated before the intended UI/UX observation finished.",
+                evidence: error.message,
+                fix: "Stabilize selectors, waits, or environment startup before relying on semantic assessment."
+              }
+            ]
+          }
+        });
+        const failureInterpretation = deriveFailureInterpretation({
+          run: {
+            summary: error.message,
+            semantics: {
+              verdict: "fail",
+              wrong: ["execution_exception: loop failed before completion"]
+            },
+            critique: {
+              issues: [
+                {
+                  severity: "critical",
+                  description: "Execution threw before the loop could complete.",
+                  evidence: error.message,
+                  fix: "Inspect failing selectors, startup timing, and runtime preconditions."
+                }
+              ]
+            }
+          },
+          objective,
+          procedure: last?.procedure || latestRun?.draftPayload?.procedure || null,
+          testingInstructions: latestRun?.testingInstructions || "",
+          lastErrorText: error.message,
+          status: "failed"
+        });
         const finalizedRun = await this.persistence.finalizeRun({
           testRunId: persistentRun.id,
           executionTimeMs: Date.now() - startedAtMs,
           loopCount: attempt,
-          status: "failed",
+          status: "failed_execution",
           testingInstructions: latestRun?.testingInstructions || "",
-          videoReference: last?.run?.videoPath || null,
+          videoReference: resolveRunVideoPath(last?.run),
           threePointSummary: buildFailureSummary(error.message),
-          lastErrorText: error.message
+          lastErrorText: error.message,
+          draftPayload: withFailureInterpretationDraftPayload(latestRun?.draftPayload, failureInterpretation),
+          semanticVerdict: semanticInterpretation.verdict,
+          semanticInterpretation
         });
 
         return {
@@ -1716,15 +2277,31 @@ class AgenticLoopManager {
     }
 
     const latestRun = await this.persistence.getRunRecord(persistentRun.id);
+    const semanticInterpretation = await generateSemanticInterpretationWithGemini(process.env.GEMINI_API_KEY, {
+      objective,
+      loopCount: await this.persistence.getLoopCount(persistentRun.id),
+      procedure: last?.procedure || latestRun?.draftPayload?.procedure || null,
+      run: last?.run || {
+        summary: "Execution completed after the maximum loop count.",
+        semantics: { wrong: [] },
+        critique: { issues: [] }
+      },
+      critique: last?.run?.critique || { issues: [], strengths: [] }
+    });
     const finalizedRun = await this.persistence.finalizeRun({
       testRunId: persistentRun.id,
       executionTimeMs: Date.now() - startedAtMs,
       loopCount: await this.persistence.getLoopCount(persistentRun.id),
-      status: "max_loops_reached",
+      status: "completed",
       testingInstructions: latestRun?.testingInstructions || "",
-      videoReference: last?.run?.videoPath || null,
-      threePointSummary: last?.run ? buildThreePointSummary(last.run) : buildFailureSummary("Maximum loop count reached."),
-      lastErrorText: last?.run?.summary || "Maximum agentic loops reached"
+      videoReference: resolveRunVideoPath(last?.run),
+      threePointSummary: buildSemanticSummary(
+        semanticInterpretation,
+        last?.run?.summary || "Execution completed after the maximum three iterations."
+      ),
+      lastErrorText: null,
+      semanticVerdict: semanticInterpretation.verdict,
+      semanticInterpretation
     });
 
     return {
@@ -1909,6 +2486,7 @@ class AgenticLoopManager {
       });
 
       const result = await executeProcedure(executionPlan, normalizedParser, artifactsDir, actionDelayMs);
+      const resolvedVideoPath = resolveRunVideoPath(result, artifactsDir);
       const preliminaryRun = {
         status: result.status,
         summary: result.summary,
@@ -1918,7 +2496,7 @@ class AgenticLoopManager {
           { type: "parser", path: parserPath },
           { type: "executor", path: programPath }
         ].concat(result.artifacts.map((p) => ({ type: p.endsWith(".webm") ? "video" : "artifact", path: p }))),
-        videoPath: result.videoPath
+        videoPath: resolvedVideoPath
       };
       const semantics = analyzeRunSemantics(preliminaryRun, this.projectRoot);
       const semanticsPath = path.join(artifactsDir, "semantic_report.json");
@@ -1931,7 +2509,7 @@ class AgenticLoopManager {
           status: result.status,
           summary: result.summary,
           steps: result.steps,
-          videoPath: result.videoPath,
+          videoPath: resolvedVideoPath,
           semantics
         }
       });
@@ -1949,7 +2527,7 @@ class AgenticLoopManager {
           { type: "semantic", path: semanticsPath },
           { type: "critique", path: critiquePath }
         ].concat(result.artifacts.map((p) => ({ type: p.endsWith(".webm") ? "video" : "artifact", path: p }))),
-        videoPath: result.videoPath,
+        videoPath: resolvedVideoPath,
         summary: result.summary,
         semantics,
         critique

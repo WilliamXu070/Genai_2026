@@ -1,0 +1,15 @@
+{
+  "requestId": "closed_loop_1773551619398",
+  "type": "jungle:start-run",
+  "payload": {
+    "projectName": "Jungle",
+    "scenarioName": "Closed loop bridge test",
+    "steps": [
+      {
+        "action": "assert",
+        "target": "closed-loop"
+      }
+    ],
+    "url": "http://127.0.0.1:3000"
+  }
+}

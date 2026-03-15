@@ -1,0 +1,55 @@
+{
+  "overallPass": false,
+  "verdict": "fail",
+  "checks": [
+    {
+      "key": "steps_present",
+      "pass": true,
+      "detail": "steps=3"
+    },
+    {
+      "key": "artifacts_present",
+      "pass": true,
+      "detail": "artifacts=7"
+    },
+    {
+      "key": "parser_artifact",
+      "pass": true,
+      "detail": "parserArtifacts=1"
+    },
+    {
+      "key": "executor_artifact",
+      "pass": true,
+      "detail": "executorArtifacts=1"
+    },
+    {
+      "key": "video_valid_webm",
+      "pass": true,
+      "detail": "not required for electron_app"
+    },
+    {
+      "key": "run_status_consistent",
+      "pass": true,
+      "detail": "status=fail failedSteps=1"
+    }
+  ],
+  "right": [
+    "steps_present: steps=3",
+    "artifacts_present: artifacts=7",
+    "parser_artifact: parserArtifacts=1",
+    "executor_artifact: executorArtifacts=1",
+    "video_valid_webm: not required for electron_app",
+    "run_status_consistent: status=fail failedSteps=1"
+  ],
+  "wrong": [
+    "run_summary: Failed at step 3: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#approve-run').first() to be visible\u001b[22m\n\u001b[2m    24 × locator resolved to hidden <button disabled type=\"button\" class=\"hidden\" id=\"approve-run\">Approve Run</button>\u001b[22m\n",
+    "failed_step_note: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#approve-run').first() to be visible\u001b[22m\n\u001b[2m    24 × locator resolved to hidden <button disabled type=\"button\" class=\"hidden\" id=\"approve-run\">Approve Run</button>\u001b[22m\n"
+  ],
+  "video": {
+    "exists": true,
+    "headerValid": true,
+    "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\e3bba53a89c36a39a1230fc5e188c7a3.webm",
+    "sizeBytes": 970394,
+    "valid": true
+  }
+}

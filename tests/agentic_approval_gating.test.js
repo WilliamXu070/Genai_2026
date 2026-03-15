@@ -64,6 +64,9 @@ class FakePersistence {
       status: "drafting",
       testingInstructions: input.testingInstructions || "",
       videoReference: null,
+      previewType: null,
+      previewPath: null,
+      previewTitle: null,
       threePointSummary: ensureSummaryArray(input.threePointSummary),
       lastErrorText: null,
       approvalRequestedAt: null,
@@ -71,6 +74,8 @@ class FakePersistence {
       approvedBy: null,
       cancelledAt: null,
       draftPayload: input.draftPayload || null,
+      semanticVerdict: null,
+      semanticInterpretation: null,
       createdAt: nowIso(),
       updatedAt: nowIso()
     };
@@ -95,9 +100,12 @@ class FakePersistence {
 
   async markRunFailedDuringDraft(input) {
     const run = this.runs.get(input.testRunId);
-    run.status = "failed";
+    run.status = "failed_execution";
     run.lastErrorText = input.lastErrorText || "draft failure";
     run.threePointSummary = ensureSummaryArray(input.threePointSummary);
+    run.draftPayload = clone(input.draftPayload || run.draftPayload || null);
+    run.semanticVerdict = input.semanticVerdict || null;
+    run.semanticInterpretation = clone(input.semanticInterpretation || null);
     run.updatedAt = nowIso();
     return clone(run);
   }
@@ -135,6 +143,19 @@ class FakePersistence {
       approvalInstructionEditedAt: nowIso(),
       approvalInstructionEditedBy: input.editedBy || null
     };
+    run.updatedAt = nowIso();
+    this.project.updatedAt = nowIso();
+    return clone(run);
+  }
+
+  async updateRunPreview(input) {
+    const run = this.runs.get(input.runId);
+    if (!run) {
+      return null;
+    }
+    run.previewPath = typeof input.previewPath === "string" && input.previewPath.trim() ? input.previewPath.trim() : null;
+    run.previewTitle = typeof input.previewTitle === "string" && input.previewTitle.trim() ? input.previewTitle.trim() : null;
+    run.previewType = typeof input.previewType === "string" && input.previewType.trim() ? input.previewType.trim() : null;
     run.updatedAt = nowIso();
     this.project.updatedAt = nowIso();
     return clone(run);
@@ -202,7 +223,7 @@ class FakePersistence {
 
   async listTestRunsByProject(projectId) {
     return this.listRunsByStatuses(
-      ["drafting", "to_be_approved", "approved", "in_progress", "passed", "failed", "max_loops_reached", "cancelled"],
+      ["drafting", "to_be_approved", "approved", "in_progress", "completed", "failed_execution", "cancelled"],
       { projectId }
     );
   }
@@ -263,8 +284,14 @@ class FakePersistence {
     run.status = input.status;
     run.testingInstructions = input.testingInstructions || run.testingInstructions;
     run.videoReference = input.videoReference || null;
+    run.previewType = input.previewType || run.previewType || null;
+    run.previewPath = input.previewPath || run.previewPath || null;
+    run.previewTitle = input.previewTitle || run.previewTitle || null;
     run.threePointSummary = ensureSummaryArray(input.threePointSummary);
     run.lastErrorText = input.lastErrorText || null;
+    run.draftPayload = clone(input.draftPayload || run.draftPayload || null);
+    run.semanticVerdict = input.semanticVerdict || run.semanticVerdict || null;
+    run.semanticInterpretation = clone(input.semanticInterpretation || run.semanticInterpretation || null);
     if (input.status === "cancelled") {
       run.cancelledAt = run.cancelledAt || nowIso();
     }
@@ -369,11 +396,13 @@ async function runApprovalResumeTest() {
   await manager.approveRun({ runId: prepared.run.id, approvedBy: "tester" });
   await manager.processApprovedRuns();
 
-  const detail = await waitForRunStatus(manager, prepared.run.id, "passed");
-  assert.equal(detail.status, "passed", "Approved run should complete");
+  const detail = await waitForRunStatus(manager, prepared.run.id, "completed");
+  assert.equal(detail.status, "completed", "Approved run should complete");
   assert.equal(detail.approvedBy, "tester", "Expected approver to be stored");
   assert.equal(detail.testingInstructions, editedInstructions, "Expected edited instructions to persist");
   assert.equal(detail.loopIterations.length, 1, "Expected one loop iteration");
+  assert.equal(detail.semanticVerdict, "strong", "Expected semantic verdict to replace test pass/fail");
+  assert.ok(detail.semanticInterpretation, "Expected semantic interpretation to be stored");
   assert.equal(confirmCalls, 1, "Expected exactly one execution after approval");
   assert.equal(
     capturedDraftNotes.some((notes, index) => index > 0 && notes.includes(editedInstructions)),
@@ -418,10 +447,11 @@ async function runMaxLoopCapTest() {
   await manager.approveRun({ runId: prepared.run.id, approvedBy: "tester" });
   await manager.processApprovedRuns();
 
-  const detail = await waitForRunStatus(manager, prepared.run.id, "max_loops_reached");
-  assert.equal(detail.status, "max_loops_reached", "Expected execution to stop at the max loop cap");
+  const detail = await waitForRunStatus(manager, prepared.run.id, "completed");
+  assert.equal(detail.status, "completed", "Expected execution to complete with semantic findings after the max loop cap");
   assert.equal(detail.loopCount, 3, "Expected exactly three persisted loops");
   assert.equal(detail.loopIterations.length, 3, "Expected three loop iteration records");
+  assert.equal(detail.semanticVerdict, "mixed", "Expected a semantic verdict instead of max-loop failure status");
   assert.equal(confirmCalls, 3, "Expected exactly three execution attempts");
 }
 
@@ -481,11 +511,11 @@ async function runVariantFromHistoricalRunTest() {
     testRunId: sourceRun.id,
     executionTimeMs: 25,
     loopCount: 1,
-    status: "passed",
+    status: "completed",
     testingInstructions: sourceInstructions,
     videoReference: null,
     threePointSummary: ensureSummaryArray([
-      "Historical source run passed.",
+      "Historical source run completed.",
       "Stored for variant cloning.",
       "Execution complete."
     ]),
@@ -506,8 +536,8 @@ async function runVariantFromHistoricalRunTest() {
   });
   await manager.processApprovedRuns();
 
-  const detail = await waitForRunStatus(manager, variantRun.id, "passed");
-  assert.equal(detail.status, "passed", "Variant should resume and complete from persisted instructions");
+  const detail = await waitForRunStatus(manager, variantRun.id, "completed");
+  assert.equal(detail.status, "completed", "Variant should resume and complete from persisted instructions");
   assert.equal(confirmCalls, 1, "Variant should execute once after approval");
   assert.equal(capturedDraftInputs.length, 1, "Variant should regenerate a fresh draft from stored instructions");
   assert.equal(capturedDraftInputs[0].objective, "Validate historical portfolio flow", "Expected objective to be reconstructed from instructions");
@@ -549,11 +579,11 @@ async function runCancelledVariantDeletionTest() {
     testRunId: sourceRun.id,
     executionTimeMs: 25,
     loopCount: 1,
-    status: "passed",
+    status: "completed",
     testingInstructions: sourceInstructions,
     videoReference: null,
     threePointSummary: ensureSummaryArray([
-      "Historical source run passed.",
+      "Historical source run completed.",
       "Stored for variant cloning.",
       "Execution complete."
     ]),
@@ -589,11 +619,129 @@ async function runCancelledVariantDeletionTest() {
   );
 }
 
+async function runPreviewMetadataPersistenceTest() {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jungle-run-preview-"));
+  const manager = new AgenticLoopManager(tmp);
+  const persistence = new FakePersistence();
+  manager.persistence = persistence;
+
+  const project = await persistence.getOrCreateProjectByName("Preview Project");
+  const run = await persistence.createDraftingRun({
+    projectId: project.id,
+    testingInstructions: "Preview run",
+    threePointSummary: ensureSummaryArray([
+      "Preview save started.",
+      "Attach a static preview path.",
+      "Open from the UI later."
+    ]),
+    draftPayload: null
+  });
+
+  const updated = await manager.updateRunPreview({
+    runId: run.id,
+    previewType: "static_html",
+    previewPath: "C:\\previews\\v1\\index.html",
+    previewTitle: "Landing Preview"
+  });
+
+  assert.equal(updated.previewType, "static_html");
+  assert.equal(updated.previewPath, "C:\\previews\\v1\\index.html");
+  assert.equal(updated.previewTitle, "Landing Preview");
+
+  const detail = await manager.getProjectTestRun(run.id);
+  assert.equal(detail.previewType, "static_html");
+  assert.equal(detail.previewPath, "C:\\previews\\v1\\index.html");
+  assert.equal(detail.previewTitle, "Landing Preview");
+}
+
+async function runFeatureFailureInterpretationTest() {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "jungle-failure-interpretation-"));
+  const manager = new AgenticLoopManager(tmp);
+  const persistence = new FakePersistence();
+  let confirmCalls = 0;
+
+  manager.persistence = persistence;
+  manager.createDraft = async (input) => makeDraft(manager, input, confirmCalls + 1);
+  manager.confirmAndRun = async () => {
+    confirmCalls += 1;
+    return {
+      run: {
+        runId: `feature_failure_${confirmCalls}`,
+        status: "fail",
+        summary: "Mark as complete updated the counters but the task card still rendered as In progress.",
+        steps: [
+          { action: "goto", status: "pass" },
+          {
+            action: "click",
+            status: "fail",
+            note: "After clicking Mark as complete, the card badge and visual state did not switch to completed."
+          }
+        ],
+        artifacts: [],
+        videoPath: null,
+        semantics: {
+          overallPass: false,
+          verdict: "fail",
+          wrong: [
+            "run_summary: Mark as complete updated the counters but the task card still rendered as In progress.",
+            "failed_step_note: After clicking Mark as complete, the card badge and visual state did not switch to completed.",
+            "run_status_consistent: status=fail failedSteps=1"
+          ]
+        },
+        critique: {
+          issues: [
+            {
+              severity: "high",
+              description: "The complete-task feature leaves the visible task card in the wrong UI state.",
+              evidence: "Counts changed, but the card badge still said In progress after completion.",
+              fix: "Bind the completed state to the card badge, card styling, and button label in the React view."
+            }
+          ]
+        }
+      }
+    };
+  };
+
+  const prepared = await manager.orchestrateTask({
+    projectName: "Failure Interpretation Project",
+    url: "http://127.0.0.1/test",
+    task: "Test the complete-task flow and fail if the visible card state does not update.",
+    notes: "Focus on feature-level UI correctness.",
+    additions: "",
+    skipCodex: true
+  });
+
+  await manager.approveRun({ runId: prepared.run.id, approvedBy: "tester" });
+  await manager.processApprovedRuns();
+
+  const detail = await waitForRunStatus(manager, prepared.run.id, "completed");
+  assert.equal(detail.status, "completed");
+  assert.equal(confirmCalls, 3, "Expected loop execution to stop at the hard cap");
+  assert.ok(detail.semanticInterpretation, "Expected semantic interpretation to be persisted");
+  assert.ok(
+    Array.isArray(detail.semanticInterpretation.failedItems) &&
+      detail.semanticInterpretation.failedItems.length >= 1,
+    "Expected semantic failure items to be generated"
+  );
+  assert.equal(
+    detail.semanticInterpretation.summary.includes("feature") || detail.semanticInterpretation.failedItems.some((bullet) => /feature|state|task card/i.test(bullet)),
+    true,
+    "Expected development-facing semantic interpretation"
+  );
+  assert.equal(
+    JSON.stringify(detail.semanticInterpretation).match(/Mark as complete|completed/i) !== null,
+    true,
+    "Expected the feature-specific failure to be reflected in the bullets"
+  );
+}
+
 async function run() {
   await runApprovalResumeTest();
   await runMaxLoopCapTest();
   await runVariantFromHistoricalRunTest();
   await runCancelledVariantDeletionTest();
+  await runPreviewMetadataPersistenceTest();
+  await runFeatureFailureInterpretationTest();
   console.log("agentic_approval_gating.test.js passed");
 }
 

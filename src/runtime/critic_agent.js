@@ -87,36 +87,66 @@ function deterministicCritique(input) {
   };
 }
 
-async function langChainCritique(input, deterministic) {
+async function openAiCritique(input, deterministic, fetchImpl = fetch) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
     return null;
   }
 
   try {
-    const { ChatOpenAI } = await import("@langchain/openai");
-    const { ChatPromptTemplate } = await import("@langchain/core/prompts");
-
-    const model = new ChatOpenAI({
-      apiKey,
-      model: "gpt-4o-mini",
-      temperature: 0.1
-    });
-
-    const prompt = ChatPromptTemplate.fromMessages([
-      [
-        "system",
-        "You are an aggressive QA critic. Return strict JSON with keys: verdict, confidence, summary, strengths(array), issues(array of {id,severity,description,evidence,fix}), expectedVsObserved(object with expected/observed), readinessScore(number)."
-      ],
-      [
-        "human",
-        `Objective:\n${input.objective || ""}\n\nProcedure:\n${JSON.stringify(input.procedure || {}, null, 2)}\n\nRun:\n${JSON.stringify(input.run || {}, null, 2)}\n\nDeterministic Critique Baseline:\n${JSON.stringify(deterministic, null, 2)}`
+    const model = process.env.OPENAI_CRITIC_MODEL || "gpt-5";
+    const requestBody = {
+      model,
+      input: [
+        {
+          role: "system",
+          content: [
+            {
+              type: "input_text",
+              text:
+                "You are an aggressive QA critic. Return strict JSON only with keys: verdict, confidence, summary, strengths(array), issues(array of {id,severity,description,evidence,fix}), expectedVsObserved(object with expected/observed), readinessScore(number)."
+            }
+          ]
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "input_text",
+              text: `Objective:\n${input.objective || ""}\n\nProcedure:\n${JSON.stringify(
+                input.procedure || {},
+                null,
+                2
+              )}\n\nRun:\n${JSON.stringify(input.run || {}, null, 2)}\n\nDeterministic Critique Baseline:\n${JSON.stringify(
+                deterministic,
+                null,
+                2
+              )}`
+            }
+          ]
+        }
       ]
-    ]);
+    };
+    if (/^gpt-5/i.test(model)) {
+      requestBody.reasoning = {
+        effort: process.env.OPENAI_CRITIC_REASONING_EFFORT || "medium"
+      };
+    }
 
-    const chain = prompt.pipe(model);
-    const response = await chain.invoke({});
-    const content = String(response.content || "");
+    const response = await fetchImpl("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${apiKey}`,
+        "content-type": "application/json"
+      },
+      body: JSON.stringify(requestBody)
+    });
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    const content = String(data?.output_text || "");
     const block = content.match(/```json\s*([\s\S]*?)```/i);
     const parsed = JSON.parse((block ? block[1] : content).trim());
     return parsed;
@@ -132,7 +162,7 @@ class RunCriticAgent {
 
   async analyze(input) {
     const baseline = deterministicCritique(input);
-    const llm = await langChainCritique(input, baseline);
+    const llm = await openAiCritique(input, baseline);
     if (!llm || typeof llm !== "object") {
       return { ...baseline, source: "deterministic" };
     }
@@ -146,7 +176,7 @@ class RunCriticAgent {
       issues: Array.isArray(llm.issues) ? llm.issues : baseline.issues,
       readinessScore: typeof llm.readinessScore === "number" ? llm.readinessScore : baseline.readinessScore,
       generatedAt: new Date().toISOString(),
-      source: "langchain"
+      source: "openai_responses"
     };
   }
 }
@@ -154,4 +184,3 @@ class RunCriticAgent {
 module.exports = {
   RunCriticAgent
 };
-

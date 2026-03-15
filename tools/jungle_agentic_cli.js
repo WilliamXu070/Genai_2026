@@ -57,6 +57,9 @@ function parseArgs(argv) {
   let actionDelayMs = "";
   let skipCodex = false;
   let storageRoot = "";
+  let waitForFinal = false;
+  let waitTimeoutMs = "";
+  let waitPollMs = "";
 
   while (args.length > 0) {
     const token = args.shift();
@@ -124,6 +127,18 @@ function parseArgs(argv) {
       storageRoot = args.shift() || "";
       continue;
     }
+    if (token === "--wait-for-final") {
+      waitForFinal = true;
+      continue;
+    }
+    if (token === "--wait-timeout-ms") {
+      waitTimeoutMs = args.shift() || "";
+      continue;
+    }
+    if (token === "--wait-poll-ms") {
+      waitPollMs = args.shift() || "";
+      continue;
+    }
     throw new Error(`Unknown argument: ${token}`);
   }
 
@@ -181,7 +196,10 @@ function parseArgs(argv) {
     inputFile,
     inputJson,
     inputStdin,
-    storageRoot
+    storageRoot,
+    waitForFinal,
+    waitTimeoutMs,
+    waitPollMs
   };
 }
 
@@ -201,6 +219,10 @@ function readInput({ inputFile, inputJson, inputStdin, inlineRequest }) {
 function toFiniteNumber(value) {
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : null;
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function resolveStorageRoot(explicitStorageRoot) {
@@ -305,12 +327,50 @@ async function runAgenticRequest(request, options = {}) {
     }
   });
 
+  const runId = result?.run?.id || "";
+  const waitForFinal = options.waitForFinal === true;
+  const waitTimeoutMsRaw = toFiniteNumber(options.waitTimeoutMs);
+  const waitPollMsRaw = toFiniteNumber(options.waitPollMs);
+  const waitTimeoutMs = waitTimeoutMsRaw && waitTimeoutMsRaw > 0 ? Number(waitTimeoutMsRaw) : 30 * 60 * 1000;
+  const waitPollMs = waitPollMsRaw && waitPollMsRaw > 0 ? Math.max(250, Number(waitPollMsRaw)) : 2000;
+  const terminalStatuses = new Set(["passed", "failed", "max_loops_reached", "cancelled", "completed"]);
+  let finalRun = null;
+  let waitTimedOut = false;
+  let waitDurationMs = 0;
+
+  if (waitForFinal && runId) {
+    const startedAt = Date.now();
+    while (Date.now() - startedAt < waitTimeoutMs) {
+      const detail = await manager.getProjectTestRun(runId);
+      if (!detail) {
+        await sleep(waitPollMs);
+        continue;
+      }
+      if (terminalStatuses.has(String(detail.status || ""))) {
+        finalRun = detail;
+        break;
+      }
+      await sleep(waitPollMs);
+    }
+    waitDurationMs = Date.now() - startedAt;
+    waitTimedOut = !finalRun;
+  }
+
   return {
     ok: true,
     requestId: normalized.requestId,
     projectRoot: normalized.projectRoot,
     result,
-    events
+    events,
+    wait: {
+      enabled: waitForFinal,
+      finalRun,
+      pollMs: waitPollMs,
+      runId,
+      timedOut: waitTimedOut,
+      timeoutMs: waitTimeoutMs,
+      waitedMs: waitDurationMs
+    }
   };
 }
 
@@ -318,8 +378,16 @@ async function main(argv = process.argv.slice(2)) {
   try {
     const parsed = parseArgs(argv);
     const request = readInput(parsed);
-    const response = await runAgenticRequest(request, { storageRoot: parsed.storageRoot });
+    const response = await runAgenticRequest(request, {
+      storageRoot: parsed.storageRoot,
+      waitForFinal: parsed.waitForFinal,
+      waitTimeoutMs: parsed.waitTimeoutMs,
+      waitPollMs: parsed.waitPollMs
+    });
     process.stdout.write(`${JSON.stringify(response, null, 2)}\n`);
+    if (response?.wait?.enabled && response?.wait?.timedOut) {
+      process.exitCode = 2;
+    }
   } finally {
     await closePool();
   }

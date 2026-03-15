@@ -107,9 +107,26 @@ video {
   text-transform: capitalize;
 }
 
-.status-chip[data-status="passed"] {
+.status-chip[data-status="strong"],
+.status-chip[data-status="completed"] {
   color: var(--accent);
   border-color: rgba(155, 231, 196, 0.38);
+}
+
+.status-chip[data-status="mixed"] {
+  color: var(--warning);
+  border-color: rgba(255, 203, 112, 0.28);
+}
+
+.status-chip[data-status="poor"],
+.status-chip[data-status="failed_execution"] {
+  color: var(--danger);
+  border-color: rgba(255, 141, 136, 0.3);
+}
+
+.status-chip[data-status="inconclusive"] {
+  color: #8ed3ff;
+  border-color: rgba(142, 211, 255, 0.28);
 }
 
 .status-chip[data-status="drafting"] {
@@ -129,8 +146,7 @@ video {
   border-color: rgba(142, 211, 255, 0.28);
 }
 
-.status-chip[data-status="failed"],
-.status-chip[data-status="max_loops_reached"],
+.status-chip[data-status="execution_failed"],
 .status-chip[data-status="cancelled"] {
   color: var(--danger);
   border-color: rgba(255, 141, 136, 0.3);
@@ -258,6 +274,17 @@ button:hover {
   font-weight: 700;
 }
 
+.semantic-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.semantic-grid h4 {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
 .entity-button {
   width: 100%;
   display: flex;
@@ -331,7 +358,7 @@ button:hover {
   content: "";
   position: absolute;
   top: 6px;
-  bottom: 40px;
+  bottom: 6px;
   left: calc(50% - 1px);
   width: 2px;
   background: linear-gradient(180deg, rgba(153, 197, 210, 0.2), rgba(153, 197, 210, 0.55), rgba(153, 197, 210, 0.2));
@@ -396,6 +423,8 @@ button:hover {
 }
 
 .timeline-tail {
+  position: relative;
+  z-index: 1;
   align-self: center;
   margin-top: auto;
   color: var(--accent);
@@ -495,6 +524,28 @@ button:hover {
   gap: 10px;
 }
 
+.preview-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.preview-input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #d7e6ea;
+  padding: 11px 12px;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 #detail-instructions {
   overflow: visible;
 }
@@ -504,6 +555,12 @@ button:hover {
 }
 
 #video-meta {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#preview-meta {
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;

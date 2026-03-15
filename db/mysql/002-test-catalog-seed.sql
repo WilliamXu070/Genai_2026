@@ -4,7 +4,7 @@ DELETE FROM test_runs;
 DELETE FROM test_versions;
 DELETE FROM tests;
 DELETE FROM projects;
-INSERT INTO projects (id, name, created_at, updated_at) VALUES ('genai_2026', 'Genai_2026', '2026-03-14 19:17:15', '2026-03-14 19:17:15');
+INSERT INTO projects (id, name, created_at, updated_at) VALUES ('genai_2026', 'Genai_2026', '2026-03-15 03:21:57', '2026-03-15 03:21:57');
 INSERT INTO tests (id, project_id, title, objective, status, latest_version, created_at, updated_at) VALUES ('langflow_orchestration_1773512123618766600', 'genai_2026', 'Observe rotating-square ball animation and identify critical defects', 'Observe rotating-square ball animation and identify critical defects.', 'needs_changes', 1, '2026-03-14 18:49:28', '2026-03-14 18:49:28');
 INSERT INTO test_versions (id, test_id, version_number, objective, notes, status, source_type, plan_json, created_at) VALUES ('langflow_orchestration_1773512123618766600_v1', 'langflow_orchestration_1773512123618766600', 1, 'Observe rotating-square ball animation and identify critical defects.', 'locator.waitFor: Timeout 10000ms exceeded.
 Call log:

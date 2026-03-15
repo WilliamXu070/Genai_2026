@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
@@ -13,6 +13,10 @@ const terminalSessions = new Map();
 let jungleManager;
 let agenticLoopManager;
 let catalogService;
+let agenticHistoryPollTimer = null;
+let agenticHistoryPollInFlight = false;
+let agenticHistorySignature = "";
+const AGENTIC_HISTORY_POLL_INTERVAL_MS = Number(process.env.JUNGLE_HISTORY_POLL_INTERVAL_MS || 1000);
 
 function readJsonFile(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -27,7 +31,7 @@ function getProjectRoot() {
 }
 
 function getStorageRoot() {
-  return process.env.JUNGLE_STORAGE_ROOT || path.join(app.getPath("userData"), "runtime");
+  return process.env.JUNGLE_STORAGE_ROOT || getProjectRoot();
 }
 
 function disposeTerminalSession() {
@@ -154,8 +158,92 @@ function createWindow() {
 
   mainWindow.on("closed", () => {
     disposeTerminalSession();
+    stopAgenticHistoryWatcher();
     mainWindow = null;
   });
+}
+
+function buildAgenticHistorySignature(projects, approvalRuns, inProgressRuns) {
+  const projectRows = (Array.isArray(projects) ? projects : []).map((project) => [
+    project.id || "",
+    project.updatedAt || project.updated_at || ""
+  ]);
+  const approvalRows = (Array.isArray(approvalRuns) ? approvalRuns : []).map((run) => [
+    run.id || "",
+    run.status || "",
+    Number(run.loopCount || 0),
+    run.updatedAt || "",
+    run.approvalRequestedAt || ""
+  ]);
+  const progressRows = (Array.isArray(inProgressRuns) ? inProgressRuns : []).map((run) => [
+    run.id || "",
+    run.status || "",
+    Number(run.loopCount || 0),
+    run.updatedAt || ""
+  ]);
+  return JSON.stringify({
+    approvalRows,
+    progressRows,
+    projectRows
+  });
+}
+
+function broadcastAgenticHistoryChanged(payload) {
+  const windows = BrowserWindow.getAllWindows();
+  windows.forEach((window) => {
+    if (!window.isDestroyed()) {
+      window.webContents.send("agentic:history-changed", payload);
+    }
+  });
+}
+
+async function pollAgenticHistoryChanges(options = {}) {
+  if (!agenticLoopManager || agenticHistoryPollInFlight) {
+    return;
+  }
+  agenticHistoryPollInFlight = true;
+  try {
+    const [projects, approvalRuns, inProgressRuns] = await Promise.all([
+      agenticLoopManager.listProjects(),
+      agenticLoopManager.listAwaitingApprovalRuns(),
+      agenticLoopManager.listInProgressRuns()
+    ]);
+    const nextSignature = buildAgenticHistorySignature(projects, approvalRuns, inProgressRuns);
+    const firstSnapshot = !agenticHistorySignature;
+    const changed = nextSignature !== agenticHistorySignature;
+    agenticHistorySignature = nextSignature;
+
+    if ((options.force && !firstSnapshot) || (!firstSnapshot && changed)) {
+      broadcastAgenticHistoryChanged({
+        changedAt: new Date().toISOString()
+      });
+    }
+  } catch (_) {
+    // ignore polling errors; renderer can still refresh manually
+  } finally {
+    agenticHistoryPollInFlight = false;
+  }
+}
+
+function startAgenticHistoryWatcher() {
+  if (agenticHistoryPollTimer || !agenticLoopManager) {
+    return;
+  }
+  pollAgenticHistoryChanges();
+  agenticHistoryPollTimer = setInterval(() => {
+    pollAgenticHistoryChanges();
+  }, AGENTIC_HISTORY_POLL_INTERVAL_MS);
+  if (typeof agenticHistoryPollTimer.unref === "function") {
+    agenticHistoryPollTimer.unref();
+  }
+}
+
+function stopAgenticHistoryWatcher() {
+  if (agenticHistoryPollTimer) {
+    clearInterval(agenticHistoryPollTimer);
+    agenticHistoryPollTimer = null;
+  }
+  agenticHistorySignature = "";
 }
 
 async function runToolBridgeIfConfigured() {
@@ -228,6 +316,7 @@ app.whenReady().then(() => {
   agenticLoopManager = new AgenticLoopManager({ workspaceRoot, storageRoot });
   catalogService = new CatalogService({ workspaceRoot, storageRoot });
   createWindow();
+  startAgenticHistoryWatcher();
   runToolBridgeIfConfigured();
 
   app.on("activate", () => {
@@ -244,6 +333,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("before-quit", () => {
+  stopAgenticHistoryWatcher();
   disposeTerminalSession();
 });
 
@@ -384,35 +474,85 @@ ipcMain.handle("agentic:approve-run", async (_, payload) => {
   if (!agenticLoopManager) {
     throw new Error("Agentic loop manager unavailable");
   }
-  return agenticLoopManager.approveRun(payload || {});
+  const result = await agenticLoopManager.approveRun(payload || {});
+  pollAgenticHistoryChanges({ force: true });
+  return result;
 });
 
 ipcMain.handle("agentic:update-run-testing-instructions", async (_, payload) => {
   if (!agenticLoopManager) {
     throw new Error("Agentic loop manager unavailable");
   }
-  return agenticLoopManager.updateRunTestingInstructions(payload || {});
+  const result = await agenticLoopManager.updateRunTestingInstructions(payload || {});
+  pollAgenticHistoryChanges({ force: true });
+  return result;
+});
+
+ipcMain.handle("agentic:update-run-preview", async (_, payload) => {
+  if (!agenticLoopManager) {
+    throw new Error("Agentic loop manager unavailable");
+  }
+  const result = await agenticLoopManager.updateRunPreview(payload || {});
+  pollAgenticHistoryChanges({ force: true });
+  return result;
 });
 
 ipcMain.handle("agentic:create-variant-run", async (_, payload) => {
   if (!agenticLoopManager) {
     throw new Error("Agentic loop manager unavailable");
   }
-  return agenticLoopManager.createVariantRun(payload || {});
+  const result = await agenticLoopManager.createVariantRun(payload || {});
+  pollAgenticHistoryChanges({ force: true });
+  return result;
 });
 
 ipcMain.handle("agentic:cancel-run", async (_, payload) => {
   if (!agenticLoopManager) {
     throw new Error("Agentic loop manager unavailable");
   }
-  return agenticLoopManager.cancelRun(payload || {});
+  const result = await agenticLoopManager.cancelRun(payload || {});
+  pollAgenticHistoryChanges({ force: true });
+  return result;
+});
+
+ipcMain.handle("agentic:open-run-preview", async (_, payload) => {
+  const rawPath = typeof payload?.previewPath === "string" ? payload.previewPath.trim() : "";
+  if (!rawPath) {
+    return {
+      ok: false,
+      error: "No preview path provided."
+    };
+  }
+
+  const resolvedPath = path.resolve(rawPath);
+  if (!fs.existsSync(resolvedPath)) {
+    return {
+      ok: false,
+      error: `Preview path not found: ${resolvedPath}`
+    };
+  }
+
+  const openError = await shell.openPath(resolvedPath);
+  if (openError) {
+    return {
+      ok: false,
+      error: openError
+    };
+  }
+
+  return {
+    ok: true,
+    previewPath: resolvedPath
+  };
 });
 
 ipcMain.handle("agentic:create-draft", async (_, payload) => {
   if (!agenticLoopManager) {
     throw new Error("Agentic loop manager unavailable");
   }
-  return agenticLoopManager.createDraft(payload || {});
+  const result = await agenticLoopManager.createDraft(payload || {});
+  pollAgenticHistoryChanges({ force: true });
+  return result;
 });
 
 ipcMain.handle("agentic:orchestrate-task", async (event, payload) => {
@@ -424,7 +564,9 @@ ipcMain.handle("agentic:orchestrate-task", async (event, payload) => {
       event.sender.send("agentic:event", runtimeEvent);
     }
   };
-  return agenticLoopManager.orchestrateTask(payload || {}, emitEvent);
+  const result = await agenticLoopManager.orchestrateTask(payload || {}, emitEvent);
+  pollAgenticHistoryChanges({ force: true });
+  return result;
 });
 
 ipcMain.handle("agentic:confirm-and-run", async (event, payload) => {
@@ -436,7 +578,9 @@ ipcMain.handle("agentic:confirm-and-run", async (event, payload) => {
       event.sender.send("agentic:event", runtimeEvent);
     }
   };
-  return agenticLoopManager.confirmAndRun(payload || {}, emitEvent);
+  const result = await agenticLoopManager.confirmAndRun(payload || {}, emitEvent);
+  pollAgenticHistoryChanges({ force: true });
+  return result;
 });
 
 ipcMain.handle("agentic:redo-run", async (event, payload) => {
@@ -448,14 +592,18 @@ ipcMain.handle("agentic:redo-run", async (event, payload) => {
       event.sender.send("agentic:event", runtimeEvent);
     }
   };
-  return agenticLoopManager.redoRun(payload || {}, emitEvent);
+  const result = await agenticLoopManager.redoRun(payload || {}, emitEvent);
+  pollAgenticHistoryChanges({ force: true });
+  return result;
 });
 
 ipcMain.handle("agentic:fork-tree", async (_, payload) => {
   if (!agenticLoopManager) {
     throw new Error("Agentic loop manager unavailable");
   }
-  return agenticLoopManager.forkTree(payload || {});
+  const result = await agenticLoopManager.forkTree(payload || {});
+  pollAgenticHistoryChanges({ force: true });
+  return result;
 });
 
 ipcMain.handle("catalog:list-tests", () => {

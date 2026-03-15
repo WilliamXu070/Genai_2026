@@ -1,0 +1,37 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Jungle Approval Queue",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "click",
+      "originalAction": "click",
+      "target": "text=Jungle\\nUpdated",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#approve-run",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "viewport",
+      "value": null,
+      "assert": null
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "overallPass": true,
+  "verdict": "pass",
+  "checks": [
+    {
+      "key": "steps_present",
+      "pass": true,
+      "detail": "steps=6"
+    },
+    {
+      "key": "artifacts_present",
+      "pass": true,
+      "detail": "artifacts=8"
+    },
+    {
+      "key": "parser_artifact",
+      "pass": true,
+      "detail": "parserArtifacts=1"
+    },
+    {
+      "key": "executor_artifact",
+      "pass": true,
+      "detail": "executorArtifacts=1"
+    },
+    {
+      "key": "video_valid_webm",
+      "pass": true,
+      "detail": "not required for electron_app"
+    },
+    {
+      "key": "run_status_consistent",
+      "pass": true,
+      "detail": "status=pass failedSteps=0"
+    }
+  ],
+  "right": [
+    "steps_present: steps=6",
+    "artifacts_present: artifacts=8",
+    "parser_artifact: parserArtifacts=1",
+    "executor_artifact: executorArtifacts=1",
+    "video_valid_webm: not required for electron_app",
+    "run_status_consistent: status=pass failedSteps=0",
+    "run_summary: Procedure executed successfully."
+  ],
+  "wrong": [],
+  "video": {
+    "exists": true,
+    "headerValid": true,
+    "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\d1c335762accef363f38a7c20c10f59c.webm",
+    "sizeBytes": 192062,
+    "valid": true
+  }
+}

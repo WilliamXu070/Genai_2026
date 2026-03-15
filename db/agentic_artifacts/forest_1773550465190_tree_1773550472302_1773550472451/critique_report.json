@@ -1,0 +1,38 @@
+{
+  "verdict": "fail",
+  "confidence": 0.7,
+  "summary": "Critic detected 3 issue(s) requiring attention.",
+  "expectedVsObserved": {
+    "expected": "Verify the plant growth cycle progresses through all stages: seed, sprout, stem, leaves, and full bloom.",
+    "observed": "Run failed; evidence indicates unmet expectations."
+  },
+  "strengths": [
+    "Observed timeline includes an explicit wait window."
+  ],
+  "issues": [
+    {
+      "id": "run_failed",
+      "severity": "critical",
+      "description": "Failed at step 8: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'",
+      "evidence": "Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'",
+      "fix": "Fix failing selector/assertion and re-run with stronger deterministic checks."
+    },
+    {
+      "id": "semantic_checks_failed",
+      "severity": "high",
+      "description": "One or more semantic checks failed.",
+      "evidence": "run_summary: Failed at step 8: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout' | failed_step_note: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'",
+      "fix": "Inspect semantic_report and harden assertions around expected motion/state changes."
+    },
+    {
+      "id": "execution_instability",
+      "severity": "high",
+      "description": "Execution output indicates instability or selector mismatch.",
+      "evidence": "Failed at step 8: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'",
+      "fix": "Use resilient selectors and fallback observation-only plan when controls are absent."
+    }
+  ],
+  "readinessScore": 20,
+  "generatedAt": "2026-03-15T04:54:38.356Z",
+  "source": "deterministic"
+}

@@ -60,8 +60,10 @@ contextBridge.exposeInMainWorld("agenticApi", {
   getProjectTestRun: (runId) => ipcRenderer.invoke("agentic:get-project-test-run", runId),
   approveRun: (payload) => ipcRenderer.invoke("agentic:approve-run", payload),
   updateRunTestingInstructions: (payload) => ipcRenderer.invoke("agentic:update-run-testing-instructions", payload),
+  updateRunPreview: (payload) => ipcRenderer.invoke("agentic:update-run-preview", payload),
   createVariantRun: (payload) => ipcRenderer.invoke("agentic:create-variant-run", payload),
   cancelRun: (payload) => ipcRenderer.invoke("agentic:cancel-run", payload),
+  openRunPreview: (payload) => ipcRenderer.invoke("agentic:open-run-preview", payload),
   createDraft: (payload) => ipcRenderer.invoke("agentic:create-draft", payload),
   orchestrateTask: (payload) => ipcRenderer.invoke("agentic:orchestrate-task", payload),
   confirmAndRun: (payload) => ipcRenderer.invoke("agentic:confirm-and-run", payload),
@@ -71,6 +73,11 @@ contextBridge.exposeInMainWorld("agenticApi", {
     const listener = (_, payload) => callback(payload);
     ipcRenderer.on("agentic:event", listener);
     return () => ipcRenderer.removeListener("agentic:event", listener);
+  },
+  onHistoryChanged: (callback) => {
+    const listener = (_, payload) => callback(payload);
+    ipcRenderer.on("agentic:history-changed", listener);
+    return () => ipcRenderer.removeListener("agentic:history-changed", listener);
   }
 });
 

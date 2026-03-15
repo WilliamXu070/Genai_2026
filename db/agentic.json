@@ -2,6 +2,1822 @@
   "schemaVersion": "0.1.0",
   "forests": [
     {
+      "forestId": "forest_1773550465190",
+      "projectName": "Grow - Single File Plant Animation",
+      "url": "http://127.0.0.1:5173",
+      "objective": "Feature: staged plant growth sequence\nObjective: verify seed -> sprout -> stem -> leaves -> full bloom appears in clear visual order\nScope: index.html only\nPrimary assertion: The UI visibly progresses through all five stages in order and reaches a distinct full bloom state\nNon-goals: Do not assert color palette preferences, typography style, or unrelated layout tweaks\nMax loops: 3",
+      "createdAt": "2026-03-15T04:54:25.190Z",
+      "updatedAt": "2026-03-15T04:54:59.017Z",
+      "trees": [
+        {
+          "treeId": "tree_1773550485241",
+          "version": 3,
+          "status": "validated",
+          "createdAt": "2026-03-15T04:54:45.241Z",
+          "updatedAt": "2026-03-15T04:54:59.017Z",
+          "procedure": {
+            "summary": "Validate Plant Growth Cycle flow and core interactions for objective: Verify the plant growth cycle progresses through all stages: seed, sprout, stem, leaves, and full bloom.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Plant Growth Cycle"
+              },
+              {
+                "action": "wait",
+                "target": "time",
+                "value": 10000
+              },
+              {
+                "action": "scrollPage",
+                "target": "down"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "Verifies the plant growth cycle progresses through all stages with a 1-second delay between each stage. Asserts the text content of the #stageLabel element and the visibility of the #scene element at each stage."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:5173/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Plant Growth Cycle",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "time",
+                "value": 10000,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "down",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "web_frontend",
+              "playwrightMode": "web",
+              "startupRequired": true,
+              "startupCommand": "npm run dev",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "url",
+                "target": "http://127.0.0.1:5173"
+              },
+              "launchTarget": {
+                "kind": "url",
+                "value": "http://127.0.0.1:5173"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "none",
+                "command": null,
+                "reasoning": "No runtime seeding required for browser-served target."
+              },
+              "reasoning": "Detected browser-served frontend via requested URL http://127.0.0.1:5173 and available scripts.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Feature: staged plant growth sequence\nObjective: verify seed -> sprout -> stem -> leaves -> full bloom appears in clear visual order\nScope: index.html only\nPrimary assertion: The UI visibly progresses through all five stages in order and reaches a distinct full bloom state\nNon-goals: Do not assert color palette preferences, typography style, or unrelated layout tweaks\nMax loops: 3\nRequested target type: web_frontend\nRequested URL: http://127.0.0.1:5173\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: web_frontend",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": "agentic_run_1773550499009",
+          "confirmedAt": "2026-03-15T04:54:59.017Z"
+        },
+        {
+          "treeId": "tree_1773550472302",
+          "version": 2,
+          "status": "failed",
+          "createdAt": "2026-03-15T04:54:32.302Z",
+          "updatedAt": "2026-03-15T04:54:38.365Z",
+          "procedure": {
+            "summary": "Verify the plant growth cycle progresses through all stages: seed, sprout, stem, leaves, and full bloom.",
+            "confirmMessage": "Plant growth cycle verified to progress through all stages.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "assertText",
+                "target": "#stageLabel",
+                "value": "Seed"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "#scene",
+                "value": "1000"
+              },
+              {
+                "action": "assertText",
+                "target": "#stageLabel",
+                "value": "Sprout"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "#scene",
+                "value": "1000"
+              },
+              {
+                "action": "assertText",
+                "target": "#stageLabel",
+                "value": "Stem"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "#scene",
+                "value": "1000"
+              },
+              {
+                "action": "assertText",
+                "target": "#stageLabel",
+                "value": "Leaves"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "wait",
+                "target": "#scene",
+                "value": "1000"
+              },
+              {
+                "action": "assertText",
+                "target": "#stageLabel",
+                "value": "Bloom"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              }
+            ],
+            "notes": "Verifies the plant growth cycle by asserting the text of the stage label and visibility of the scene element after a short delay for each stage."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:5173/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertText",
+                "originalAction": "assertText",
+                "target": "#stageLabel",
+                "value": "Seed",
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "assertText",
+                "originalAction": "assertText",
+                "target": "#stageLabel",
+                "value": "Sprout",
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "assert": null
+              },
+              {
+                "index": 7,
+                "action": "assertText",
+                "originalAction": "assertText",
+                "target": "#stageLabel",
+                "value": "Stem",
+                "assert": null
+              },
+              {
+                "index": 8,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 9,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "assert": null
+              },
+              {
+                "index": 10,
+                "action": "assertText",
+                "originalAction": "assertText",
+                "target": "#stageLabel",
+                "value": "Leaves",
+                "assert": null
+              },
+              {
+                "index": 11,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 12,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "#scene",
+                "value": "1000",
+                "assert": null
+              },
+              {
+                "index": 13,
+                "action": "assertText",
+                "originalAction": "assertText",
+                "target": "#stageLabel",
+                "value": "Bloom",
+                "assert": null
+              },
+              {
+                "index": 14,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "web_frontend",
+              "playwrightMode": "web",
+              "startupRequired": true,
+              "startupCommand": "npm run dev",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "url",
+                "target": "http://127.0.0.1:5173"
+              },
+              "launchTarget": {
+                "kind": "url",
+                "value": "http://127.0.0.1:5173"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "none",
+                "command": null,
+                "reasoning": "No runtime seeding required for browser-served target."
+              },
+              "reasoning": "Detected browser-served frontend via requested URL http://127.0.0.1:5173 and available scripts.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Feature: staged plant growth sequence\nObjective: verify seed -> sprout -> stem -> leaves -> full bloom appears in clear visual order\nScope: index.html only\nPrimary assertion: The UI visibly progresses through all five stages in order and reaches a distinct full bloom state\nNon-goals: Do not assert color palette preferences, typography style, or unrelated layout tweaks\nMax loops: 3\nRequested target type: web_frontend\nRequested URL: http://127.0.0.1:5173\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: web_frontend",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": "agentic_run_1773550478358",
+          "confirmedAt": "2026-03-15T04:54:38.365Z"
+        },
+        {
+          "treeId": "tree_1773550465205",
+          "version": 1,
+          "status": "draft",
+          "createdAt": "2026-03-15T04:54:25.205Z",
+          "updatedAt": "2026-03-15T04:54:25.205Z",
+          "procedure": {
+            "notes": "Verifies the plant growth cycle progresses through all stages in the correct order.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "assertText",
+                "assert": "Seed",
+                "target": "#stageLabel"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "value": "1000",
+                "action": "wait",
+                "target": "#scene"
+              },
+              {
+                "action": "assertText",
+                "assert": "Sprout",
+                "target": "#stageLabel"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "value": "1000",
+                "action": "wait",
+                "target": "#scene"
+              },
+              {
+                "action": "assertText",
+                "assert": "Stem",
+                "target": "#stageLabel"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "value": "1000",
+                "action": "wait",
+                "target": "#scene"
+              },
+              {
+                "action": "assertText",
+                "assert": "Leaves",
+                "target": "#stageLabel"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "value": "1000",
+                "action": "wait",
+                "target": "#scene"
+              },
+              {
+                "action": "assertText",
+                "assert": "Full Bloom",
+                "target": "#stageLabel"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              }
+            ],
+            "summary": "Verify the plant growth cycle progresses through all stages: seed, sprout, stem, leaves, and full bloom.",
+            "confirmMessage": "Plant growth cycle stages verified successfully."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "value": null,
+                "action": "goto",
+                "assert": null,
+                "target": "http://127.0.0.1:5173/",
+                "originalAction": "goto"
+              },
+              {
+                "index": 1,
+                "value": "Seed",
+                "action": "assertText",
+                "assert": "Seed",
+                "target": "#stageLabel",
+                "originalAction": "assertText"
+              },
+              {
+                "index": 2,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "assertVisible"
+              },
+              {
+                "index": 3,
+                "value": "1000",
+                "action": "wait",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "wait"
+              },
+              {
+                "index": 4,
+                "value": "Sprout",
+                "action": "assertText",
+                "assert": "Sprout",
+                "target": "#stageLabel",
+                "originalAction": "assertText"
+              },
+              {
+                "index": 5,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "assertVisible"
+              },
+              {
+                "index": 6,
+                "value": "1000",
+                "action": "wait",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "wait"
+              },
+              {
+                "index": 7,
+                "value": "Stem",
+                "action": "assertText",
+                "assert": "Stem",
+                "target": "#stageLabel",
+                "originalAction": "assertText"
+              },
+              {
+                "index": 8,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "assertVisible"
+              },
+              {
+                "index": 9,
+                "value": "1000",
+                "action": "wait",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "wait"
+              },
+              {
+                "index": 10,
+                "value": "Leaves",
+                "action": "assertText",
+                "assert": "Leaves",
+                "target": "#stageLabel",
+                "originalAction": "assertText"
+              },
+              {
+                "index": 11,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "assertVisible"
+              },
+              {
+                "index": 12,
+                "value": "1000",
+                "action": "wait",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "wait"
+              },
+              {
+                "index": 13,
+                "value": "Full Bloom",
+                "action": "assertText",
+                "assert": "Full Bloom",
+                "target": "#stageLabel",
+                "originalAction": "assertText"
+              },
+              {
+                "index": 14,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "assertVisible"
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": null
+        }
+      ],
+      "summary": {
+        "totalRuns": 2,
+        "passRuns": 1,
+        "failRuns": 1,
+        "passRate": 50,
+        "avgReadiness": 60,
+        "latestRunId": "agentic_run_1773550499009",
+        "latestStatus": "pass",
+        "recurringIssues": [
+          {
+            "id": "run_failed",
+            "count": 1
+          },
+          {
+            "id": "semantic_checks_failed",
+            "count": 1
+          },
+          {
+            "id": "execution_instability",
+            "count": 1
+          }
+        ],
+        "updatedAt": "2026-03-15T04:54:59.009Z"
+      }
+    },
+    {
+      "forestId": "forest_1773550292603",
+      "projectName": "Grow - Single File Plant Animation",
+      "url": "http://127.0.0.1:5173",
+      "objective": "Feature: staged plant growth sequence\nObjective: verify seed -> sprout -> stem -> leaves -> full bloom appears in clear visual order\nScope: index.html only\nPrimary assertion: The UI visibly progresses through all five stages in order and reaches a distinct full bloom state\nNon-goals: Do not assert color palette preferences, typography style, or unrelated layout tweaks\nMax loops: 3",
+      "createdAt": "2026-03-15T04:51:32.603Z",
+      "updatedAt": "2026-03-15T04:52:16.773Z",
+      "trees": [
+        {
+          "treeId": "tree_1773550322892",
+          "version": 3,
+          "status": "validated",
+          "createdAt": "2026-03-15T04:52:02.893Z",
+          "updatedAt": "2026-03-15T04:52:16.773Z",
+          "procedure": {
+            "summary": "Validate Plant Growth Cycle flow and core interactions for objective: Verify the plant growth sequence progresses through all five stages (seed, sprout, stem, leaves, full bloom) in the correct visual order.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "assertVisible",
+                "target": "text=Plant Growth Cycle"
+              },
+              {
+                "action": "wait",
+                "target": "time",
+                "value": 10000
+              },
+              {
+                "action": "scrollPage",
+                "target": "down"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "Verifies the plant growth stages progress in the correct order: Seed, Sprout, Stem, Leaves, and Full Bloom.  The scrollPage action is used to trigger the next stage.  A short wait is included to allow the UI to update."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:5173/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Plant Growth Cycle",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "time",
+                "value": 10000,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "down",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "web_frontend",
+              "playwrightMode": "web",
+              "startupRequired": true,
+              "startupCommand": "npm run dev",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "url",
+                "target": "http://127.0.0.1:5173"
+              },
+              "launchTarget": {
+                "kind": "url",
+                "value": "http://127.0.0.1:5173"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "none",
+                "command": null,
+                "reasoning": "No runtime seeding required for browser-served target."
+              },
+              "reasoning": "Detected browser-served frontend via requested URL http://127.0.0.1:5173 and available scripts.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Feature: staged plant growth sequence\nObjective: verify seed -> sprout -> stem -> leaves -> full bloom appears in clear visual order\nScope: index.html only\nPrimary assertion: The UI visibly progresses through all five stages in order and reaches a distinct full bloom state\nNon-goals: Do not assert color palette preferences, typography style, or unrelated layout tweaks\nMax loops: 3\nRequested target type: web_frontend\nRequested URL: http://127.0.0.1:5173\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: web_frontend",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": "agentic_run_1773550336766",
+          "confirmedAt": "2026-03-15T04:52:16.773Z"
+        },
+        {
+          "treeId": "tree_1773550300925",
+          "version": 2,
+          "status": "failed",
+          "createdAt": "2026-03-15T04:51:40.926Z",
+          "updatedAt": "2026-03-15T04:51:54.543Z",
+          "procedure": {
+            "summary": "Verify the plant growth sequence progresses through all five stages (seed, sprout, stem, leaves, full bloom) in the correct visual order.",
+            "confirmMessage": "Plant growth sequence verified successfully.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "assertText",
+                "target": "#stageLabel",
+                "value": "Seed"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "scrollPage",
+                "target": "document bottom"
+              },
+              {
+                "action": "wait",
+                "target": "500"
+              },
+              {
+                "action": "assertText",
+                "target": "#stageLabel",
+                "value": "Sprout"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "scrollPage",
+                "target": "document bottom"
+              },
+              {
+                "action": "wait",
+                "target": "500"
+              },
+              {
+                "action": "assertText",
+                "target": "#stageLabel",
+                "value": "Stem"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "scrollPage",
+                "target": "document bottom"
+              },
+              {
+                "action": "wait",
+                "target": "500"
+              },
+              {
+                "action": "assertText",
+                "target": "#stageLabel",
+                "value": "Leaves"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "action": "scrollPage",
+                "target": "document bottom"
+              },
+              {
+                "action": "wait",
+                "target": "500"
+              },
+              {
+                "action": "assertText",
+                "target": "#stageLabel",
+                "value": "Full Bloom"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              }
+            ],
+            "notes": "Verifies the plant growth stages by asserting the text content of the #stageLabel element and visibility of the #scene element after scrolling to the bottom of the page and waiting for a short duration. This simulates progression through the growth cycle."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "goto",
+                "originalAction": "goto",
+                "target": "http://127.0.0.1:5173/",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertText",
+                "originalAction": "assertText",
+                "target": "#stageLabel",
+                "value": "Seed",
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "document bottom",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "500",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "assertText",
+                "originalAction": "assertText",
+                "target": "#stageLabel",
+                "value": "Sprout",
+                "assert": null
+              },
+              {
+                "index": 6,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 7,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "document bottom",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 8,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "500",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 9,
+                "action": "assertText",
+                "originalAction": "assertText",
+                "target": "#stageLabel",
+                "value": "Stem",
+                "assert": null
+              },
+              {
+                "index": 10,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 11,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "document bottom",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 12,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "500",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 13,
+                "action": "assertText",
+                "originalAction": "assertText",
+                "target": "#stageLabel",
+                "value": "Leaves",
+                "assert": null
+              },
+              {
+                "index": 14,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 15,
+                "action": "scrollPage",
+                "originalAction": "scrollPage",
+                "target": "document bottom",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 16,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "500",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 17,
+                "action": "assertText",
+                "originalAction": "assertText",
+                "target": "#stageLabel",
+                "value": "Full Bloom",
+                "assert": null
+              },
+              {
+                "index": 18,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#scene",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "web_frontend",
+              "playwrightMode": "web",
+              "startupRequired": true,
+              "startupCommand": "npm run dev",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "url",
+                "target": "http://127.0.0.1:5173"
+              },
+              "launchTarget": {
+                "kind": "url",
+                "value": "http://127.0.0.1:5173"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "none",
+                "command": null,
+                "reasoning": "No runtime seeding required for browser-served target."
+              },
+              "reasoning": "Detected browser-served frontend via requested URL http://127.0.0.1:5173 and available scripts.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Feature: staged plant growth sequence\nObjective: verify seed -> sprout -> stem -> leaves -> full bloom appears in clear visual order\nScope: index.html only\nPrimary assertion: The UI visibly progresses through all five stages in order and reaches a distinct full bloom state\nNon-goals: Do not assert color palette preferences, typography style, or unrelated layout tweaks\nMax loops: 3\nRequested target type: web_frontend\nRequested URL: http://127.0.0.1:5173\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: web_frontend",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": "agentic_run_1773550314535",
+          "confirmedAt": "2026-03-15T04:51:54.543Z"
+        },
+        {
+          "treeId": "tree_1773550292616",
+          "version": 1,
+          "status": "draft",
+          "createdAt": "2026-03-15T04:51:32.616Z",
+          "updatedAt": "2026-03-15T04:51:32.616Z",
+          "procedure": {
+            "notes": "The test scrolls to the bottom of the page to trigger the next stage of growth.  A short wait is added to allow the transition to complete before asserting the new stage.",
+            "steps": [
+              {
+                "action": "goto",
+                "target": "http://127.0.0.1:5173/"
+              },
+              {
+                "action": "assertText",
+                "assert": "Seed",
+                "target": "#stageLabel"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "value": "bottom",
+                "action": "scrollPage",
+                "target": "document"
+              },
+              {
+                "action": "wait",
+                "target": "500"
+              },
+              {
+                "action": "assertText",
+                "assert": "Sprout",
+                "target": "#stageLabel"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "value": "bottom",
+                "action": "scrollPage",
+                "target": "document"
+              },
+              {
+                "action": "wait",
+                "target": "500"
+              },
+              {
+                "action": "assertText",
+                "assert": "Stem",
+                "target": "#stageLabel"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "value": "bottom",
+                "action": "scrollPage",
+                "target": "document"
+              },
+              {
+                "action": "wait",
+                "target": "500"
+              },
+              {
+                "action": "assertText",
+                "assert": "Leaves",
+                "target": "#stageLabel"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              },
+              {
+                "value": "bottom",
+                "action": "scrollPage",
+                "target": "document"
+              },
+              {
+                "action": "wait",
+                "target": "500"
+              },
+              {
+                "action": "assertText",
+                "assert": "Full Bloom",
+                "target": "#stageLabel"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#scene"
+              }
+            ],
+            "summary": "Verify the plant growth sequence progresses through all five stages (seed, sprout, stem, leaves, full bloom) in the correct visual order.",
+            "confirmMessage": "Plant growth sequence verified successfully."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "value": null,
+                "action": "goto",
+                "assert": null,
+                "target": "http://127.0.0.1:5173/",
+                "originalAction": "goto"
+              },
+              {
+                "index": 1,
+                "value": "Seed",
+                "action": "assertText",
+                "assert": "Seed",
+                "target": "#stageLabel",
+                "originalAction": "assertText"
+              },
+              {
+                "index": 2,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "assertVisible"
+              },
+              {
+                "index": 3,
+                "value": "bottom",
+                "action": "scrollPage",
+                "assert": null,
+                "target": "document",
+                "originalAction": "scrollPage"
+              },
+              {
+                "index": 4,
+                "value": null,
+                "action": "wait",
+                "assert": null,
+                "target": "500",
+                "originalAction": "wait"
+              },
+              {
+                "index": 5,
+                "value": "Sprout",
+                "action": "assertText",
+                "assert": "Sprout",
+                "target": "#stageLabel",
+                "originalAction": "assertText"
+              },
+              {
+                "index": 6,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "assertVisible"
+              },
+              {
+                "index": 7,
+                "value": "bottom",
+                "action": "scrollPage",
+                "assert": null,
+                "target": "document",
+                "originalAction": "scrollPage"
+              },
+              {
+                "index": 8,
+                "value": null,
+                "action": "wait",
+                "assert": null,
+                "target": "500",
+                "originalAction": "wait"
+              },
+              {
+                "index": 9,
+                "value": "Stem",
+                "action": "assertText",
+                "assert": "Stem",
+                "target": "#stageLabel",
+                "originalAction": "assertText"
+              },
+              {
+                "index": 10,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "assertVisible"
+              },
+              {
+                "index": 11,
+                "value": "bottom",
+                "action": "scrollPage",
+                "assert": null,
+                "target": "document",
+                "originalAction": "scrollPage"
+              },
+              {
+                "index": 12,
+                "value": null,
+                "action": "wait",
+                "assert": null,
+                "target": "500",
+                "originalAction": "wait"
+              },
+              {
+                "index": 13,
+                "value": "Leaves",
+                "action": "assertText",
+                "assert": "Leaves",
+                "target": "#stageLabel",
+                "originalAction": "assertText"
+              },
+              {
+                "index": 14,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "assertVisible"
+              },
+              {
+                "index": 15,
+                "value": "bottom",
+                "action": "scrollPage",
+                "assert": null,
+                "target": "document",
+                "originalAction": "scrollPage"
+              },
+              {
+                "index": 16,
+                "value": null,
+                "action": "wait",
+                "assert": null,
+                "target": "500",
+                "originalAction": "wait"
+              },
+              {
+                "index": 17,
+                "value": "Full Bloom",
+                "action": "assertText",
+                "assert": "Full Bloom",
+                "target": "#stageLabel",
+                "originalAction": "assertText"
+              },
+              {
+                "index": 18,
+                "value": null,
+                "action": "assertVisible",
+                "assert": null,
+                "target": "#scene",
+                "originalAction": "assertVisible"
+              }
+            ]
+          },
+          "executionProfile": {
+            "recordVideo": true,
+            "mode": "web",
+            "targetType": "web_frontend"
+          },
+          "lastRunId": null
+        }
+      ],
+      "summary": {
+        "totalRuns": 2,
+        "passRuns": 1,
+        "failRuns": 1,
+        "passRate": 50,
+        "avgReadiness": 60,
+        "latestRunId": "agentic_run_1773550336766",
+        "latestStatus": "pass",
+        "recurringIssues": [
+          {
+            "id": "run_failed",
+            "count": 1
+          },
+          {
+            "id": "semantic_checks_failed",
+            "count": 1
+          },
+          {
+            "id": "execution_instability",
+            "count": 1
+          }
+        ],
+        "updatedAt": "2026-03-15T04:52:16.766Z"
+      }
+    },
+    {
+      "forestId": "forest_1773544916903",
+      "projectName": "Jungle",
+      "url": "",
+      "objective": "Verify the Electron application shell is running and the main window is inspectable.",
+      "createdAt": "2026-03-15T03:21:56.903Z",
+      "updatedAt": "2026-03-15T03:22:11.510Z",
+      "trees": [
+        {
+          "treeId": "tree_1773544916906",
+          "version": 1,
+          "status": "failed",
+          "createdAt": "2026-03-15T03:21:56.906Z",
+          "updatedAt": "2026-03-15T03:22:11.510Z",
+          "procedure": {
+            "summary": "Verify the Electron application shell is running and the main window is inspectable, then interact with the 'Jungle' project run.",
+            "confirmMessage": "Electron application and Jungle run interaction verified.",
+            "steps": [
+              {
+                "action": "assertVisible",
+                "target": "text=Jungle Approval Queue"
+              },
+              {
+                "action": "click",
+                "target": "text=Jungle\\nUpdated"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#approve-run"
+              },
+              {
+                "action": "screenshot",
+                "target": "viewport"
+              }
+            ],
+            "notes": "This test verifies the basic structure of the Electron app and interacts with a project run. The screenshot provides video evidence of the application state."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Jungle Approval Queue",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "click",
+                "originalAction": "click",
+                "target": "text=Jungle\\nUpdated",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#approve-run",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "viewport",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "electron_app",
+              "playwrightMode": "electron",
+              "startupRequired": false,
+              "startupCommand": "npm start",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "electron_window",
+                "target": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js"
+              },
+              "launchTarget": {
+                "kind": "electron_app",
+                "value": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+                "JUNGLE_PROJECT_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "script",
+                "command": "npm run db:mysql:seed:build",
+                "reasoning": "Using package script seeding path via npm run db:mysql:seed:build."
+              },
+              "reasoning": "Detected Electron project via dependency=true mainEntry=C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js. Using package script seeding path via npm run db:mysql:seed:build.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Verify the Electron application shell is running and the main window is inspectable.\nRequested target type: electron_app\nRequested URL: not provided\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: electron_app",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "electron",
+            "targetType": "electron_app"
+          },
+          "lastRunId": "agentic_run_1773544931506",
+          "confirmedAt": "2026-03-15T03:22:11.510Z"
+        }
+      ],
+      "summary": {
+        "totalRuns": 1,
+        "passRuns": 0,
+        "failRuns": 1,
+        "passRate": 0,
+        "avgReadiness": 10,
+        "latestRunId": "agentic_run_1773544931506",
+        "latestStatus": "fail",
+        "recurringIssues": [
+          {
+            "id": "run_failed",
+            "count": 1
+          },
+          {
+            "id": "semantic_checks_failed",
+            "count": 1
+          },
+          {
+            "id": "insufficient_observation_window",
+            "count": 1
+          },
+          {
+            "id": "execution_instability",
+            "count": 1
+          }
+        ],
+        "updatedAt": "2026-03-15T03:22:11.506Z"
+      }
+    },
+    {
+      "forestId": "forest_1773544667047",
+      "projectName": "Jungle",
+      "url": "",
+      "objective": "Verify the Electron application shell is running and the main window is inspectable.",
+      "createdAt": "2026-03-15T03:17:47.047Z",
+      "updatedAt": "2026-03-15T03:17:55.194Z",
+      "trees": [
+        {
+          "treeId": "tree_1773544667051",
+          "version": 1,
+          "status": "validated",
+          "createdAt": "2026-03-15T03:17:47.051Z",
+          "updatedAt": "2026-03-15T03:17:55.194Z",
+          "procedure": {
+            "summary": "Validate Jungle Approval Queue flow and core interactions for objective: Verify the Electron application shell is running and the main window is inspectable.",
+            "confirmMessage": "Confirm this testing procedure. You can add extra checks before execution (auth, edge cases, copy assertions).",
+            "steps": [
+              {
+                "action": "assertVisible",
+                "target": "text=Jungle Approval Queue"
+              },
+              {
+                "action": "assertVisible",
+                "target": "#refresh-projects"
+              },
+              {
+                "action": "click",
+                "target": "#refresh-projects"
+              },
+              {
+                "action": "wait",
+                "target": "post_click_stabilize",
+                "value": 1500
+              },
+              {
+                "action": "assertVisible",
+                "target": "#session-status"
+              },
+              {
+                "action": "screenshot",
+                "target": "fullPage"
+              }
+            ],
+            "notes": "Check the approval queue shell only."
+          },
+          "requestParser": {
+            "parserVersion": "0.1.0",
+            "normalizedSteps": [
+              {
+                "index": 0,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "text=Jungle Approval Queue",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 1,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#refresh-projects",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 2,
+                "action": "click",
+                "originalAction": "click",
+                "target": "#refresh-projects",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 3,
+                "action": "wait",
+                "originalAction": "wait",
+                "target": "post_click_stabilize",
+                "value": 1500,
+                "assert": null
+              },
+              {
+                "index": 4,
+                "action": "assertVisible",
+                "originalAction": "assertVisible",
+                "target": "#session-status",
+                "value": null,
+                "assert": null
+              },
+              {
+                "index": 5,
+                "action": "screenshot",
+                "originalAction": "screenshot",
+                "target": "fullPage",
+                "value": null,
+                "assert": null
+              }
+            ]
+          },
+          "executionProfile": {
+            "environmentPlan": {
+              "targetType": "electron_app",
+              "playwrightMode": "electron",
+              "startupRequired": false,
+              "startupCommand": "npm start",
+              "startupCwd": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+              "readiness": {
+                "kind": "electron_window",
+                "target": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js"
+              },
+              "launchTarget": {
+                "kind": "electron_app",
+                "value": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "launchEnv": {
+                "JUNGLE_STORAGE_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026",
+                "JUNGLE_PROJECT_ROOT": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026"
+              },
+              "seeding": {
+                "mode": "script",
+                "command": "npm run db:mysql:seed:build",
+                "reasoning": "Using package script seeding path via npm run db:mysql:seed:build."
+              },
+              "reasoning": "Detected Electron project via dependency=true mainEntry=C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js. Using package script seeding path via npm run db:mysql:seed:build.",
+              "prompt": "You are planning how to make a local application testable before Playwright code generation.\nReturn strict JSON only with keys:\ntargetType, playwrightMode, startupRequired, startupCommand, startupCwd, readiness, launchTarget, launchEnv, seeding, reasoning.\nAllowed targetType values: web_frontend, electron_app.\nAllowed playwrightMode values: web, electron.\nAllowed seeding.mode values: none, script, jungle_shared_or_sample.\nRules:\n- Choose only one of the allowed target types.\n- If targetType is electron_app, launchTarget.kind must be electron_app.\n- If targetType is web_frontend, launchTarget.kind must be url.\n- startupCommand must be a concrete local command or null.\n- readiness.kind must be url for web_frontend and electron_window for electron_app.\n- launchEnv must be an object of string environment variables if runtime state must be shared.\n- seeding must describe whether the environment should be seeded with real/shared data or deterministic sample data before launch.\n- reasoning must mention the concrete project signals used.\n\nProject root: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\nRequested task: Verify the Electron application shell is running and the main window is inspectable.\nRequested target type: electron_app\nRequested URL: not provided\nPackage scripts: {\"db:down\":\"docker compose down\",\"db:logs\":\"docker compose logs -f db\",\"db:start\":\"docker compose up -d db\",\"db:status\":\"docker compose ps db\",\"db:stop\":\"docker compose stop db\",\"db:mysql:down\":\"docker compose stop mysql\",\"db:mysql:logs\":\"docker compose logs -f mysql\",\"db:mysql:import:agentic\":\"node tools/import_legacy_agentic_history_to_mysql.js\",\"db:mysql:start\":\"docker compose up -d mysql\",\"db:mysql:status\":\"docker compose ps mysql\",\"db:mysql:stop\":\"docker compose stop mysql\",\"db:mysql:verify\":\"node tools/verify_agentic_mysql.js\",\"start\":\"electron .\",\"dev\":\"electron .\",\"playwright:install\":\"playwright install chromium\",\"rebuild:native\":\"electron-builder install-app-deps\",\"dist:mac\":\"electron-builder --mac\",\"test\":\"node tests/run_all.js\",\"simulate:ops\":\"node src/runtime/operational_example.js\",\"simulate:sandbox-backend\":\"node tools/simulate_sandbox_backend.js\",\"loop:cli\":\"node Testing/cli_agentic_loop/run_cli_loop.js\",\"orchestrate_testing\":\"node \\\"Testing/Testing Loop/orchestrate_testing.js\\\"\",\"db:mysql:seed:build\":\"node tools/generate_mysql_catalog_seed.js\"}\nMain entry: C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js\nDependencies: [\"@xterm/addon-fit\",\"mysql2\",\"node-pty\",\"xterm\",\"electron-builder\",\"electron\",\"playwright\"]\nDeterministic target guess: electron_app",
+              "projectSignals": {
+                "dependencies": [
+                  "@xterm/addon-fit",
+                  "mysql2",
+                  "node-pty",
+                  "xterm",
+                  "electron-builder",
+                  "electron",
+                  "playwright"
+                ],
+                "hasElectronDependency": true,
+                "hasMainEntry": true,
+                "mainEntry": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\src\\main.js",
+                "projectName": "jungle",
+                "scripts": {
+                  "db:down": "docker compose down",
+                  "db:logs": "docker compose logs -f db",
+                  "db:start": "docker compose up -d db",
+                  "db:status": "docker compose ps db",
+                  "db:stop": "docker compose stop db",
+                  "db:mysql:down": "docker compose stop mysql",
+                  "db:mysql:logs": "docker compose logs -f mysql",
+                  "db:mysql:import:agentic": "node tools/import_legacy_agentic_history_to_mysql.js",
+                  "db:mysql:start": "docker compose up -d mysql",
+                  "db:mysql:status": "docker compose ps mysql",
+                  "db:mysql:stop": "docker compose stop mysql",
+                  "db:mysql:verify": "node tools/verify_agentic_mysql.js",
+                  "start": "electron .",
+                  "dev": "electron .",
+                  "playwright:install": "playwright install chromium",
+                  "rebuild:native": "electron-builder install-app-deps",
+                  "dist:mac": "electron-builder --mac",
+                  "test": "node tests/run_all.js",
+                  "simulate:ops": "node src/runtime/operational_example.js",
+                  "simulate:sandbox-backend": "node tools/simulate_sandbox_backend.js",
+                  "loop:cli": "node Testing/cli_agentic_loop/run_cli_loop.js",
+                  "orchestrate_testing": "node \"Testing/Testing Loop/orchestrate_testing.js\"",
+                  "db:mysql:seed:build": "node tools/generate_mysql_catalog_seed.js"
+                }
+              }
+            },
+            "recordVideo": true,
+            "mode": "electron",
+            "targetType": "electron_app"
+          },
+          "lastRunId": "agentic_run_1773544675191",
+          "confirmedAt": "2026-03-15T03:17:55.194Z"
+        }
+      ],
+      "summary": {
+        "totalRuns": 1,
+        "passRuns": 1,
+        "failRuns": 0,
+        "passRate": 100,
+        "avgReadiness": 100,
+        "latestRunId": "agentic_run_1773544675191",
+        "latestStatus": "pass",
+        "recurringIssues": [],
+        "updatedAt": "2026-03-15T03:17:55.191Z"
+      }
+    },
+    {
       "forestId": "forest_1773538400432",
       "projectName": "Jungle",
       "url": "",
@@ -5194,6 +7010,1064 @@
     }
   ],
   "runs": [
+    {
+      "runId": "agentic_run_1773550499009",
+      "forestId": "forest_1773550465190",
+      "treeId": "tree_1773550485241",
+      "createdAt": "2026-03-15T04:54:59.009Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:5173/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Plant Growth Cycle",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "wait",
+          "target": "time",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "down",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\c14a933144b2e9bcdfb6cc6a52bca84f.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\final_1773550498855.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\step_1773550498282.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\c14a933144b2e9bcdfb6cc6a52bca84f.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=5"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=545542 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=5",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=545542 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550485241_1773550485568\\c14a933144b2e9bcdfb6cc6a52bca84f.webm",
+          "sizeBytes": 545542,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Validate Plant Growth Cycle flow and core interactions for objective: Verify the plant growth cycle progresses through all stages: seed, sprout, stem, leaves, and full bloom.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T04:54:59.008Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773550478358",
+      "forestId": "forest_1773550465190",
+      "treeId": "tree_1773550472302",
+      "createdAt": "2026-03-15T04:54:38.358Z",
+      "status": "fail",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:5173/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertText",
+          "target": "#stageLabel",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "assertVisible",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "wait",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "assertText",
+          "target": "#stageLabel",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "assertVisible",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 6,
+          "action": "wait",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 7,
+          "action": "assertText",
+          "target": "#stageLabel",
+          "status": "fail",
+          "note": "Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\650772cb9a91c76226ec28fe8225b214.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\final_1773550478170.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\request_parser.json"
+        }
+      ],
+      "summary": "Failed at step 8: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\650772cb9a91c76226ec28fe8225b214.webm",
+      "semantics": {
+        "overallPass": false,
+        "verdict": "fail",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=8"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=7"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=202376 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=fail failedSteps=1"
+          }
+        ],
+        "right": [
+          "steps_present: steps=8",
+          "artifacts_present: artifacts=7",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=202376 headerValid=true",
+          "run_status_consistent: status=fail failedSteps=1"
+        ],
+        "wrong": [
+          "run_summary: Failed at step 8: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'",
+          "failed_step_note: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'"
+        ],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550465190_tree_1773550472302_1773550472451\\650772cb9a91c76226ec28fe8225b214.webm",
+          "sizeBytes": 202376,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "fail",
+        "confidence": 0.7,
+        "summary": "Critic detected 3 issue(s) requiring attention.",
+        "expectedVsObserved": {
+          "expected": "Verify the plant growth cycle progresses through all stages: seed, sprout, stem, leaves, and full bloom.",
+          "observed": "Run failed; evidence indicates unmet expectations."
+        },
+        "strengths": [
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [
+          {
+            "id": "run_failed",
+            "severity": "critical",
+            "description": "Failed at step 8: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'",
+            "evidence": "Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'",
+            "fix": "Fix failing selector/assertion and re-run with stronger deterministic checks."
+          },
+          {
+            "id": "semantic_checks_failed",
+            "severity": "high",
+            "description": "One or more semantic checks failed.",
+            "evidence": "run_summary: Failed at step 8: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout' | failed_step_note: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'",
+            "fix": "Inspect semantic_report and harden assertions around expected motion/state changes."
+          },
+          {
+            "id": "execution_instability",
+            "severity": "high",
+            "description": "Execution output indicates instability or selector mismatch.",
+            "evidence": "Failed at step 8: Text assertion failed: expected includes 'Stem' got 'Stage: Sprout'",
+            "fix": "Use resilient selectors and fallback observation-only plan when controls are absent."
+          }
+        ],
+        "readinessScore": 20,
+        "generatedAt": "2026-03-15T04:54:38.356Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773550336766",
+      "forestId": "forest_1773550292603",
+      "treeId": "tree_1773550322892",
+      "createdAt": "2026-03-15T04:52:16.766Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:5173/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "text=Plant Growth Cycle",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "wait",
+          "target": "time",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "down",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\5fac3a8fff64a2d7555b83f96105bcad.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\final_1773550336627.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\step_1773550336067.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\5fac3a8fff64a2d7555b83f96105bcad.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=5"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=544273 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=5",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=544273 headerValid=true",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550322892_1773550323362\\5fac3a8fff64a2d7555b83f96105bcad.webm",
+          "sizeBytes": 544273,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Validate Plant Growth Cycle flow and core interactions for objective: Verify the plant growth sequence progresses through all five stages (seed, sprout, stem, leaves, full bloom) in the correct visual order.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T04:52:16.764Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773550314535",
+      "forestId": "forest_1773550292603",
+      "treeId": "tree_1773550300925",
+      "createdAt": "2026-03-15T04:51:54.535Z",
+      "status": "fail",
+      "steps": [
+        {
+          "index": 0,
+          "action": "goto",
+          "target": "http://127.0.0.1:5173/",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertText",
+          "target": "#stageLabel",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "assertVisible",
+          "target": "#scene",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "scrollPage",
+          "target": "document bottom",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "wait",
+          "target": "500",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "assertText",
+          "target": "#stageLabel",
+          "status": "fail",
+          "note": "Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\critique_report.json"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\4e72e18b0b28656e53955baaef242732.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\final_1773550314394.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\request_parser.json"
+        }
+      ],
+      "summary": "Failed at step 6: Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\4e72e18b0b28656e53955baaef242732.webm",
+      "semantics": {
+        "overallPass": false,
+        "verdict": "fail",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=6"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=7"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "exists=true size=545898 headerValid=true"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=fail failedSteps=1"
+          }
+        ],
+        "right": [
+          "steps_present: steps=6",
+          "artifacts_present: artifacts=7",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: exists=true size=545898 headerValid=true",
+          "run_status_consistent: status=fail failedSteps=1"
+        ],
+        "wrong": [
+          "run_summary: Failed at step 6: Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'",
+          "failed_step_note: Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'"
+        ],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773550292603_tree_1773550300925_1773550301122\\4e72e18b0b28656e53955baaef242732.webm",
+          "sizeBytes": 545898,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "fail",
+        "confidence": 0.7,
+        "summary": "Critic detected 3 issue(s) requiring attention.",
+        "expectedVsObserved": {
+          "expected": "Verify the plant growth sequence progresses through all five stages (seed, sprout, stem, leaves, full bloom) in the correct visual order.",
+          "observed": "Run failed; evidence indicates unmet expectations."
+        },
+        "strengths": [
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [
+          {
+            "id": "run_failed",
+            "severity": "critical",
+            "description": "Failed at step 6: Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'",
+            "evidence": "Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'",
+            "fix": "Fix failing selector/assertion and re-run with stronger deterministic checks."
+          },
+          {
+            "id": "semantic_checks_failed",
+            "severity": "high",
+            "description": "One or more semantic checks failed.",
+            "evidence": "run_summary: Failed at step 6: Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom' | failed_step_note: Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'",
+            "fix": "Inspect semantic_report and harden assertions around expected motion/state changes."
+          },
+          {
+            "id": "execution_instability",
+            "severity": "high",
+            "description": "Execution output indicates instability or selector mismatch.",
+            "evidence": "Failed at step 6: Text assertion failed: expected includes 'Sprout' got 'Stage: Full Bloom'",
+            "fix": "Use resilient selectors and fallback observation-only plan when controls are absent."
+          }
+        ],
+        "readinessScore": 20,
+        "generatedAt": "2026-03-15T04:51:54.534Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773544931506",
+      "forestId": "forest_1773544916903",
+      "treeId": "tree_1773544916906",
+      "createdAt": "2026-03-15T03:22:11.506Z",
+      "status": "fail",
+      "steps": [
+        {
+          "index": 0,
+          "action": "assertVisible",
+          "target": "text=Jungle Approval Queue",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "click",
+          "target": "text=Jungle\\nUpdated",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "assertVisible",
+          "target": "#approve-run",
+          "status": "fail",
+          "note": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#approve-run').first() to be visible\u001b[22m\n\u001b[2m    24 × locator resolved to hidden <button disabled type=\"button\" class=\"hidden\" id=\"approve-run\">Approve Run</button>\u001b[22m\n"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\critique_report.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\e3bba53a89c36a39a1230fc5e188c7a3.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\final_1773544931137.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\request_parser.json"
+        }
+      ],
+      "summary": "Failed at step 3: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#approve-run').first() to be visible\u001b[22m\n\u001b[2m    24 × locator resolved to hidden <button disabled type=\"button\" class=\"hidden\" id=\"approve-run\">Approve Run</button>\u001b[22m\n",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\e3bba53a89c36a39a1230fc5e188c7a3.webm",
+      "semantics": {
+        "overallPass": false,
+        "verdict": "fail",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=3"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=7"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "not required for electron_app"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=fail failedSteps=1"
+          }
+        ],
+        "right": [
+          "steps_present: steps=3",
+          "artifacts_present: artifacts=7",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: not required for electron_app",
+          "run_status_consistent: status=fail failedSteps=1"
+        ],
+        "wrong": [
+          "run_summary: Failed at step 3: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#approve-run').first() to be visible\u001b[22m\n\u001b[2m    24 × locator resolved to hidden <button disabled type=\"button\" class=\"hidden\" id=\"approve-run\">Approve Run</button>\u001b[22m\n",
+          "failed_step_note: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#approve-run').first() to be visible\u001b[22m\n\u001b[2m    24 × locator resolved to hidden <button disabled type=\"button\" class=\"hidden\" id=\"approve-run\">Approve Run</button>\u001b[22m\n"
+        ],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544916903_tree_1773544916906_1773544919628\\e3bba53a89c36a39a1230fc5e188c7a3.webm",
+          "sizeBytes": 970394,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "fail",
+        "confidence": 0.7,
+        "summary": "Critic detected 4 issue(s) requiring attention.",
+        "expectedVsObserved": {
+          "expected": "Verify the Electron application shell is running and the main window is inspectable, then interact with the 'Jungle' project run.",
+          "observed": "Run failed; evidence indicates unmet expectations."
+        },
+        "strengths": [],
+        "issues": [
+          {
+            "id": "run_failed",
+            "severity": "critical",
+            "description": "Failed at step 3: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#approve-run').first() to be visible\u001b[22m\n\u001b[2m    24 × locator resolved to hidden <button disabled type=\"button\" class=\"hidden\" id=\"approve-run\">Approve Run</button>\u001b[22m\n",
+            "evidence": "locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#approve-run').first() to be visible\u001b[22m\n\u001b[2m    24 × locator resolved to hidden <button disabled type=\"button\" class=\"hidden\" id=\"approve-run\">Approve Run</button>\u001b[22m\n",
+            "fix": "Fix failing selector/assertion and re-run with stronger deterministic checks."
+          },
+          {
+            "id": "semantic_checks_failed",
+            "severity": "high",
+            "description": "One or more semantic checks failed.",
+            "evidence": "run_summary: Failed at step 3: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#approve-run').first() to be visible\u001b[22m\n\u001b[2m    24 × locator resolved to hidden <button disabled type=\"button\" class=\"hidden\" id=\"approve-run\">Approve Run</button>\u001b[22m\n | failed_step_note: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#approve-run').first() to be visible\u001b[22m\n\u001b[2m    24 × locator resolved to hidden <button disabled type=\"button\" class=\"hidden\" id=\"approve-run\">Approve Run</button>\u001b[22m\n",
+            "fix": "Inspect semantic_report and harden assertions around expected motion/state changes."
+          },
+          {
+            "id": "insufficient_observation_window",
+            "severity": "medium",
+            "description": "No dedicated wait/observation window detected.",
+            "evidence": "A wait step is missing from executed sequence.",
+            "fix": "Include a wait step (>= 10 seconds) before post-observation assertions."
+          },
+          {
+            "id": "execution_instability",
+            "severity": "high",
+            "description": "Execution output indicates instability or selector mismatch.",
+            "evidence": "Failed at step 3: locator.waitFor: Timeout 10000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#approve-run').first() to be visible\u001b[22m\n\u001b[2m    24 × locator resolved to hidden <button disabled type=\"button\" class=\"hidden\" id=\"approve-run\">Approve Run</button>\u001b[22m\n",
+            "fix": "Use resilient selectors and fallback observation-only plan when controls are absent."
+          }
+        ],
+        "readinessScore": 10,
+        "generatedAt": "2026-03-15T03:22:11.504Z",
+        "source": "deterministic"
+      }
+    },
+    {
+      "runId": "agentic_run_1773544675191",
+      "forestId": "forest_1773544667047",
+      "treeId": "tree_1773544667051",
+      "createdAt": "2026-03-15T03:17:55.191Z",
+      "status": "pass",
+      "steps": [
+        {
+          "index": 0,
+          "action": "assertVisible",
+          "target": "text=Jungle Approval Queue",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 1,
+          "action": "assertVisible",
+          "target": "#refresh-projects",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 2,
+          "action": "click",
+          "target": "#refresh-projects",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 3,
+          "action": "wait",
+          "target": "post_click_stabilize",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 4,
+          "action": "assertVisible",
+          "target": "#session-status",
+          "status": "pass",
+          "note": "ok"
+        },
+        {
+          "index": 5,
+          "action": "screenshot",
+          "target": "fullPage",
+          "status": "pass",
+          "note": "ok"
+        }
+      ],
+      "artifacts": [
+        {
+          "type": "codex_mcp",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "parser",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\request_parser.json"
+        },
+        {
+          "type": "executor",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\playwright_executor.generated.js"
+        },
+        {
+          "type": "semantic",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\semantic_report.json"
+        },
+        {
+          "type": "critique",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\critique_report.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\codex_mcp_transcript.txt"
+        },
+        {
+          "type": "video",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\d1c335762accef363f38a7c20c10f59c.webm"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\final_1773544674115.png"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\playwright_executor.generated.js"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\request_parser.json"
+        },
+        {
+          "type": "artifact",
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\step_1773544673680.png"
+        }
+      ],
+      "summary": "Procedure executed successfully.",
+      "videoPath": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\d1c335762accef363f38a7c20c10f59c.webm",
+      "semantics": {
+        "overallPass": true,
+        "verdict": "pass",
+        "checks": [
+          {
+            "key": "steps_present",
+            "pass": true,
+            "detail": "steps=6"
+          },
+          {
+            "key": "artifacts_present",
+            "pass": true,
+            "detail": "artifacts=8"
+          },
+          {
+            "key": "parser_artifact",
+            "pass": true,
+            "detail": "parserArtifacts=1"
+          },
+          {
+            "key": "executor_artifact",
+            "pass": true,
+            "detail": "executorArtifacts=1"
+          },
+          {
+            "key": "video_valid_webm",
+            "pass": true,
+            "detail": "not required for electron_app"
+          },
+          {
+            "key": "run_status_consistent",
+            "pass": true,
+            "detail": "status=pass failedSteps=0"
+          }
+        ],
+        "right": [
+          "steps_present: steps=6",
+          "artifacts_present: artifacts=8",
+          "parser_artifact: parserArtifacts=1",
+          "executor_artifact: executorArtifacts=1",
+          "video_valid_webm: not required for electron_app",
+          "run_status_consistent: status=pass failedSteps=0",
+          "run_summary: Procedure executed successfully."
+        ],
+        "wrong": [],
+        "video": {
+          "exists": true,
+          "headerValid": true,
+          "path": "C:\\Users\\William\\Desktop\\Projects\\Genai_2026\\db\\agentic_artifacts\\forest_1773544667047_tree_1773544667051_1773544669714\\d1c335762accef363f38a7c20c10f59c.webm",
+          "sizeBytes": 192062,
+          "valid": true
+        }
+      },
+      "critique": {
+        "verdict": "pass",
+        "confidence": 0.9,
+        "summary": "Critic found no blocking semantic regressions.",
+        "expectedVsObserved": {
+          "expected": "Validate Jungle Approval Queue flow and core interactions for objective: Verify the Electron application shell is running and the main window is inspectable.",
+          "observed": "Run completed with evidence artifacts."
+        },
+        "strengths": [
+          "Execution completed with pass status.",
+          "Semantic checks were satisfied.",
+          "Observed timeline includes an explicit wait window."
+        ],
+        "issues": [],
+        "readinessScore": 100,
+        "generatedAt": "2026-03-15T03:17:55.189Z",
+        "source": "deterministic"
+      }
+    },
     {
       "runId": "agentic_run_1773538418061",
       "forestId": "forest_1773538400432",
