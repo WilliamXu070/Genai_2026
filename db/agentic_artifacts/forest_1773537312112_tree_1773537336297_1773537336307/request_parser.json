@@ -1,0 +1,29 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "role=heading[name='Jungle Approval Queue']",
+      "value": null,
+      "assert": true
+    },
+    {
+      "index": 1,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#refresh-projects",
+      "value": null,
+      "assert": true
+    },
+    {
+      "index": 2,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Jungle\\nUpdated 3/15/2026, 1:15:30 AM",
+      "value": null,
+      "assert": true
+    }
+  ]
+}

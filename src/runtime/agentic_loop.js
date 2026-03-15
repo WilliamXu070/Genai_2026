@@ -1,10 +1,11 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
-const { chromium } = require("playwright");
+const { chromium, _electron: electron } = require("playwright");
 const { analyzeRunSemantics } = require("./semantics");
 const { RunCriticAgent } = require("./critic_agent");
 const { AgenticMySqlPersistenceService, ensureSummaryArray } = require("./agentic_mysql_persistence");
+const { ensureExecutionEnvironment, planExecutionEnvironment } = require("./environment_planner");
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -127,10 +128,18 @@ function formatProcedureSteps(procedure) {
     .join("\n");
 }
 
+function buildTargetLabel(input) {
+  if (input?.targetType === "electron_app") {
+    return `Electron app at ${input?.projectName || "the current project"}`;
+  }
+  return input?.url || "-";
+}
+
 function buildTestingInstructions(objective, input, procedure) {
   const sections = [
     [`Objective: ${objective}`],
-    [`Target URL: ${input?.url || "-"}`],
+    [`Target Type: ${input?.targetType || "web_frontend"}`],
+    [`Target: ${buildTargetLabel(input)}`],
     input?.notes ? [`Notes: ${input.notes}`] : [],
     input?.additions ? [`Additions: ${input.additions}`] : [],
     procedure?.summary ? [`Draft Summary: ${procedure.summary}`] : [],
@@ -170,11 +179,16 @@ function buildPersistentRunSeed(run, overrides = {}) {
     payload.objective ||
     readTestingInstructionField(testingInstructions, "Objective") ||
     "Validate critical user flow";
+  const targetType =
+    overrides.targetType ||
+    payload.targetType ||
+    readTestingInstructionField(testingInstructions, "Target Type") ||
+    "web_frontend";
   const url =
     overrides.url ||
     payload.url ||
-    readTestingInstructionField(testingInstructions, "Target URL") ||
-    "http://127.0.0.1:3000";
+    (targetType === "web_frontend" ? readTestingInstructionField(testingInstructions, "Target") : "") ||
+    (targetType === "web_frontend" ? "http://127.0.0.1:3000" : "");
   const projectName = overrides.projectName || payload.projectName || run?.projectName || "Jungle";
   const notes = [
     payload.notes || "",
@@ -192,6 +206,7 @@ function buildPersistentRunSeed(run, overrides = {}) {
     objective,
     projectName,
     skipCodex: Boolean(payload.skipCodex),
+    targetType,
     testingInstructions,
     url
   };
@@ -221,7 +236,8 @@ function buildDraftPayload({ input, objective, draft, maxAttempts, attempt = 1 }
     forestId: draft?.forestId || null,
     treeId: draft?.tree?.treeId || null,
     procedure,
-    requestParser: draft?.tree?.requestParser || (procedure ? buildRequestParser(procedure) : null)
+    requestParser: draft?.tree?.requestParser || (procedure ? buildRequestParser(procedure) : null),
+    targetType: input?.targetType || draft?.tree?.executionProfile?.targetType || "web_frontend"
   };
 }
 
@@ -390,67 +406,141 @@ class AgenticStore {
   }
 }
 
-async function inspectWebsite(url) {
+async function collectInspectionContext(page) {
+  return page.evaluate(() => {
+    const takeTexts = (selector, limit = 8) =>
+      Array.from(document.querySelectorAll(selector))
+        .map((el) => (el.innerText || el.textContent || "").trim())
+        .filter(Boolean)
+        .slice(0, limit);
+
+    const buttonSelectors = Array.from(document.querySelectorAll("button, [role='button']"))
+      .map((el) => {
+        if (el.id) return `#${el.id}`;
+        const testId = el.getAttribute("data-testid");
+        if (testId) return `[data-testid='${testId}']`;
+        const text = (el.innerText || el.textContent || "").trim();
+        return text ? `text=${text}` : null;
+      })
+      .filter(Boolean)
+      .slice(0, 12);
+
+    const textTargets = Array.from(document.querySelectorAll("[id], [data-testid], .status, .state, p, div, span"))
+      .map((el) => {
+        if (["BUTTON", "A", "INPUT", "TEXTAREA", "SELECT"].includes(el.tagName)) {
+          return null;
+        }
+        const id = el.id || "";
+        const testId = el.getAttribute("data-testid") || "";
+        const selector = id ? `#${id}` : testId ? `[data-testid='${testId}']` : null;
+        if (!selector) return null;
+        const signal = `${id} ${testId}`.toLowerCase();
+        const score = /(state|status|result|output|message|count|step)/.test(signal) ? 2 : 1;
+        return { selector, score };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.score - a.score)
+      .map((x) => x.selector)
+      .slice(0, 12);
+
+    return {
+      title: document.title,
+      url: location.href,
+      headings: takeTexts("h1, h2, h3", 12),
+      buttons: takeTexts("button, [role='button']", 12),
+      buttonSelectors,
+      textTargets,
+      links: takeTexts("a", 12),
+      hasForms: !!document.querySelector("form"),
+      inputs: Array.from(document.querySelectorAll("input, textarea, select"))
+        .map((el) => el.getAttribute("name") || el.id || el.getAttribute("placeholder") || el.tagName)
+        .slice(0, 10)
+    };
+  });
+}
+
+async function inspectWebFrontend(url) {
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30000 });
-    const context = await page.evaluate(() => {
-      const takeTexts = (selector, limit = 8) =>
-        Array.from(document.querySelectorAll(selector))
-          .map((el) => (el.innerText || el.textContent || "").trim())
-          .filter(Boolean)
-          .slice(0, limit);
-
-      const buttonSelectors = Array.from(document.querySelectorAll("button, [role='button']"))
-        .map((el) => {
-          if (el.id) return `#${el.id}`;
-          const text = (el.innerText || el.textContent || "").trim();
-          return text ? `text=${text}` : null;
-        })
-        .filter(Boolean)
-        .slice(0, 12);
-
-      const textTargets = Array.from(document.querySelectorAll("[id], [data-testid], .status, .state, p, div, span"))
-        .map((el) => {
-          if (["BUTTON", "A", "INPUT", "TEXTAREA", "SELECT"].includes(el.tagName)) {
-            return null;
-          }
-          const id = el.id || "";
-          const testId = el.getAttribute("data-testid") || "";
-          const selector = id ? `#${id}` : testId ? `[data-testid='${testId}']` : null;
-          if (!selector) return null;
-          const signal = `${id} ${testId}`.toLowerCase();
-          const score = /(state|status|result|output|message|count|step)/.test(signal) ? 2 : 1;
-          return { selector, score };
-        })
-        .filter(Boolean)
-        .sort((a, b) => b.score - a.score)
-        .map((x) => x.selector)
-        .slice(0, 12);
-
-      return {
-        title: document.title,
-        url: location.href,
-        headings: takeTexts("h1, h2, h3", 12),
-        buttons: takeTexts("button, [role='button']", 12),
-        buttonSelectors,
-        textTargets,
-        links: takeTexts("a", 12),
-        hasForms: !!document.querySelector("form"),
-        inputs: Array.from(document.querySelectorAll("input, textarea, select"))
-          .map((el) => el.getAttribute("name") || el.id || el.getAttribute("placeholder") || el.tagName)
-          .slice(0, 10)
-      };
-    });
-
-    return context;
+    return collectInspectionContext(page);
   } finally {
     await browser.close();
   }
 }
 
-function fallbackProcedure(inspection, objective, notes) {
+async function inspectElectronApp(projectRoot) {
+  const app = await electron.launch({
+    args: [projectRoot],
+    cwd: projectRoot
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.waitForLoadState("domcontentloaded");
+    const context = await collectInspectionContext(page);
+    return {
+      ...context,
+      electronWindow: true
+    };
+  } finally {
+    await app.close();
+  }
+}
+
+async function inspectTarget(environmentPlan, input) {
+  if (environmentPlan?.playwrightMode === "electron") {
+    return inspectElectronApp(input.projectRoot);
+  }
+  return inspectWebFrontend(input.url || environmentPlan?.launchTarget?.value);
+}
+
+function targetLooksVolatile(target) {
+  const normalized = String(target || "").trim();
+  if (!normalized) {
+    return false;
+  }
+  if (!/^text=/i.test(normalized)) {
+    return false;
+  }
+  return (
+    /\bupdated\b/i.test(normalized) ||
+    /\b\d{1,2}\/\d{1,2}\/\d{4}\b/.test(normalized) ||
+    /\b\d{1,2}:\d{2}(?::\d{2})?\s?(AM|PM)\b/i.test(normalized)
+  );
+}
+
+function hasSupportedInteraction(steps) {
+  return steps.some((step) => ["click", "fill", "scrollpage"].includes(String(step?.action || "").toLowerCase()));
+}
+
+function shouldFallbackToDeterministicProcedure(procedure, inspection, environmentPlan = null) {
+  const parser = buildRequestParser(procedure);
+  const hasUnsupportedAction = parser.normalizedSteps.some((step) => !step.action);
+  if (hasUnsupportedAction) {
+    return true;
+  }
+
+  const hasVolatileSelector = (procedure?.steps || []).some((step) => targetLooksVolatile(step?.target));
+  if (hasVolatileSelector) {
+    return true;
+  }
+
+  if (Array.isArray(inspection?.buttonSelectors) && inspection.buttonSelectors.length > 0 && !hasSupportedInteraction(parser.normalizedSteps)) {
+    return true;
+  }
+
+  if (environmentPlan?.playwrightMode === "electron") {
+    const hasNavigationStep = parser.normalizedSteps.some((step) => String(step?.action || "").toLowerCase() === "goto");
+    if (hasNavigationStep) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function fallbackProcedure(inspection, objective, notes, environmentPlan = null) {
   const firstHeading = inspection.headings?.[0] || inspection.title || "main page";
   const buttonTarget = inspection.buttonSelectors?.[0] || null;
   const dynamicSignals = /(state|status|result|output|message|count|step|speed|angle|energy|progress|value)/i;
@@ -459,23 +549,40 @@ function fallbackProcedure(inspection, objective, notes) {
     inspection.textTargets?.[0] ||
     "body";
   const hasInteractiveControl = Boolean(buttonTarget);
+  const isElectron = environmentPlan?.playwrightMode === "electron";
 
-  const steps = hasInteractiveControl
-    ? [
-        { action: "goto", target: inspection.url || "/" },
-        { action: "assertVisible", target: `text=${firstHeading}` },
+  let steps;
+  if (hasInteractiveControl) {
+    steps = [
+      ...(isElectron ? [] : [{ action: "goto", target: inspection.url || "/" }]),
+      { action: "assertVisible", target: `text=${firstHeading}` },
+      { action: "assertVisible", target: buttonTarget }
+    ];
+
+    if (isElectron) {
+      steps = steps.concat([
+        { action: "click", target: buttonTarget },
+        { action: "wait", target: "post_click_stabilize", value: 1500 },
+        ...(stateTarget && stateTarget !== "body" ? [{ action: "assertVisible", target: stateTarget }] : []),
+        { action: "screenshot", target: "fullPage" }
+      ]);
+    } else {
+      steps = steps.concat([
         { action: "captureText", target: stateTarget, value: "beforeState" },
         { action: "click", target: buttonTarget },
         { action: "assertChanged", target: stateTarget, value: "beforeState" },
         { action: "screenshot", target: "fullPage" }
-      ]
-    : [
-        { action: "goto", target: inspection.url || "/" },
-        { action: "assertVisible", target: `text=${firstHeading}` },
-        { action: "wait", target: "time", value: 10000 },
-        { action: "scrollPage", target: "down" },
-        { action: "screenshot", target: "fullPage" }
-      ];
+      ]);
+    }
+  } else {
+    steps = [
+      ...(isElectron ? [] : [{ action: "goto", target: inspection.url || "/" }]),
+      { action: "assertVisible", target: `text=${firstHeading}` },
+      { action: "wait", target: "time", value: isElectron ? 1500 : 10000 },
+      { action: "scrollPage", target: "down" },
+      { action: "screenshot", target: "fullPage" }
+    ];
+  }
 
   return {
     summary: `Validate ${firstHeading} flow and core interactions for objective: ${objective}`,
@@ -486,15 +593,23 @@ function fallbackProcedure(inspection, objective, notes) {
   };
 }
 
-async function generateProcedureWithGemini(apiKey, inspection, objective, notes) {
+async function generateProcedureWithGemini(apiKey, inspection, objective, notes, environmentPlan = null) {
   if (!apiKey) {
-    return fallbackProcedure(inspection, objective, notes);
+    return fallbackProcedure(inspection, objective, notes, environmentPlan);
   }
 
-  const prompt = `Generate a generalized Playwright testing procedure as strict JSON with keys: summary, confirmMessage, steps(array), notes.
+  const prompt = `Generate a target-specific Playwright testing procedure as strict JSON with keys: summary, confirmMessage, steps(array), notes.
 Each step must include: action and target; optional value/assert.
-Use robust selectors (role/text/ids when present) and avoid hardcoded business values.
-Website inspection context:\n${JSON.stringify(inspection, null, 2)}
+Allowed actions only: goto, click, fill, assertVisible, assertText, captureText, assertChanged, screenshot, scrollPage, wait.
+Use robust selectors (role/text/ids/data-testid when present) and avoid hardcoded business values.
+Never use dynamic timestamps, dates, relative times, or "Updated ..." text as selectors.
+If an interactive control exists, include at least one supported interaction step such as click, fill, or scrollPage.
+Target type: ${environmentPlan?.targetType || "web_frontend"}
+Playwright mode: ${environmentPlan?.playwrightMode || "web"}
+If target type is electron_app, do not emit browser navigation assumptions unless the app itself exposes an in-window web navigation control.
+If target type is electron_app, prefer stable controls like headings, ids, roles, and data-testid values.
+Every interactive step must stay feature-specific to the objective and use selectors discovered in the inspection context when possible.
+Inspection context:\n${JSON.stringify(inspection, null, 2)}
 Objective: ${objective}
 Additional notes: ${notes || "none"}`;
 
@@ -511,7 +626,7 @@ Additional notes: ${notes || "none"}`;
   );
 
   if (!response.ok) {
-    return fallbackProcedure(inspection, objective, notes);
+    return fallbackProcedure(inspection, objective, notes, environmentPlan);
   }
 
   const data = await response.json();
@@ -519,12 +634,12 @@ Additional notes: ${notes || "none"}`;
   try {
     const body = text.match(/```json\s*([\s\S]*?)```/i)?.[1] || text;
     const parsed = JSON.parse(body.trim());
-    if (!Array.isArray(parsed.steps) || parsed.steps.length === 0) {
-      return fallbackProcedure(inspection, objective, notes);
+    if (!Array.isArray(parsed.steps) || parsed.steps.length === 0 || shouldFallbackToDeterministicProcedure(parsed, inspection, environmentPlan)) {
+      return fallbackProcedure(inspection, objective, notes, environmentPlan);
     }
     return parsed;
   } catch (_) {
-    return fallbackProcedure(inspection, objective, notes);
+    return fallbackProcedure(inspection, objective, notes, environmentPlan);
   }
 }
 
@@ -659,7 +774,7 @@ function getStepDelayMs(step, actionDelayMs = 500) {
   return Math.max(250, Math.min(baseDelay, 500));
 }
 
-function stepToCode(step, actionDelayMs = 500) {
+function stepToCode(step, actionDelayMs = 500, executionPlan = { playwrightMode: "web" }) {
   const target = JSON.stringify(step.target || "body");
   const value = JSON.stringify(step.value || "");
   const delay = getStepDelayMs(step, actionDelayMs);
@@ -667,10 +782,13 @@ function stepToCode(step, actionDelayMs = 500) {
   const waitMs = step.action === "wait" && /(anim|motion|transition|scroll)/.test(waitTarget)
     ? Math.max(Number(step.value) || 10000, 1800)
     : Number(step.value) || 10000;
+  const isElectron = executionPlan?.playwrightMode === "electron";
 
   switch (step.action) {
     case "goto":
-      return `await page.goto(${target}, { waitUntil: 'domcontentloaded' });\n  await page.waitForTimeout(${delay});`;
+      return isElectron
+        ? `await page.waitForLoadState('domcontentloaded');\n  await page.waitForTimeout(${delay});`
+        : `await page.goto(${target}, { waitUntil: 'domcontentloaded' });\n  await page.waitForTimeout(${delay});`;
     case "click":
       return `await page.locator(${target}).first().click();\n  await page.waitForTimeout(${delay});`;
     case "fill":
@@ -694,109 +812,153 @@ function stepToCode(step, actionDelayMs = 500) {
   }
 }
 
-function generatePlaywrightProgram(parser, actionDelayMs = 500) {
-  const lines = parser.normalizedSteps.map((s) => stepToCode(s, actionDelayMs)).join("\n  ");
+function generatePlaywrightProgram(parser, actionDelayMs = 500, executionPlan = { playwrightMode: "web" }) {
+  const lines = parser.normalizedSteps.map((s) => stepToCode(s, actionDelayMs, executionPlan)).join("\n  ");
+  if (executionPlan?.playwrightMode === "electron") {
+    return `const path = require('node:path');\nconst fs = require('node:fs');\nconst { _electron: electron, expect } = require('playwright');\n\nasync function run({ projectRoot, artifactsDir }) {\n  const app = await electron.launch({ args: [projectRoot], cwd: projectRoot, recordVideo: { dir: artifactsDir, size: { width: 1280, height: 720 } } });\n  const page = await app.firstWindow();\n  const pageVideo = typeof page.video === 'function' ? page.video() : null;\n  const stateStore = {};\n  try {\n    await page.waitForLoadState('domcontentloaded');\n  ${lines}\n  } finally {\n    await page.screenshot({ path: path.join(artifactsDir, 'final_' + Date.now() + '.png'), fullPage: true }).catch(() => {});\n    await app.close();\n    if (pageVideo) {\n      try {\n        await pageVideo.path();\n      } catch (_) {}\n    }\n  }\n}\n\nmodule.exports = { run };\n`;
+  }
   return `const path = require('node:path');\nconst fs = require('node:fs');\nconst { chromium, expect } = require('playwright');\n\nasync function run({ baseUrl, artifactsDir }) {\n  const browser = await chromium.launch({ headless: true });\n  const context = await browser.newContext({ recordVideo: { dir: artifactsDir, size: { width: 1280, height: 720 } } });\n  const page = await context.newPage();\n  const stateStore = {};\n  try {\n  ${lines}\n  } finally {\n    await context.close();\n    await browser.close();\n  }\n}\n\nmodule.exports = { run };\n`;
 }
 
-async function executeProcedure(url, parser, artifactsDir, actionDelayMs = 500) {
-  ensureDir(artifactsDir);
-  const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({
-    recordVideo: { dir: artifactsDir, size: { width: 1280, height: 720 } }
-  });
-  const page = await context.newPage();
-
+async function executePageSteps(page, parser, artifactsDir, actionDelayMs = 500, executionPlan = { playwrightMode: "web", launchTarget: {} }) {
   const stepResults = [];
   let status = "pass";
   let summary = "Procedure executed successfully.";
   const stateStore = {};
 
-  try {
-    for (const step of parser.normalizedSteps) {
-      const s = { index: step.index, action: step.action, target: step.target, status: "pass", note: "ok" };
-      try {
-        const stepDelayMs = getStepDelayMs(step, actionDelayMs);
-        if (step.action === "goto") {
-          const dest = step.target?.startsWith("http") ? step.target : new URL(step.target || "/", url).toString();
-          await page.goto(dest, { waitUntil: "domcontentloaded", timeout: 30000 });
-          await sleep(stepDelayMs);
-        } else if (step.action === "click") {
-          await page.locator(step.target).first().click({ timeout: 10000 });
-          await sleep(stepDelayMs);
-        } else if (step.action === "fill") {
-          await page.locator(step.target).first().fill(step.value || "", { timeout: 10000 });
-          await sleep(stepDelayMs);
-        } else if (step.action === "assertVisible") {
-          await page.locator(step.target).first().waitFor({ state: "visible", timeout: 10000 });
-          await sleep(stepDelayMs);
-        } else if (step.action === "assertText") {
-          const txt = await page.locator(step.target).first().innerText({ timeout: 10000 });
-          if (!txt.includes(step.value || "")) {
-            throw new Error(`Text assertion failed: expected includes '${step.value}' got '${txt}'`);
-          }
-          await sleep(stepDelayMs);
-        } else if (step.action === "captureText") {
-          stateStore[step.value || `step_${step.index}`] = await page
-            .locator(step.target)
-            .first()
-            .innerText({ timeout: 10000 });
-          await sleep(stepDelayMs);
-        } else if (step.action === "assertChanged") {
-          const key = step.value || `step_${step.index - 1}`;
-          const prev = stateStore[key] || "";
-
-          await page.waitForFunction(
-            ({ selector, before }) => {
-              const el = document.querySelector(selector);
-              if (!el) {
-                return false;
-              }
-              const current = (el.innerText || el.textContent || "").trim();
-              return current !== before;
-            },
-            { selector: step.target, before: prev },
-            { timeout: 5000 }
-          );
-          await sleep(stepDelayMs);
-        } else if (step.action === "screenshot") {
-          await page.screenshot({ path: path.join(artifactsDir, `step_${Date.now()}.png`), fullPage: true });
-          await sleep(stepDelayMs);
-        } else if (step.action === "scrollPage") {
-          await page.evaluate(async () => {
-            const maxY = document.documentElement.scrollHeight - window.innerHeight;
-            let y = 0;
-            const stride = Math.max(64, Math.floor(window.innerHeight * 0.35));
-            while (y < maxY) {
-              y = Math.min(maxY, y + stride);
-              window.scrollTo(0, y);
-              await new Promise((resolve) => setTimeout(resolve, 450));
-            }
-          });
-          await sleep(stepDelayMs);
-        } else if (step.action === "wait") {
-          const waitTarget = String(step.target || "").toLowerCase();
-          const requestedWaitMs = Number(step.value) || 10000;
-          const adaptiveWaitMs = /(anim|motion|transition|scroll)/.test(waitTarget)
-            ? Math.max(requestedWaitMs, 1800)
-            : requestedWaitMs;
-          await page.waitForTimeout(adaptiveWaitMs);
-          await sleep(stepDelayMs);
+  for (const step of parser.normalizedSteps) {
+    const s = { index: step.index, action: step.action, target: step.target, status: "pass", note: "ok" };
+    try {
+      const stepDelayMs = getStepDelayMs(step, actionDelayMs);
+      if (step.action === "goto") {
+        if (executionPlan?.playwrightMode === "electron") {
+          await page.waitForLoadState("domcontentloaded");
         } else {
-          throw new Error(`Unsupported action '${step.action || step.originalAction || "unknown"}'`);
+          const baseUrl = executionPlan?.launchTarget?.value;
+          const dest = step.target?.startsWith("http") ? step.target : new URL(step.target || "/", baseUrl).toString();
+          await page.goto(dest, { waitUntil: "domcontentloaded", timeout: 30000 });
         }
-      } catch (error) {
-        s.status = "fail";
-        s.note = error.message;
-        status = "fail";
-        summary = `Failed at step ${step.index + 1}: ${error.message}`;
+        await sleep(stepDelayMs);
+      } else if (step.action === "click") {
+        await page.locator(step.target).first().click({ timeout: 10000 });
+        await sleep(stepDelayMs);
+      } else if (step.action === "fill") {
+        await page.locator(step.target).first().fill(step.value || "", { timeout: 10000 });
+        await sleep(stepDelayMs);
+      } else if (step.action === "assertVisible") {
+        await page.locator(step.target).first().waitFor({ state: "visible", timeout: 10000 });
+        await sleep(stepDelayMs);
+      } else if (step.action === "assertText") {
+        const txt = await page.locator(step.target).first().innerText({ timeout: 10000 });
+        if (!txt.includes(step.value || "")) {
+          throw new Error(`Text assertion failed: expected includes '${step.value}' got '${txt}'`);
+        }
+        await sleep(stepDelayMs);
+      } else if (step.action === "captureText") {
+        stateStore[step.value || `step_${step.index}`] = await page
+          .locator(step.target)
+          .first()
+          .innerText({ timeout: 10000 });
+        await sleep(stepDelayMs);
+      } else if (step.action === "assertChanged") {
+        const key = step.value || `step_${step.index - 1}`;
+        const prev = stateStore[key] || "";
+        await page.waitForFunction(
+          ({ selector, before }) => {
+            const el = document.querySelector(selector);
+            if (!el) {
+              return false;
+            }
+            const current = (el.innerText || el.textContent || "").trim();
+            return current !== before;
+          },
+          { selector: step.target, before: prev },
+          { timeout: 5000 }
+        );
+        await sleep(stepDelayMs);
+      } else if (step.action === "screenshot") {
+        await page.screenshot({ path: path.join(artifactsDir, `step_${Date.now()}.png`), fullPage: true });
+        await sleep(stepDelayMs);
+      } else if (step.action === "scrollPage") {
+        await page.evaluate(async () => {
+          const maxY = document.documentElement.scrollHeight - window.innerHeight;
+          let y = 0;
+          const stride = Math.max(64, Math.floor(window.innerHeight * 0.35));
+          while (y < maxY) {
+            y = Math.min(maxY, y + stride);
+            window.scrollTo(0, y);
+            await new Promise((resolve) => setTimeout(resolve, 450));
+          }
+        });
+        await sleep(stepDelayMs);
+      } else if (step.action === "wait") {
+        const waitTarget = String(step.target || "").toLowerCase();
+        const requestedWaitMs = Number(step.value) || 10000;
+        const adaptiveWaitMs = /(anim|motion|transition|scroll)/.test(waitTarget)
+          ? Math.max(requestedWaitMs, 1800)
+          : requestedWaitMs;
+        await page.waitForTimeout(adaptiveWaitMs);
+        await sleep(stepDelayMs);
+      } else {
+        throw new Error(`Unsupported action '${step.action || step.originalAction || "unknown"}'`);
       }
-
-      stepResults.push(s);
-      if (status === "fail") break;
+    } catch (error) {
+      s.status = "fail";
+      s.note = error.message;
+      status = "fail";
+      summary = `Failed at step ${step.index + 1}: ${error.message}`;
     }
 
-    await page.screenshot({ path: path.join(artifactsDir, `final_${Date.now()}.png`), fullPage: true });
+    stepResults.push(s);
+    if (status === "fail") break;
+  }
+
+  await page.screenshot({ path: path.join(artifactsDir, `final_${Date.now()}.png`), fullPage: true }).catch(() => {});
+  return { status, summary, steps: stepResults };
+}
+
+async function executeProcedure(executionPlan, parser, artifactsDir, actionDelayMs = 500) {
+  ensureDir(artifactsDir);
+
+  if (executionPlan?.playwrightMode === "electron") {
+    const app = await electron.launch({
+      args: [executionPlan.launchTarget.value],
+      cwd: executionPlan.launchTarget.value,
+      recordVideo: {
+        dir: artifactsDir,
+        size: { width: 1280, height: 720 }
+      }
+    });
+    let pageVideo = null;
+    let appClosed = false;
+    try {
+      const page = await app.firstWindow();
+      pageVideo = typeof page.video === "function" ? page.video() : null;
+      await page.waitForLoadState("domcontentloaded");
+      const pageResult = await executePageSteps(page, parser, artifactsDir, actionDelayMs, executionPlan);
+      await app.close();
+      appClosed = true;
+      const videoPath = pageVideo ? await pageVideo.path().catch(() => null) : null;
+      return {
+        ...pageResult,
+        videoPath,
+        artifacts: fs.readdirSync(artifactsDir).map((n) => path.join(artifactsDir, n))
+      };
+    } finally {
+      if (!appClosed) {
+        await app.close().catch(() => {});
+      }
+    }
+  }
+
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({
+    recordVideo: { dir: artifactsDir, size: { width: 1280, height: 720 } }
+  });
+  const page = await context.newPage();
+  let pageResult;
+  try {
+    pageResult = await executePageSteps(page, parser, artifactsDir, actionDelayMs, executionPlan);
   } finally {
     await context.close();
     await browser.close();
@@ -808,9 +970,7 @@ async function executeProcedure(url, parser, artifactsDir, actionDelayMs = 500) 
     .map((n) => path.join(artifactsDir, n));
 
   return {
-    status,
-    summary,
-    steps: stepResults,
+    ...pageResult,
     videoPath: videos[0] || null,
     artifacts: fs.readdirSync(artifactsDir).map((n) => path.join(artifactsDir, n))
   };
@@ -898,20 +1058,41 @@ class AgenticLoopManager {
 
   async createDraft(input) {
     const env = { ...parseDotEnv(this.projectRoot), ...process.env };
-    const inspection = await inspectWebsite(input.url);
-    const procedure = await generateProcedureWithGemini(
-      env.GEMINI_API_KEY,
-      inspection,
-      input.objective || "Validate critical user flow",
-      input.notes || ""
-    );
+    const environmentPlan = await planExecutionEnvironment({
+      projectRoot: this.projectRoot,
+      input,
+      openAiApiKey: env.OPENAI_API_KEY
+    });
+    const environmentSession = await ensureExecutionEnvironment(environmentPlan);
+    let inspection;
+    let procedure;
+    try {
+      inspection = await inspectTarget(environmentPlan, {
+        projectRoot: this.projectRoot,
+        url: input.url
+      });
+      procedure = await generateProcedureWithGemini(
+        env.GEMINI_API_KEY,
+        inspection,
+        input.objective || "Validate critical user flow",
+        input.notes || "",
+        environmentPlan
+      );
+    } finally {
+      await environmentSession.cleanup();
+    }
 
     const parser = buildRequestParser(procedure);
     const forest = input.forestId ? this.store.getForest(input.forestId) : this.store.createForest(input);
     const { tree } = this.store.addTree(forest.forestId, {
       procedure,
       requestParser: parser,
-      executionProfile: { recordVideo: true, mode: "playwright" }
+      executionProfile: {
+        environmentPlan,
+        recordVideo: true,
+        mode: environmentPlan.playwrightMode,
+        targetType: environmentPlan.targetType
+      }
     });
 
     return { forestId: forest.forestId, tree };
@@ -992,6 +1173,7 @@ class AgenticLoopManager {
       requestParser: null,
       skipCodex: seed.skipCodex,
       sourceRunId: sourceRun.id,
+      targetType: seed.targetType,
       treeId: null,
       url: seed.url,
       variantSeedInstructions: seed.testingInstructions
@@ -1063,7 +1245,11 @@ class AgenticLoopManager {
     const { tree } = this.store.addTree(forest.forestId, {
       procedure: payload.procedure,
       requestParser: payload.requestParser || buildRequestParser(payload.procedure),
-      executionProfile: { recordVideo: true, mode: "playwright" }
+      executionProfile: {
+        recordVideo: true,
+        mode: payload.targetType === "electron_app" ? "electron" : "web",
+        targetType: payload.targetType || "web_frontend"
+      }
     });
 
     return {
@@ -1084,6 +1270,7 @@ class AgenticLoopManager {
         notes: seed.notes,
         objective: seed.objective,
         projectName: seed.projectName,
+        targetType: seed.targetType,
         url: seed.url
       });
       const nextPayload = {
@@ -1099,6 +1286,7 @@ class AgenticLoopManager {
         projectName: seed.projectName,
         requestParser: draft.tree.requestParser,
         skipCodex: seed.skipCodex,
+        targetType: seed.targetType,
         treeId: draft.tree.treeId,
         url: seed.url
       };
@@ -1193,6 +1381,7 @@ class AgenticLoopManager {
           .join("\n"),
         objective,
         projectName: workingInput.projectName || "Jungle",
+        targetType: workingInput.targetType,
         url: workingInput.url
       });
 
@@ -1208,6 +1397,7 @@ class AgenticLoopManager {
           forestId: draft.forestId,
           forceFallback: attempt > 1,
           skipCodex: workingInput.skipCodex,
+          targetType: workingInput.targetType,
           treeId: draft.tree.treeId,
           url: workingInput.url
         },
@@ -1259,6 +1449,7 @@ class AgenticLoopManager {
         notes: input.notes || "",
         objective,
         projectName: input.projectName || "Jungle",
+        targetType: input.targetType,
         url: input.url
       });
       const draftPayload = buildDraftPayload({
@@ -1356,6 +1547,7 @@ class AgenticLoopManager {
               .join("\n"),
             objective,
             projectName: workingInput.projectName || "Jungle",
+            targetType: workingInput.targetType,
             url: workingInput.url
           });
         }
@@ -1388,6 +1580,7 @@ class AgenticLoopManager {
             forestId: draft.forestId,
             forceFallback: attempt > 1,
             skipCodex: workingInput.skipCodex,
+            targetType: workingInput.targetType,
             treeId: draft.tree.treeId,
             url: workingInput.url,
             actionDelayMs: workingInput.actionDelayMs
@@ -1561,6 +1754,7 @@ class AgenticLoopManager {
           notes: buildApprovedExecutionNotes(draftPayload, approvedTestingInstructions),
           projectName: draftPayload.projectName || hydrated.run.projectName || "Jungle",
           skipCodex: draftPayload.skipCodex,
+          targetType: draftPayload.targetType || "web_frontend",
           url: draftPayload.url || "http://127.0.0.1:3000"
         },
         emitEvent,
@@ -1596,140 +1790,164 @@ class AgenticLoopManager {
     const trees = this.store.listTrees(input.forestId);
     const tree = trees.find((t) => t.treeId === input.treeId);
     if (!tree) throw new Error("Tree not found for confirmation");
+    const env = { ...parseDotEnv(this.projectRoot), ...process.env };
+    const executionPlan =
+      tree.executionProfile?.environmentPlan ||
+      (await planExecutionEnvironment({
+        projectRoot: this.projectRoot,
+        input,
+        openAiApiKey: env.OPENAI_API_KEY
+      }));
+    const environmentSession = await ensureExecutionEnvironment(executionPlan);
 
-    let finalProcedure = {
-      ...tree.procedure,
-      notes: [tree.procedure.notes || "", input.additions || ""].filter(Boolean).join("\n")
-    };
+    try {
+      let finalProcedure = {
+        ...tree.procedure,
+        notes: [tree.procedure.notes || "", input.additions || ""].filter(Boolean).join("\n")
+      };
 
-    if (input.forceFallback) {
-      const inspection = await inspectWebsite(input.url);
-      finalProcedure = fallbackProcedure(
-        inspection,
-        finalProcedure.summary || "Validate critical user flow",
-        finalProcedure.notes || ""
+      if (input.forceFallback) {
+        const inspection = await inspectTarget(executionPlan, {
+          projectRoot: this.projectRoot,
+          url: input.url
+        });
+        finalProcedure = fallbackProcedure(
+          inspection,
+          finalProcedure.summary || "Validate critical user flow",
+          finalProcedure.notes || "",
+          executionPlan
+        );
+      }
+
+      const inspection = await inspectTarget(executionPlan, {
+        projectRoot: this.projectRoot,
+        url: input.url
+      });
+      if (shouldFallbackToDeterministicProcedure(finalProcedure, inspection, executionPlan)) {
+        emitEvent?.({
+          type: "agentic_status",
+          value: "Detected unstable planner output. Switching to deterministic fallback procedure."
+        });
+        finalProcedure = fallbackProcedure(
+          inspection,
+          finalProcedure.summary || "Validate critical user flow",
+          finalProcedure.notes || "",
+          executionPlan
+        );
+      }
+
+      const normalizedParser = buildRequestParser(finalProcedure);
+      const artifactsDir = path.join(
+        this.projectRoot,
+        "db",
+        "agentic_artifacts",
+        `${input.forestId}_${input.treeId}_${Date.now()}`
       );
-    }
+      ensureDir(artifactsDir);
 
-    const parser = buildRequestParser(finalProcedure);
-    const hasUnsupportedAction = parser.normalizedSteps.some((step) => !step.action);
-    if (hasUnsupportedAction) {
+      const actionDelayMs = Number(input.actionDelayMs ?? 500);
+      const playwrightProgram = generatePlaywrightProgram(normalizedParser, actionDelayMs, executionPlan);
+      const parserPath = path.join(artifactsDir, "request_parser.json");
+      const programPath = path.join(artifactsDir, "playwright_executor.generated.js");
+      fs.writeFileSync(parserPath, JSON.stringify(normalizedParser, null, 2), "utf8");
+      fs.writeFileSync(programPath, playwrightProgram, "utf8");
+
+      emitEvent?.({ type: "agentic_status", value: "WELCOME TO THE JUNGLE" });
+      emitEvent?.({ type: "agentic_status", value: "Codex terminal calls MCP to initiate testing procedure..." });
+
+      const codexMcpResult = input.skipCodex
+        ? {
+            status: "skipped",
+            pass: false,
+            reason: "Codex step skipped by input flag",
+            stdout: "",
+            stderr: ""
+          }
+        : await runCodexMcpStep({
+            objective: finalProcedure.summary,
+            url: executionPlan.launchTarget?.value || input.url,
+            inspection: {
+              ...inspection,
+              targetType: executionPlan.targetType,
+              playwrightMode: executionPlan.playwrightMode
+            },
+            timeoutMs: input.codexTimeoutMs || 120000,
+            cwd: this.projectRoot
+          });
+
+      const codexTranscriptPath = path.join(artifactsDir, "codex_mcp_transcript.txt");
+      fs.writeFileSync(
+        codexTranscriptPath,
+        [`status=${codexMcpResult.status}`, `reason=${codexMcpResult.reason}`, "", codexMcpResult.stdout, "", codexMcpResult.stderr].join("\n"),
+        "utf8"
+      );
+
       emitEvent?.({
         type: "agentic_status",
-        value: "Detected unsupported step actions from planner. Switching to deterministic fallback procedure."
+        value: codexMcpResult.pass
+          ? "Codex MCP planning complete. Converting into Request Parser and Playwright Executor..."
+          : `Codex MCP unavailable (${codexMcpResult.reason}). Continuing with local planner.`
       });
-      const inspection = await inspectWebsite(input.url);
-      finalProcedure = fallbackProcedure(
-        inspection,
-        finalProcedure.summary || "Validate critical user flow",
-        finalProcedure.notes || ""
-      );
-    }
 
-    const normalizedParser = buildRequestParser(finalProcedure);
-    const artifactsDir = path.join(
-      this.projectRoot,
-      "db",
-      "agentic_artifacts",
-      `${input.forestId}_${input.treeId}_${Date.now()}`
-    );
-    ensureDir(artifactsDir);
-
-    const actionDelayMs = Number(input.actionDelayMs ?? 500);
-    const playwrightProgram = generatePlaywrightProgram(normalizedParser, actionDelayMs);
-    const parserPath = path.join(artifactsDir, "request_parser.json");
-    const programPath = path.join(artifactsDir, "playwright_executor.generated.js");
-    fs.writeFileSync(parserPath, JSON.stringify(normalizedParser, null, 2), "utf8");
-    fs.writeFileSync(programPath, playwrightProgram, "utf8");
-
-    emitEvent?.({ type: "agentic_status", value: "WELCOME TO THE JUNGLE" });
-    emitEvent?.({ type: "agentic_status", value: "Codex terminal calls MCP to initiate testing procedure..." });
-
-    const inspection = await inspectWebsite(input.url);
-    const codexMcpResult = input.skipCodex
-      ? {
-          status: "skipped",
-          pass: false,
-          reason: "Codex step skipped by input flag",
-          stdout: "",
-          stderr: ""
-        }
-      : await runCodexMcpStep({
-          objective: finalProcedure.summary,
-          url: input.url,
-          inspection,
-          timeoutMs: input.codexTimeoutMs || 120000,
-          cwd: this.projectRoot
-        });
-
-    const codexTranscriptPath = path.join(artifactsDir, "codex_mcp_transcript.txt");
-    fs.writeFileSync(
-      codexTranscriptPath,
-      [`status=${codexMcpResult.status}`, `reason=${codexMcpResult.reason}`, "", codexMcpResult.stdout, "", codexMcpResult.stderr].join("\n"),
-      "utf8"
-    );
-
-    emitEvent?.({
-      type: "agentic_status",
-      value: codexMcpResult.pass
-        ? "Codex MCP planning complete. Converting into Request Parser and Playwright Executor..."
-        : `Codex MCP unavailable (${codexMcpResult.reason}). Continuing with local planner.`
-    });
-
-    const result = await executeProcedure(input.url, normalizedParser, artifactsDir, actionDelayMs);
-    const preliminaryRun = {
-      status: result.status,
-      summary: result.summary,
-      steps: result.steps,
-      artifacts: [
-        { type: "parser", path: parserPath },
-        { type: "executor", path: programPath }
-      ].concat(result.artifacts.map((p) => ({ type: p.endsWith(".webm") ? "video" : "artifact", path: p }))),
-      videoPath: result.videoPath
-    };
-    const semantics = analyzeRunSemantics(preliminaryRun, this.projectRoot);
-    const semanticsPath = path.join(artifactsDir, "semantic_report.json");
-    fs.writeFileSync(semanticsPath, JSON.stringify(semantics, null, 2), "utf8");
-
-    const critique = await this.criticAgent.analyze({
-      objective: finalProcedure.summary || "Validate critical user flow",
-      procedure: finalProcedure,
-      run: {
+      const result = await executeProcedure(executionPlan, normalizedParser, artifactsDir, actionDelayMs);
+      const preliminaryRun = {
         status: result.status,
         summary: result.summary,
+        targetType: executionPlan.targetType,
         steps: result.steps,
+        artifacts: [
+          { type: "parser", path: parserPath },
+          { type: "executor", path: programPath }
+        ].concat(result.artifacts.map((p) => ({ type: p.endsWith(".webm") ? "video" : "artifact", path: p }))),
+        videoPath: result.videoPath
+      };
+      const semantics = analyzeRunSemantics(preliminaryRun, this.projectRoot);
+      const semanticsPath = path.join(artifactsDir, "semantic_report.json");
+      fs.writeFileSync(semanticsPath, JSON.stringify(semantics, null, 2), "utf8");
+
+      const critique = await this.criticAgent.analyze({
+        objective: finalProcedure.summary || "Validate critical user flow",
+        procedure: finalProcedure,
+        run: {
+          status: result.status,
+          summary: result.summary,
+          steps: result.steps,
+          videoPath: result.videoPath,
+          semantics
+        }
+      });
+      const critiquePath = path.join(artifactsDir, "critique_report.json");
+      fs.writeFileSync(critiquePath, JSON.stringify(critique, null, 2), "utf8");
+
+      const run = this.store.addRun(input.forestId, input.treeId, {
+        status: result.status,
+        targetType: executionPlan.targetType,
+        steps: result.steps,
+        artifacts: [
+          { type: "codex_mcp", path: codexTranscriptPath },
+          { type: "parser", path: parserPath },
+          { type: "executor", path: programPath },
+          { type: "semantic", path: semanticsPath },
+          { type: "critique", path: critiquePath }
+        ].concat(result.artifacts.map((p) => ({ type: p.endsWith(".webm") ? "video" : "artifact", path: p }))),
         videoPath: result.videoPath,
-        semantics
-      }
-    });
-    const critiquePath = path.join(artifactsDir, "critique_report.json");
-    fs.writeFileSync(critiquePath, JSON.stringify(critique, null, 2), "utf8");
+        summary: result.summary,
+        semantics,
+        critique
+      });
 
-    const run = this.store.addRun(input.forestId, input.treeId, {
-      status: result.status,
-      steps: result.steps,
-      artifacts: [
-        { type: "codex_mcp", path: codexTranscriptPath },
-        { type: "parser", path: parserPath },
-        { type: "executor", path: programPath },
-        { type: "semantic", path: semanticsPath },
-        { type: "critique", path: critiquePath }
-      ].concat(result.artifacts.map((p) => ({ type: p.endsWith(".webm") ? "video" : "artifact", path: p }))),
-      videoPath: result.videoPath,
-      summary: result.summary,
-      semantics,
-      critique
-    });
+      this.store.updateTree(input.forestId, input.treeId, (draft) => ({
+        ...draft,
+        status: run.status === "pass" ? "validated" : "failed",
+        requestParser: normalizedParser,
+        confirmedAt: nowIso(),
+        procedure: finalProcedure
+      }));
 
-    this.store.updateTree(input.forestId, input.treeId, (draft) => ({
-      ...draft,
-      status: run.status === "pass" ? "validated" : "failed",
-      requestParser: normalizedParser,
-      confirmedAt: nowIso(),
-      procedure: finalProcedure
-    }));
-
-    return { run, treeId: input.treeId, forestId: input.forestId };
+      return { run, treeId: input.treeId, forestId: input.forestId };
+    } finally {
+      await environmentSession.cleanup();
+    }
   }
 
   async redoRun(input, emitEvent) {
@@ -1758,5 +1976,7 @@ class AgenticLoopManager {
 }
 
 module.exports = {
-  AgenticLoopManager
+  AgenticLoopManager,
+  buildRequestParser,
+  generatePlaywrightProgram
 };

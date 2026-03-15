@@ -479,8 +479,141 @@ h2 {
   margin-bottom: 6px;
 }
 
+.timeline-card {
+  grid-column: 1 / -1;   /* stretch across all 3 columns */
+  overflow: hidden;
+}
+
+/* Let the timeline fill the card properly */
+.timeline {
+  position: relative;
+  height: 280px;          /* fixed height, just below the eyebrow label */
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.timeline {
+  position: relative;
+  min-height: 320px;
+  height: 320px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.timeline-trunk {
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    rgba(208, 255, 163, 0.14),
+    rgba(183, 242, 121, 0.82),
+    rgba(208, 255, 163, 0.14)
+  );
+  box-shadow: 0 0 18px rgba(183, 242, 121, 0.16);
+}
+
+#timeline-events {
+  position: relative;
+  height: 100%;
+}
+
+.timeline-event {
+  position: absolute;
+  width: min(240px, calc(50% - 28px));
+  transform: translateX(-50%);
+}
+
+.timeline-event.down {
+  top: 28px;
+}
+
+.timeline-event.up {
+  bottom: 28px;
+}
+
+.timeline-branch {
+  position: absolute;
+  left: 50%;
+  width: 24px;
+  height: 2px;
+  transform: translateX(-50%);
+  background: rgba(183, 242, 121, 0.42);
+}
+
+.timeline-event.down .timeline-branch {
+  top: 18px;
+}
+
+.timeline-event.up .timeline-branch {
+  bottom: 18px;
+}
+
+.timeline-card-node {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(7, 16, 10, 0.92);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.timeline-event.down .timeline-card-node {
+  margin-top: 28px;
+}
+
+.timeline-event.up .timeline-card-node {
+  margin-bottom: 28px;
+}
+
+.timeline-card-node.success {
+  border-color: rgba(183, 242, 121, 0.34);
+}
+
+.timeline-card-node.running {
+  border-color: rgba(250, 204, 21, 0.4);
+}
+
+.timeline-time {
+  margin-bottom: 8px;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
 @media (max-width: 1080px) {
   .mvp-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .timeline {
+    min-height: 420px;
+    height: 420px;
+  }
+
+  .timeline-trunk {
+    left: 18px;
+    transform: none;
+  }
+
+  .timeline-event {
+    left: 18px !important;
+    width: calc(100% - 36px);
+    transform: none;
+  }
+
+  .timeline-branch {
+    left: 0;
+    width: 18px;
+    transform: none;
   }
 }

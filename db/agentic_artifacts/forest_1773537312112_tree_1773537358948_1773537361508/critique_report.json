@@ -1,0 +1,31 @@
+{
+  "verdict": "fail",
+  "confidence": 0.7,
+  "summary": "Critic detected 2 issue(s) requiring attention.",
+  "expectedVsObserved": {
+    "expected": "Validate Jungle Approval Queue flow and core interactions for objective: Verify the Electron application's main window is accessible and inspectable.",
+    "observed": "Run completed with evidence artifacts."
+  },
+  "strengths": [
+    "Execution completed with pass status."
+  ],
+  "issues": [
+    {
+      "id": "semantic_checks_failed",
+      "severity": "high",
+      "description": "One or more semantic checks failed.",
+      "evidence": "video_valid_webm: missing video path",
+      "fix": "Inspect semantic_report and harden assertions around expected motion/state changes."
+    },
+    {
+      "id": "insufficient_observation_window",
+      "severity": "medium",
+      "description": "No dedicated wait/observation window detected.",
+      "evidence": "A wait step is missing from executed sequence.",
+      "fix": "Include a wait step (>= 10 seconds) before post-observation assertions."
+    }
+  ],
+  "readinessScore": 70,
+  "generatedAt": "2026-03-15T01:16:09.602Z",
+  "source": "deterministic"
+}

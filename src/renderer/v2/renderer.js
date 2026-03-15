@@ -14,6 +14,7 @@ const detailExecutionTime = document.getElementById("detail-execution-time");
 const detailInstructionsEditor = document.getElementById("detail-instructions-editor");
 const detailInstructions = document.getElementById("detail-instructions");
 const detailLoopCount = document.getElementById("detail-loop-count");
+const detailPanel = document.querySelector(".detail-panel");
 const detailProjectName = document.getElementById("detail-project-name");
 const detailRunId = document.getElementById("detail-run-id");
 const detailStatus = document.getElementById("detail-status");
@@ -33,6 +34,7 @@ const refreshProjectsButton = document.getElementById("refresh-projects");
 const runList = document.getElementById("run-list");
 const runsMeta = document.getElementById("runs-meta");
 const runsTitle = document.getElementById("runs-title");
+const runsSection = runsTitle?.closest(".queue-section") || null;
 const sessionStatus = document.getElementById("session-status");
 const saveInstructionsButton = document.getElementById("save-instructions");
 const versionText = document.getElementById("version-text");
@@ -63,6 +65,7 @@ let activeRunDetail = null;
 let instructionDraftRunId = null;
 let instructionDraftValue = "";
 let instructionDraftDirty = false;
+let timelineLimitObserver = null;
 
 function setStatus(value) {
   if (sessionStatus && sessionStatus.textContent !== value) {
@@ -462,6 +465,80 @@ function renderTimelineRunItem(run, index, projectId) {
   return item;
 }
 
+function syncTimelineHeightLimit() {
+  if (!runList || !runList.classList.contains("timeline-list")) {
+    if (runList) {
+      runList.style.height = "";
+      runList.style.maxHeight = "";
+    }
+    if (runsSection) {
+      runsSection.style.height = "";
+      runsSection.style.maxHeight = "";
+    }
+    return;
+  }
+
+  const limitElement = detailVideo?.closest(".content-block") || detailPanel;
+  if (!limitElement || !runsSection) {
+    runList.style.height = "";
+    runList.style.maxHeight = "";
+    if (runsSection) {
+      runsSection.style.height = "";
+      runsSection.style.maxHeight = "";
+    }
+    return;
+  }
+
+  const limitRect = limitElement.getBoundingClientRect();
+  const sectionRect = runsSection.getBoundingClientRect();
+
+  if (limitRect.top > sectionRect.top + 8) {
+    runsSection.style.height = "";
+    runsSection.style.maxHeight = "";
+    runList.style.height = "";
+    runList.style.maxHeight = "";
+    return;
+  }
+
+  const availableSectionHeight = Math.floor(limitRect.bottom - sectionRect.top);
+  if (availableSectionHeight > 220) {
+    const sectionHeight = `${availableSectionHeight}px`;
+    runsSection.style.height = sectionHeight;
+    runsSection.style.maxHeight = sectionHeight;
+
+    const listTopOffset = Math.max(0, Math.floor(runList.getBoundingClientRect().top - sectionRect.top));
+    const availableListHeight = Math.max(160, availableSectionHeight - listTopOffset);
+    const listHeight = `${availableListHeight}px`;
+    runList.style.height = listHeight;
+    runList.style.maxHeight = listHeight;
+    return;
+  }
+
+  runsSection.style.height = "";
+  runsSection.style.maxHeight = "";
+  runList.style.height = "";
+  runList.style.maxHeight = "";
+}
+
+function bindTimelineHeightLimit() {
+  if (timelineLimitObserver) {
+    timelineLimitObserver.disconnect();
+    timelineLimitObserver = null;
+  }
+
+  const limitElement = detailVideo?.closest(".content-block") || detailPanel;
+  if (!limitElement || typeof ResizeObserver !== "function") {
+    requestAnimationFrame(syncTimelineHeightLimit);
+    return;
+  }
+
+  timelineLimitObserver = new ResizeObserver(() => {
+    syncTimelineHeightLimit();
+  });
+  timelineLimitObserver.observe(limitElement);
+  requestAnimationFrame(syncTimelineHeightLimit);
+}
+
 function renderProjects() {
   if (!projectList) {
     return;
@@ -551,11 +628,23 @@ function renderProjectRuns() {
   }
 
   if (!project) {
+    if (runsSection) {
+      runsSection.style.height = "";
+      runsSection.style.maxHeight = "";
+    }
+    runList.style.height = "";
+    runList.style.maxHeight = "";
     runList.appendChild(createEmptyListItem("Choose a project to load its full run history."));
     return;
   }
 
   if (runs.length === 0) {
+    if (runsSection) {
+      runsSection.style.height = "";
+      runsSection.style.maxHeight = "";
+    }
+    runList.style.height = "";
+    runList.style.maxHeight = "";
     runList.appendChild(createEmptyListItem("This project has no persisted test runs yet."));
     return;
   }
@@ -575,6 +664,7 @@ function renderProjectRuns() {
   tail.setAttribute("aria-hidden", "true");
   tail.textContent = "↓";
   runList.appendChild(tail);
+  bindTimelineHeightLimit();
 }
 
 function renderLoopArtifacts(artifacts) {
@@ -832,6 +922,7 @@ function renderRunDetail(run) {
   }
 
   setActionButtonState(run);
+  bindTimelineHeightLimit();
 }
 
 function renderQueues() {
@@ -1112,7 +1203,15 @@ if (window.agenticApi && typeof window.agenticApi.onEvent === "function") {
   });
 }
 
+window.addEventListener("resize", () => {
+  syncTimelineHeightLimit();
+});
+
 window.addEventListener("beforeunload", () => {
+  if (timelineLimitObserver) {
+    timelineLimitObserver.disconnect();
+    timelineLimitObserver = null;
+  }
   if (refreshDebounceHandle) {
     clearTimeout(refreshDebounceHandle);
     refreshDebounceHandle = null;

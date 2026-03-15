@@ -1,0 +1,85 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Jungle Approval Queue",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Persisted Projects",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Approval-Gated Runs",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=To Be Approved",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 4,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Currently In Progress",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 5,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Project Run History",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 6,
+      "action": "click",
+      "originalAction": "click",
+      "target": "#refresh-projects",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 7,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#project-count",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 8,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#approval-count",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 9,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "#progress-count",
+      "value": null,
+      "assert": null
+    }
+  ]
+}

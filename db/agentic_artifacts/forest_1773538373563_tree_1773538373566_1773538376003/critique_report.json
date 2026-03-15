@@ -1,0 +1,18 @@
+{
+  "verdict": "pass",
+  "confidence": 0.9,
+  "summary": "Critic found no blocking semantic regressions.",
+  "expectedVsObserved": {
+    "expected": "Validate Jungle Approval Queue flow and core interactions for objective: Test the current Electron application shell and verify the main window can be inspected.",
+    "observed": "Run completed with evidence artifacts."
+  },
+  "strengths": [
+    "Execution completed with pass status.",
+    "Semantic checks were satisfied.",
+    "Observed timeline includes an explicit wait window."
+  ],
+  "issues": [],
+  "readinessScore": 100,
+  "generatedAt": "2026-03-15T01:33:01.499Z",
+  "source": "deterministic"
+}

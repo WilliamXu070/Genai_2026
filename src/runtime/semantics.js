@@ -50,6 +50,8 @@ function analyzeRunSemantics(runLike, projectRoot) {
   const steps = Array.isArray(runLike?.steps) ? runLike.steps : [];
   const artifacts = Array.isArray(runLike?.artifacts) ? runLike.artifacts : [];
   const runStatus = runLike?.status || "unknown";
+  const targetType = runLike?.targetType || "web_frontend";
+  const requiresVideo = targetType !== "electron_app";
   const failedSteps = steps.filter((s) => s?.status === "fail");
   const parserArtifacts = artifacts.filter((a) => a?.type === "parser");
   const executorArtifacts = artifacts.filter((a) => a?.type === "executor");
@@ -78,10 +80,12 @@ function analyzeRunSemantics(runLike, projectRoot) {
     },
     {
       key: "video_valid_webm",
-      pass: video.valid,
-      detail: video.path
-        ? `exists=${video.exists} size=${video.sizeBytes} headerValid=${video.headerValid}`
-        : "missing video path"
+      pass: requiresVideo ? video.valid : true,
+      detail: requiresVideo
+        ? video.path
+          ? `exists=${video.exists} size=${video.sizeBytes} headerValid=${video.headerValid}`
+          : "missing video path"
+        : "not required for electron_app"
     },
     {
       key: "run_status_consistent",

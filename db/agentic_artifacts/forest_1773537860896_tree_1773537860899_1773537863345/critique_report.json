@@ -1,0 +1,25 @@
+{
+  "verdict": "pass",
+  "confidence": 0.7,
+  "summary": "Critic detected 1 issue(s) requiring attention.",
+  "expectedVsObserved": {
+    "expected": "Verify the Electron application's main window is accessible and displays the expected title.",
+    "observed": "Run completed with evidence artifacts."
+  },
+  "strengths": [
+    "Execution completed with pass status.",
+    "Semantic checks were satisfied."
+  ],
+  "issues": [
+    {
+      "id": "insufficient_observation_window",
+      "severity": "medium",
+      "description": "No dedicated wait/observation window detected.",
+      "evidence": "A wait step is missing from executed sequence.",
+      "fix": "Include a wait step (>= 10 seconds) before post-observation assertions."
+    }
+  ],
+  "readinessScore": 90,
+  "generatedAt": "2026-03-15T01:24:25.803Z",
+  "source": "deterministic"
+}

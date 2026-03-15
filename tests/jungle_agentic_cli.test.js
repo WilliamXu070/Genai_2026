@@ -16,6 +16,8 @@ const { normalizeRequest, parseArgs, readInput } = require("../tools/jungle_agen
     "check critical flow",
     "--additions",
     "verify nav",
+    "--target-type",
+    "electron_app",
     "--max-attempts",
     "2",
     "--skip-codex"
@@ -27,6 +29,7 @@ const { normalizeRequest, parseArgs, readInput } = require("../tools/jungle_agen
   assert.equal(parsed.inlineRequest.payload.url, "http://127.0.0.1:3000");
   assert.equal(parsed.inlineRequest.payload.notes, "check critical flow");
   assert.equal(parsed.inlineRequest.payload.additions, "verify nav");
+  assert.equal(parsed.inlineRequest.payload.targetType, "electron_app");
   assert.equal(parsed.inlineRequest.payload.maxAttempts, 2);
   assert.equal(parsed.inlineRequest.payload.skipCodex, true);
 })();
@@ -45,14 +48,46 @@ const { normalizeRequest, parseArgs, readInput } = require("../tools/jungle_agen
     payload: {
       projectRoot: ".\\Testing",
       objective: "Drive approval queue",
-      skipCodex: "true"
+      skipCodex: "true",
+      targetType: "web_frontend"
     }
   });
   assert.equal(normalized.requestId, "req-1");
   assert.equal(normalized.payload.projectName, path.basename(path.resolve(".\\Testing")));
   assert.equal(normalized.payload.task, "Drive approval queue");
   assert.equal(normalized.payload.skipCodex, true);
+  assert.equal(normalized.payload.targetType, "web_frontend");
   assert.equal(normalized.payload.url, "http://127.0.0.1:3000");
+})();
+
+(() => {
+  const normalized = normalizeRequest({
+    type: "agentic:orchestrate-task",
+    payload: {
+      projectRoot: ".\\Testing",
+      task: "Drive electron shell",
+      targetType: "electron_app"
+    }
+  });
+  assert.equal(normalized.payload.targetType, "electron_app");
+  assert.equal(normalized.payload.url, "");
+})();
+
+(() => {
+  let threw = false;
+  try {
+    normalizeRequest({
+      type: "agentic:orchestrate-task",
+      payload: {
+        task: "bad",
+        targetType: "database_only"
+      }
+    });
+  } catch (error) {
+    threw = true;
+    assert.match(error.message, /targetType must be web_frontend or electron_app/);
+  }
+  assert.equal(threw, true);
 })();
 
 (() => {

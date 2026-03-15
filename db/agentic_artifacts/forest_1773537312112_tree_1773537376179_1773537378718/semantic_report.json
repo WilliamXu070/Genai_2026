@@ -1,0 +1,55 @@
+{
+  "overallPass": false,
+  "verdict": "fail",
+  "checks": [
+    {
+      "key": "steps_present",
+      "pass": true,
+      "detail": "steps=4"
+    },
+    {
+      "key": "artifacts_present",
+      "pass": true,
+      "detail": "artifacts=6"
+    },
+    {
+      "key": "parser_artifact",
+      "pass": true,
+      "detail": "parserArtifacts=1"
+    },
+    {
+      "key": "executor_artifact",
+      "pass": true,
+      "detail": "executorArtifacts=1"
+    },
+    {
+      "key": "video_valid_webm",
+      "pass": false,
+      "detail": "missing video path"
+    },
+    {
+      "key": "run_status_consistent",
+      "pass": true,
+      "detail": "status=fail failedSteps=1"
+    }
+  ],
+  "right": [
+    "steps_present: steps=4",
+    "artifacts_present: artifacts=6",
+    "parser_artifact: parserArtifacts=1",
+    "executor_artifact: executorArtifacts=1",
+    "run_status_consistent: status=fail failedSteps=1"
+  ],
+  "wrong": [
+    "video_valid_webm: missing video path",
+    "run_summary: Failed at step 4: page.waitForFunction: Timeout 5000ms exceeded.",
+    "failed_step_note: page.waitForFunction: Timeout 5000ms exceeded."
+  ],
+  "video": {
+    "exists": false,
+    "headerValid": false,
+    "path": null,
+    "sizeBytes": 0,
+    "valid": false
+  }
+}

@@ -50,6 +50,7 @@ function parseArgs(argv) {
   let url = "";
   let notes = "";
   let additions = "";
+  let targetType = "";
   let maxAttempts = "";
   let codexTimeoutMs = "";
   let actionDelayMs = "";
@@ -97,6 +98,10 @@ function parseArgs(argv) {
       additions = args.shift() || "";
       continue;
     }
+    if (token === "--target-type") {
+      targetType = args.shift() || "";
+      continue;
+    }
     if (token === "--max-attempts") {
       maxAttempts = args.shift() || "";
       continue;
@@ -123,7 +128,7 @@ function parseArgs(argv) {
   }
 
   let inlineRequest = null;
-  if (task || projectRoot || projectName || url || notes || additions || maxAttempts || codexTimeoutMs || actionDelayMs || skipCodex) {
+  if (task || projectRoot || projectName || url || notes || additions || targetType || maxAttempts || codexTimeoutMs || actionDelayMs || skipCodex) {
     inlineRequest = {
       requestId: requestId || `agentic_req_${Date.now()}`,
       type: "agentic:orchestrate-task",
@@ -147,6 +152,9 @@ function parseArgs(argv) {
     }
     if (additions) {
       inlineRequest.payload.additions = additions;
+    }
+    if (targetType) {
+      inlineRequest.payload.targetType = targetType;
     }
     if (maxAttempts) {
       inlineRequest.payload.maxAttempts = Number(maxAttempts);
@@ -205,13 +213,25 @@ function normalizeRequest(request) {
     throw new Error("Request payload must include task or objective");
   }
 
+  const requestedTargetType = typeof payload.targetType === "string" ? payload.targetType.trim() : "";
+  if (requestedTargetType && !["web_frontend", "electron_app"].includes(requestedTargetType)) {
+    throw new Error("Request payload targetType must be web_frontend or electron_app");
+  }
+  const effectiveTargetType = requestedTargetType || "web_frontend";
+
   const normalizedPayload = {
     additions: typeof payload.additions === "string" ? payload.additions : "",
     notes: typeof payload.notes === "string" ? payload.notes : "",
     projectName: resolvedProjectName,
     skipCodex: parseBoolean(payload.skipCodex),
     task,
-    url: typeof payload.url === "string" && payload.url.trim() ? payload.url.trim() : "http://127.0.0.1:3000"
+    targetType: effectiveTargetType,
+    url:
+      typeof payload.url === "string" && payload.url.trim()
+        ? payload.url.trim()
+        : effectiveTargetType === "electron_app"
+          ? ""
+          : "http://127.0.0.1:3000"
   };
 
   const maxAttempts = toFiniteNumber(payload.maxAttempts);

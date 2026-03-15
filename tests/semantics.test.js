@@ -39,6 +39,17 @@ function run() {
   assert.ok(!failSemantic.overallPass, "fail semantic should fail checks");
   assert.ok(failSemantic.wrong.some((line) => line.includes("failed_step_note")), "fail semantic should include failure note");
 
+  const electronPassRun = {
+    status: "pass",
+    summary: "electron ok",
+    targetType: "electron_app",
+    steps: [{ status: "pass", action: "click", target: "#refresh-projects" }],
+    artifacts: [{ type: "parser", path: "a" }, { type: "executor", path: "b" }],
+    videoPath: null
+  };
+  const electronSemantic = analyzeRunSemantics(electronPassRun);
+  assert.ok(electronSemantic.overallPass, "electron pass semantic should not require webm video");
+
   const operational = analyzeOperationalSemantics(
     {
       hasAppTitle: true,
@@ -64,4 +75,3 @@ try {
   console.error(error);
   process.exit(1);
 }
-

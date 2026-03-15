@@ -1,0 +1,45 @@
+{
+  "parserVersion": "0.1.0",
+  "normalizedSteps": [
+    {
+      "index": 0,
+      "action": "assertVisible",
+      "originalAction": "assertVisible",
+      "target": "text=Jungle Approval Queue",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 1,
+      "action": "captureText",
+      "originalAction": "captureText",
+      "target": "#session-status",
+      "value": "beforeState",
+      "assert": null
+    },
+    {
+      "index": 2,
+      "action": "click",
+      "originalAction": "click",
+      "target": "#refresh-projects",
+      "value": null,
+      "assert": null
+    },
+    {
+      "index": 3,
+      "action": "assertChanged",
+      "originalAction": "assertChanged",
+      "target": "#session-status",
+      "value": "beforeState",
+      "assert": null
+    },
+    {
+      "index": 4,
+      "action": "screenshot",
+      "originalAction": "screenshot",
+      "target": "fullPage",
+      "value": null,
+      "assert": null
+    }
+  ]
+}
